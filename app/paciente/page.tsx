@@ -302,9 +302,9 @@ export default function PacientePage() {
                           <Badge>{orden.estado.replace('_', ' ')}</Badge>
                         </div>
                         <div className="space-y-1">
-                          {orden.items?.map((item: { id: string; nombreProducto: string; cantidad: number; subtotal: number }) => (
-                            <p key={item.id} className="text-sm">
-                              {item.nombreProducto} x{item.cantidad} - S/ {item.subtotal}
+                          {orden.items?.map((item, index) => (
+                            <p key={index} className="text-sm">
+                              {item.nombre} x{item.cantidad} - S/ {item.precio}
                             </p>
                           ))}
                         </div>

@@ -101,6 +101,6 @@ export interface Orden {
   precio: number
   estado: 'pendiente' | 'procesada' | 'entregada'
   fechaCreacion: string
-  items?: any[]
+  items?: { nombre: string; cantidad: number; precio: number }[]
   total?: number
 }

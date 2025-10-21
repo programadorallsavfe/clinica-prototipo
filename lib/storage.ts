@@ -126,7 +126,7 @@ export interface Orden {
   precio: number
   estado: 'pendiente' | 'procesada' | 'entregada'
   fechaCreacion: string
-  items?: any[]
+  items?: { nombre: string; cantidad: number; precio: number }[]
   total?: number
 }
 
@@ -154,7 +154,7 @@ class StorageManager<T> {
 
   getById(id: string): T | undefined {
     const data = this.getData()
-    return data.find((item: any) => item.id === id)
+    return data.find((item: T) => (item as { id: string }).id === id)
   }
 
   find(predicate: (item: T) => boolean): T[] {
@@ -176,7 +176,7 @@ class StorageManager<T> {
 
   update(id: string, updates: Partial<T>): T | undefined {
     const data = this.getData()
-    const index = data.findIndex((item: any) => item.id === id)
+    const index = data.findIndex((item: T) => (item as { id: string }).id === id)
     if (index !== -1) {
       data[index] = { ...data[index], ...updates }
       this.setData(data)
@@ -187,7 +187,7 @@ class StorageManager<T> {
 
   delete(id: string): boolean {
     const data = this.getData()
-    const filtered = data.filter((item: any) => item.id !== id)
+    const filtered = data.filter((item: T) => (item as { id: string }).id !== id)
     this.setData(filtered)
     return filtered.length !== data.length
   }
@@ -219,8 +219,8 @@ export function logAuditoria(
   accion: string,
   entidad: string,
   entidadId: string,
-  datosAnteriores?: any,
-  datosNuevos?: any
+  datosAnteriores?: Record<string, unknown>,
+  datosNuevos?: Record<string, unknown>
 ): void {
   const log = {
     id: generateId('audit'),

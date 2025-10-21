@@ -130,7 +130,7 @@ export default function RecepcionistaPage() {
       'Paciente',
       nuevoPaciente.id,
       undefined,
-      nuevoPaciente
+      nuevoPaciente as unknown as Record<string, unknown>
     );
     }
 
@@ -155,7 +155,7 @@ export default function RecepcionistaPage() {
 
     leadsStorage.create(nuevoLead);
     if (sessionUser) {
-      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear lead', 'Lead', nuevoLead.id, undefined, nuevoLead);
+      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear lead', 'Lead', nuevoLead.id, undefined, nuevoLead as unknown as Record<string, unknown>);
     }
     
     setShowNuevoLead(false);
@@ -188,7 +188,7 @@ export default function RecepcionistaPage() {
 
     cotizacionesStorage.create(nuevaCotizacion);
     if (sessionUser) {
-      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear cotización', 'Cotizacion', nuevaCotizacion.id, undefined, nuevaCotizacion);
+      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear cotización', 'Cotizacion', nuevaCotizacion.id, undefined, nuevaCotizacion as unknown as Record<string, unknown>);
     }
     
     alert('✅ Cotización creada. En producción se enviaría por WhatsApp.');
@@ -244,7 +244,7 @@ export default function RecepcionistaPage() {
 
     citasStorage.create(nuevaCita);
     if (sessionUser) {
-      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear cita', 'Cita', nuevaCita.id, undefined, nuevaCita);
+      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear cita', 'Cita', nuevaCita.id, undefined, nuevaCita as unknown as Record<string, unknown>);
     }
     
     alert('✅ Cita creada exitosamente');
@@ -594,7 +594,7 @@ export default function RecepcionistaPage() {
                 )}
 
                 <DataTable
-                  data={pacientes}
+                  data={pacientes as unknown as Record<string, unknown>[]}
                   columnas={[
                     { key: 'documento', titulo: 'DNI', sortable: true },
                     { key: 'nombres', titulo: 'Nombres', sortable: true },
@@ -603,7 +603,7 @@ export default function RecepcionistaPage() {
                     { key: 'email', titulo: 'Email' },
                   ]}
                   itemsPorPagina={15}
-                  keyExtractor={(paciente: { id: string }) => paciente.id}
+                  keyExtractor={(paciente: Record<string, unknown>) => paciente.id as string}
                 />
               </CardContent>
             </Card>
