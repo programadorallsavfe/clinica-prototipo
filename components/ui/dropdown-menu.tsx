@@ -34,9 +34,9 @@ function DropdownMenu({ children }: DropdownMenuProps) {
 function DropdownMenuTrigger({ asChild, children, className, ...props }: DropdownMenuTriggerProps) {
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
-      className: cn(className, children.props.className),
+      className: cn(className, (children.props as any).className),
       ...props
-    })
+    } as any)
   }
   
   return (
