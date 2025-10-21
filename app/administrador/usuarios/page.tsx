@@ -139,7 +139,7 @@ export default function UsuariosPage() {
       proximaCita: '2024-01-22',
       especialidad: 'Cardiología',
       doctor: 'Dr. Carlos Mendoza',
-      saldo: 0,
+      saldo: 50,
       deuda: 0,
       ultimoPago: '2024-01-10',
       cotizacionesAbiertas: 0,

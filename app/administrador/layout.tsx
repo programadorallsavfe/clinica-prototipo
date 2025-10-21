@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdministradorSidebar } from '@/components/administrador-sidebar';
+import { ModeToggle } from '@/components/mode-toggle';
 import { isAuthenticated, getSession } from '@/lib/auth';
 import { usuariosStorage } from '@/lib/storage';
 import { Menu } from 'lucide-react';
@@ -63,6 +64,9 @@ export default function AdministradorLayout({
             <span className="font-semibold text-foreground">Sistema de Clínica</span>
             <span>/</span>
             <span>Administración</span>
+          </div>
+          <div className="ml-auto">
+            <ModeToggle />
           </div>
         </header>
         <main className="flex-1 overflow-auto">

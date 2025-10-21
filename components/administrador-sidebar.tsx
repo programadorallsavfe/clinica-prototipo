@@ -103,18 +103,12 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
           onClick={() => router.push("/administrador")}
           className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} cursor-pointer hover:bg-muted/50 transition-colors duration-200 rounded-lg ${isCollapsed ? 'p-2' : 'p-3'}`}
         >
-          <div className="relative">
-            <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-destructive text-destructive-foreground">
-              <Shield className="size-5" />
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-          {!isCollapsed && (
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-primary">ADMINISTRACIÓN</span>
-              <span className="text-xs text-muted-foreground font-medium">{adminNombre}</span>
-            </div>
-          )}
+          <img 
+            src="/logo_feminis.webp" 
+            alt="Logo Feminis" 
+            className={`${isCollapsed ? 'w-8 h-8' : 'w-250 h-12'} object-contain`}
+          />
+        
         </div>
       </div>
       

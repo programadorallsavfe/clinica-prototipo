@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { RecepcionistaSidebar } from '@/components/recepcionista-sidebar';
+import { ModeToggle } from '@/components/mode-toggle';
 import { isAuthenticated, getSession } from '@/lib/auth';
 import { usuariosStorage } from '@/lib/storage';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
@@ -55,6 +56,9 @@ export default function RecepcionistaLayout({
             <span className="font-semibold text-foreground">Sistema de Clínica</span>
             <span>/</span>
             <span>Recepción</span>
+          </div>
+          <div className="ml-auto">
+            <ModeToggle />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
