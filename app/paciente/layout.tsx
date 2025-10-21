@@ -28,7 +28,7 @@ export default function PacienteLayout({
     }
 
     // Obtener nombre del paciente
-    const paciente = pacientesStorage.findOne(p => p.usuarioId === session.usuarioId);
+    const paciente = pacientesStorage.findOne(p => p.usuarioId === session.userId);
     if (paciente) {
       setPacienteNombre(`${paciente.nombres} ${paciente.apellidos}`);
     }

@@ -29,7 +29,7 @@ export default function FarmaciaLayout({
     }
 
     // Obtener nombre del usuario
-    const usuario = usuariosStorage.getById(session.usuarioId);
+    const usuario = usuariosStorage.getById(session.userId);
     if (usuario) {
       setUserName(usuario.username);
     }

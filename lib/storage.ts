@@ -73,6 +73,7 @@ export interface Usuario {
 
 export interface Doctor {
   id: string
+  usuarioId?: string
   nombres: string
   apellidos: string
   especialidadId: string

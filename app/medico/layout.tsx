@@ -28,7 +28,7 @@ export default function MedicoLayout({
     }
 
     // Obtener nombre del doctor
-    const doctor = doctoresStorage.findOne(d => d.usuarioId === session.usuarioId);
+    const doctor = doctoresStorage.findOne(d => d.usuarioId === session.userId);
     if (doctor) {
       setDoctorNombre(`Dr. ${doctor.nombres} ${doctor.apellidos}`);
     } else {
