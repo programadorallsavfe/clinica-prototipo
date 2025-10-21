@@ -104,7 +104,7 @@ ${colorConfig
 interface ChartTooltipProps {
   children?: React.ReactNode
   active?: boolean
-  payload?: any[]
+  payload?: Record<string, unknown>[]
   className?: string
 }
 
@@ -125,29 +125,19 @@ function ChartTooltipContent({
   payload,
   className,
   indicator = "dot",
-  hideLabel = false,
   hideIndicator = false,
-  label,
-  labelFormatter,
-  labelClassName,
   formatter,
   color,
   nameKey,
-  labelKey,
 }: {
   active?: boolean
-  payload?: any[]
+  payload?: Record<string, unknown>[]
   className?: string
   indicator?: "line" | "dot" | "dashed"
-  hideLabel?: boolean
   hideIndicator?: boolean
-  label?: string
-  labelFormatter?: (value: any, payload: any[]) => React.ReactNode
-  labelClassName?: string
-  formatter?: (value: any, name: string, item: any, index: number, payload: any) => React.ReactNode
+  formatter?: (value: unknown, name: string, item: Record<string, unknown>, index: number, payload: Record<string, unknown>) => React.ReactNode
   color?: string
   nameKey?: string
-  labelKey?: string
 }) {
   const { config } = useChart()
 
@@ -164,20 +154,20 @@ function ChartTooltipContent({
     >
       <div className="grid gap-1.5">
         {payload.map((item, index) => {
-          const key = `${nameKey || item.name || item.dataKey || "value"}`
+          const key = `${nameKey || (item.name as string) || (item.dataKey as string) || "value"}`
           const itemConfig = config[key as keyof typeof config]
-          const indicatorColor = color || item.color || item.payload?.fill
+          const indicatorColor = color || (item.color as string) || ((item.payload as Record<string, unknown>)?.fill as string)
 
           return (
             <div
-              key={item.dataKey || index}
+              key={(item.dataKey as string) || index}
               className={cn(
                 "flex w-full flex-wrap items-stretch gap-2",
                 indicator === "dot" && "items-center"
               )}
             >
-              {formatter && item?.value !== undefined && item.name ? (
-                formatter(item.value, item.name, item, index, item.payload)
+              {formatter && item?.value !== undefined && item?.value !== null && item.name ? (
+                formatter(item.value, item.name as string, item, index, item.payload as Record<string, unknown>)
               ) : (
                 <>
                   {itemConfig?.icon ? (
@@ -203,11 +193,11 @@ function ChartTooltipContent({
                   )}
                   <div className="flex flex-1 justify-between leading-none items-center">
                     <span className="text-muted-foreground">
-                      {itemConfig?.label || item.name}
+                      {(itemConfig?.label as string) || (item.name as string)}
                     </span>
-                    {item.value && (
+                    {item.value !== undefined && item.value !== null && (
                       <span className="text-foreground font-mono font-medium tabular-nums">
-                        {item.value.toLocaleString()}
+                        {(item.value as number).toLocaleString()}
                       </span>
                     )}
                   </div>
@@ -224,7 +214,7 @@ function ChartTooltipContent({
 // Simplified legend component
 interface ChartLegendProps {
   children?: React.ReactNode
-  payload?: any[]
+  payload?: Record<string, unknown>[]
   verticalAlign?: "top" | "bottom"
   className?: string
 }
@@ -256,7 +246,7 @@ function ChartLegendContent({
 }: {
   className?: string
   hideIcon?: boolean
-  payload?: any[]
+  payload?: Record<string, unknown>[]
   verticalAlign?: "top" | "bottom"
   nameKey?: string
 }) {
@@ -275,12 +265,12 @@ function ChartLegendContent({
       )}
     >
       {payload.map((item) => {
-        const key = `${nameKey || item.dataKey || "value"}`
+        const key = `${nameKey || (item.dataKey as string) || "value"}`
         const itemConfig = config[key as keyof typeof config]
 
         return (
           <div
-            key={item.value}
+            key={item.value as string}
             className="flex items-center gap-1.5"
           >
             {itemConfig?.icon && !hideIcon ? (
@@ -289,11 +279,11 @@ function ChartLegendContent({
               <div
                 className="h-2 w-2 shrink-0 rounded-[2px]"
                 style={{
-                  backgroundColor: item.color,
+                  backgroundColor: item.color as string,
                 }}
               />
             )}
-            {itemConfig?.label}
+            {itemConfig?.label as string}
           </div>
         )
       })}
