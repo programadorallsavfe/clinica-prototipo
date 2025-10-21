@@ -144,36 +144,56 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
-            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-accent/20 p-4">
+      <Card className="w-full max-w-md shadow-lg border-border/50 backdrop-blur-sm">
+        <CardHeader className="text-center space-y-6">
+          <div className="mx-auto w-20 h-20 mb-2">
+            <img 
+              src="/logo_feminis.webp" 
+              alt="Logo Clínica" 
+              className="w-full h-full object-contain drop-shadow-sm"
+            />
           </div>
-          <CardTitle className="text-2xl">Clínica Prototype</CardTitle>
-          <CardDescription>Sistema de Gestión Clínica</CardDescription>
+          <div className="space-y-2">
+            <CardTitle className="text-3xl font-semibold tracking-tight text-foreground">
+              Clínica Feminis Prototipo
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-base">
+              Sistema de Gestión Clínica
+            </CardDescription>
+          </div>
         </CardHeader>
         
-        <CardContent>
+        <CardContent className="space-y-6">
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
-              <TabsTrigger value="recuperar">Recuperar</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 rounded-xl">
+              <TabsTrigger 
+                value="login" 
+                className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+              >
+                Iniciar Sesión
+              </TabsTrigger>
+              <TabsTrigger 
+                value="recuperar"
+                className="rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+              >
+                Recuperar
+              </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
+            <TabsContent value="login" className="space-y-6">
+              <form onSubmit={handleLogin} className="space-y-5">
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="text-sm">{error}</span>
+                  <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl flex items-center gap-3">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm font-medium">{error}</span>
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="username">Usuario</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="username" className="text-sm font-medium text-foreground">
+                    Usuario
+                  </Label>
                   <Input
                     id="username"
                     type="text"
@@ -182,11 +202,14 @@ export default function AuthPage() {
                     onChange={(e) => setUsername(e.target.value)}
                     required
                     disabled={loading}
+                    className="h-12 rounded-xl border-input/50 bg-background/50 backdrop-blur-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-background"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Contraseña</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="password" className="text-sm font-medium text-foreground">
+                    Contraseña
+                  </Label>
                   <Input
                     id="password"
                     type="password"
@@ -195,10 +218,15 @@ export default function AuthPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={loading}
+                    className="h-12 rounded-xl border-input/50 bg-background/50 backdrop-blur-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-background"
                   />
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 rounded-xl font-medium text-base transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed" 
+                  disabled={loading}
+                >
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -209,36 +237,59 @@ export default function AuthPage() {
                   )}
                 </Button>
 
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg text-sm">
-                  <p className="font-semibold mb-2">👤 Usuarios de prueba:</p>
-                  <ul className="space-y-1 text-xs">
-                    <li><strong>Admin:</strong> admin / admin123</li>
-                    <li><strong>Recepción:</strong> recepcion / recep123</li>
-                    <li><strong>Doctor:</strong> dr.sanchez / doctor123</li>
-                    <li><strong>Paciente:</strong> jperez / paciente123</li>
-                    <li><strong>Farmacia:</strong> farmacia / farma123</li>
+                <div className="mt-8 p-5 bg-accent/30 border border-accent/50 rounded-xl">
+                  <p className="font-semibold mb-3 text-foreground text-sm flex items-center gap-2">
+                    <span className="w-5 h-5 bg-primary/20 rounded-full flex items-center justify-center text-xs">👤</span>
+                    Usuarios de prueba:
+                  </p>
+                  <ul className="space-y-2 text-xs">
+                    <li className="flex justify-between items-center py-1">
+                      <span className="text-muted-foreground">Admin:</span>
+                      <span className="font-mono text-foreground">admin / admin123</span>
+                    </li>
+                    <li className="flex justify-between items-center py-1">
+                      <span className="text-muted-foreground">Recepción:</span>
+                      <span className="font-mono text-foreground">recepcion / recep123</span>
+                    </li>
+                    <li className="flex justify-between items-center py-1">
+                      <span className="text-muted-foreground">Doctor:</span>
+                      <span className="font-mono text-foreground">dr.sanchez / doctor123</span>
+                    </li>
+                    <li className="flex justify-between items-center py-1">
+                      <span className="text-muted-foreground">Paciente:</span>
+                      <span className="font-mono text-foreground">jperez / paciente123</span>
+                    </li>
+                    <li className="flex justify-between items-center py-1">
+                      <span className="text-muted-foreground">Farmacia:</span>
+                      <span className="font-mono text-foreground">farmacia / farma123</span>
+                    </li>
                   </ul>
                 </div>
               </form>
             </TabsContent>
 
-            <TabsContent value="recuperar">
-              <form onSubmit={handleRecuperacion} className="space-y-4">
+            <TabsContent value="recuperar" className="space-y-6">
+              <form onSubmit={handleRecuperacion} className="space-y-5">
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="text-sm">{error}</span>
+                  <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl flex items-center gap-3">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm font-medium">{error}</span>
                   </div>
                 )}
 
                 {mensaje && (
-                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                    <span className="text-sm">{mensaje}</span>
+                  <div className="bg-success/10 border border-success/20 text-success px-4 py-3 rounded-xl flex items-center gap-3">
+                    <svg className="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm font-medium">{mensaje}</span>
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="recup-username">Usuario</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="recup-username" className="text-sm font-medium text-foreground">
+                    Usuario
+                  </Label>
                   <Input
                     id="recup-username"
                     type="text"
@@ -247,11 +298,14 @@ export default function AuthPage() {
                     onChange={(e) => setRecupUsername(e.target.value)}
                     required
                     disabled={loading}
+                    className="h-12 rounded-xl border-input/50 bg-background/50 backdrop-blur-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-background"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="recup-email">Email</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="recup-email" className="text-sm font-medium text-foreground">
+                    Email
+                  </Label>
                   <Input
                     id="recup-email"
                     type="email"
@@ -260,10 +314,15 @@ export default function AuthPage() {
                     onChange={(e) => setRecupEmail(e.target.value)}
                     required
                     disabled={loading}
+                    className="h-12 rounded-xl border-input/50 bg-background/50 backdrop-blur-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-background"
                   />
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 rounded-xl font-medium text-base transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed" 
+                  disabled={loading}
+                >
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -274,7 +333,7 @@ export default function AuthPage() {
                   )}
                 </Button>
 
-                <p className="text-xs text-gray-500 text-center mt-4">
+                <p className="text-xs text-muted-foreground text-center mt-6 leading-relaxed">
                   Recibirás un correo con instrucciones para restablecer tu contraseña.
                 </p>
               </form>

@@ -98,7 +98,7 @@ export function AdminSidebar({ variant = "sidebar", ...props }: React.ComponentP
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <Image
-                      src="/logo.png"
+                      src="/logo_feminis.webp"
                       alt="Logo Clínica"
                       width={36}
                       height={36}

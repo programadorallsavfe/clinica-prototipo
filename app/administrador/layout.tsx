@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AdministradorSidebar } from '@/components/administrador-sidebar';
 import { isAuthenticated, getSession } from '@/lib/auth';
 import { usuariosStorage } from '@/lib/storage';
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { Menu } from 'lucide-react';
 
 export default function AdministradorLayout({
   children,
@@ -15,6 +15,7 @@ export default function AdministradorLayout({
   const router = useRouter();
   const [adminNombre, setAdminNombre] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -46,21 +47,30 @@ export default function AdministradorLayout({
   }
 
   return (
-    <SidebarProvider>
-      <AdministradorSidebar adminNombre={adminNombre} />
-      <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
+    <div className="flex h-screen w-full">
+      <AdministradorSidebar adminNombre={adminNombre} isCollapsed={isCollapsed} onToggleCollapse={() => setIsCollapsed(!isCollapsed)} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-2 rounded-lg hover:bg-muted/50 transition-colors duration-200"
+            aria-label={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
+            title={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
+          >
+            <Menu className="w-4 h-4 text-muted-foreground" />
+          </button>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">Sistema de Clínica</span>
             <span>/</span>
             <span>Administración</span>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          {children}
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        <main className="flex-1 overflow-auto">
+          <div className="p-6">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }

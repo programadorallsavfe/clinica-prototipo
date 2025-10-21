@@ -4,28 +4,17 @@ import * as React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu } from 'lucide-react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-  SidebarTrigger,
-  SidebarSeparator,
-} from '@/components/ui/sidebar';
+// Importaciones removidas - usando estructura HTML nativa
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-interface AdministradorSidebarProps extends React.ComponentProps<typeof Sidebar> {
+interface AdministradorSidebarProps {
   adminNombre: string;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
-export function AdministradorSidebar({ adminNombre, ...props }: AdministradorSidebarProps) {
+export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollapse }: AdministradorSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -39,7 +28,7 @@ export function AdministradorSidebar({ adminNombre, ...props }: AdministradorSid
     ],
     navGestionUsuarios: [
       {
-        title: "Usuarios y Permisos",
+        title: "Usuarios",
         onClick: () => router.push("/administrador/usuarios"),
         icon: Users,
       },
@@ -108,239 +97,242 @@ export function AdministradorSidebar({ adminNombre, ...props }: AdministradorSid
   };
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader className="border-b border-sidebar-border/50 pb-4">
-        <div className="flex items-center gap-2 px-3">
-          <SidebarTrigger className="md:hidden" />
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                className="data-[slot=sidebar-menu-button]:!p-3 hover:bg-muted/50 transition-colors duration-200"
-              >
-                <div 
-                  onClick={() => router.push("/administrador")}
-                  className="flex items-center justify-between w-full cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-destructive text-destructive-foreground">
-                        <Shield className="size-5" />
-                      </div>
-                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-lg font-bold text-primary">ADMINISTRACIÓN</span>
-                      <span className="text-xs text-muted-foreground font-medium">{adminNombre}</span>
-                    </div>
-                  </div>
-                </div>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+    <aside className={`${isCollapsed ? 'w-16' : 'w-72'} h-screen bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300`}>
+      <div className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border`}>
+        <div 
+          onClick={() => router.push("/administrador")}
+          className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} cursor-pointer hover:bg-muted/50 transition-colors duration-200 rounded-lg ${isCollapsed ? 'p-2' : 'p-3'}`}
+        >
+          <div className="relative">
+            <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-destructive text-destructive-foreground">
+              <Shield className="size-5" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+          </div>
+          {!isCollapsed && (
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-primary">ADMINISTRACIÓN</span>
+              <span className="text-xs text-muted-foreground font-medium">{adminNombre}</span>
+            </div>
+          )}
         </div>
-      </SidebarHeader>
+      </div>
       
-      <SidebarContent className="flex-1">
+      <div className="flex-1 overflow-y-auto">
         {/* Dashboard */}
-        <div className="px-3 py-2">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Principal
-          </h3>
-        </div>
-        <div className="px-3 space-y-1 mb-4">
-          {data.navMain.map((item) => (
-            <button
-              key={item.title}
-              onClick={item.onClick}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group w-full text-left ${
-                pathname === "/administrador" 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              }`}
-            >
-              <div className={`p-2 rounded-md transition-colors duration-200 ${
-                pathname === "/administrador" 
-                  ? "bg-primary-foreground/20" 
-                  : "bg-muted/30 group-hover:bg-muted/60"
-              }`}>
-                <item.icon className="w-4 h-4" />
-              </div>
-              <span className="font-medium">{item.title}</span>
-            </button>
-          ))}
+        <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
+          {!isCollapsed && (
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Principal
+            </h3>
+          )}
+          <div className="space-y-1">
+            {data.navMain.map((item) => (
+              <button
+                key={item.title}
+                onClick={item.onClick}
+                title={isCollapsed ? item.title : undefined}
+                className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 group w-full text-left ${
+                  pathname === "/administrador" 
+                    ? "bg-primary text-primary-foreground" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                {!isCollapsed && <span className="font-medium">{item.title}</span>}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Gestión de Usuarios */}
-        <div className="px-3 py-2">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Gestión de Usuarios
-          </h3>
-        </div>
-        <div className="px-3 space-y-1 mb-4">
-          {data.navGestionUsuarios.map((item) => {
-            const isActive = pathname.includes("/administrador/usuarios") || 
-                           pathname.includes("/administrador/doctores") ||
-                           pathname.includes("/administrador/especialidades");
-            return (
-              <button
-                key={item.title}
-                onClick={item.onClick}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group w-full text-left ${
-                  isActive
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                }`}
-              >
-                <div className={`p-2 rounded-md transition-colors duration-200 ${
-                  isActive
-                    ? "bg-primary-foreground/20" 
-                    : "bg-muted/30 group-hover:bg-muted/60"
-                }`}>
-                  <item.icon className="w-4 h-4" />
-                </div>
-                <span className="font-medium flex-1">{item.title}</span>
-                {item.badge && (
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5">
-                    {item.badge}
-                  </Badge>
-                )}
-              </button>
-            );
-          })}
+        <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
+          {!isCollapsed && (
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Gestión de Usuarios
+            </h3>
+          )}
+          <div className="space-y-1">
+            {data.navGestionUsuarios.map((item) => {
+              // Determinar la ruta específica para cada elemento
+              let targetPath = "";
+              if (item.title === "Usuarios") {
+                targetPath = "/administrador/usuarios";
+              } else if (item.title === "Doctores") {
+                targetPath = "/administrador/doctores";
+              } else if (item.title === "Especialidades") {
+                targetPath = "/administrador/especialidades";
+              }
+              
+              const isActive = pathname === targetPath;
+              return (
+                <button
+                  key={item.title}
+                  onClick={item.onClick}
+                  title={isCollapsed ? item.title : undefined}
+                  className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 group w-full text-left ${
+                    isActive
+                      ? "bg-primary text-primary-foreground" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {!isCollapsed && (
+                    <>
+                      <span className="font-medium flex-1">{item.title}</span>
+                      {item.badge && (
+                        <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Operaciones */}
-        <div className="px-3 py-2">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Operaciones
-          </h3>
-        </div>
-        <div className="px-3 space-y-1 mb-4">
-          {data.navOperaciones.map((item) => {
-            const isActive = pathname.includes("/administrador/inventario") || 
-                           pathname.includes("/administrador/reportes");
-            return (
-              <button
-                key={item.title}
-                onClick={item.onClick}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group w-full text-left ${
-                  isActive
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                }`}
-              >
-                <div className={`p-2 rounded-md transition-colors duration-200 ${
-                  isActive
-                    ? "bg-primary-foreground/20" 
-                    : "bg-muted/30 group-hover:bg-muted/60"
-                }`}>
-                  <item.icon className="w-4 h-4" />
-                </div>
-                <span className="font-medium">{item.title}</span>
-              </button>
-            );
-          })}
+        <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
+          {!isCollapsed && (
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Operaciones
+            </h3>
+          )}
+          <div className="space-y-1">
+            {data.navOperaciones.map((item) => {
+              // Determinar la ruta específica para cada elemento
+              let targetPath = "";
+              if (item.title === "Inventario") {
+                targetPath = "/administrador/inventario";
+              } else if (item.title === "Reportes") {
+                targetPath = "/administrador/reportes";
+              }
+              
+              const isActive = pathname === targetPath;
+              return (
+                <button
+                  key={item.title}
+                  onClick={item.onClick}
+                  title={isCollapsed ? item.title : undefined}
+                  className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 group w-full text-left ${
+                    isActive
+                      ? "bg-primary text-primary-foreground" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Sistema */}
-        <div className="px-3 py-2">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Sistema
-          </h3>
-        </div>
-        <div className="px-3 space-y-1 mb-4">
-          {data.navSistema.map((item) => {
-            const isActive = pathname.includes("/administrador/auditoria") || 
-                           pathname.includes("/administrador/configuracion");
-            return (
-              <button
-                key={item.title}
-                onClick={item.onClick}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group w-full text-left ${
-                  isActive
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                }`}
-              >
-                <div className={`p-2 rounded-md transition-colors duration-200 ${
-                  isActive
-                    ? "bg-primary-foreground/20" 
-                    : "bg-muted/30 group-hover:bg-muted/60"
-                }`}>
-                  <item.icon className="w-4 h-4" />
-                </div>
-                <span className="font-medium">{item.title}</span>
-              </button>
-            );
-          })}
+        <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
+          {!isCollapsed && (
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Sistema
+            </h3>
+          )}
+          <div className="space-y-1">
+            {data.navSistema.map((item) => {
+              // Determinar la ruta específica para cada elemento
+              let targetPath = "";
+              if (item.title === "Auditoría") {
+                targetPath = "/administrador/auditoria";
+              } else if (item.title === "Configuración") {
+                targetPath = "/administrador/configuracion";
+              }
+              
+              const isActive = pathname === targetPath;
+              return (
+                <button
+                  key={item.title}
+                  onClick={item.onClick}
+                  title={isCollapsed ? item.title : undefined}
+                  className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 group w-full text-left ${
+                    isActive
+                      ? "bg-primary text-primary-foreground" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="flex-1"></div>
-        
         {/* Redes Sociales */}
-        <div className="px-3 py-2">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            Redes Sociales
-          </h3>
-        </div>
-        
-        <div className="px-3 space-y-1 mb-4">
-          {data.socialMedia.map((social) => (
-            <a
-              key={social.title}
-              href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 group"
-              aria-label={`Visitar ${social.title}`}
-            >
-              <div className={`p-2 rounded-md bg-muted/30 group-hover:bg-muted/60 transition-colors duration-200 ${social.color}`}>
+        <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
+          {!isCollapsed && (
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Redes Sociales
+            </h3>
+          )}
+          <div className="space-y-1">
+            {data.socialMedia.map((social) => (
+              <a
+                key={social.title}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={isCollapsed ? social.title : undefined}
+                className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200 group`}
+                aria-label={`Visitar ${social.title}`}
+              >
                 <Image
                   src={social.icon}
                   alt={`${social.title} icon`}
-                  width={16}
-                  height={16}
-                  className="w-4 h-4"
+                  width={20}
+                  height={20}
+                  className="w-5 h-5"
                 />
-              </div>
-              <span className="font-medium">{social.title}</span>
-            </a>
-          ))}
+                {!isCollapsed && <span className="font-medium">{social.title}</span>}
+              </a>
+            ))}
+          </div>
         </div>
-      </SidebarContent>
+      </div>
       
-      <SidebarFooter className="border-t border-sidebar-border/50">
-        <div className="p-4 space-y-3">
-          {/* Estado del sistema */}
+      <div className={`border-t border-sidebar-border ${isCollapsed ? 'p-2' : 'p-4'} space-y-3`}>
+        {/* Estado de la clínica */}
+        {!isCollapsed && (
           <div className="flex items-center gap-2 px-3 py-2 text-xs text-muted-foreground">
             <Activity className="size-3" />
-            <span>Sistema Operativo</span>
+            <span>Online</span>
             <div className="ml-auto size-2 rounded-full bg-green-500 animate-pulse" />
           </div>
-          
-          {/* Notificación de issues */}
+        )}
+        
+        {/* Notificación de alertas médicas */}
+        {!isCollapsed && (
           <div className="flex items-center gap-2 px-3 py-2 text-xs bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-lg">
             <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <span>2 Issues</span>
+            <span>3 Alertas Médicas</span>
             <button className="ml-auto text-red-500 hover:text-red-700">
               <span className="sr-only">Cerrar</span>
               ×
             </button>
           </div>
-          
-          {/* Botón de logout */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleLogout}
-            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-          >
-            <LogOut className="size-4" />
-            <span>Cerrar Sesión</span>
-          </Button>
-          
-          {/* Footer */}
+        )}
+        
+        {/* Botón de logout */}
+        <button
+          onClick={handleLogout}
+          title={isCollapsed ? "Cerrar Sesión" : undefined}
+          className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 group w-full text-left text-destructive hover:text-destructive hover:bg-destructive/10`}
+        >
+          <LogOut className="w-5 h-5" />
+          {!isCollapsed && <span className="font-medium">Cerrar Sesión</span>}
+        </button>
+        
+        {/* Footer */}
+        {!isCollapsed && (
           <div className="text-center pt-2">
             <p className="text-xs text-muted-foreground mb-2">
               Desarrollado por
@@ -356,8 +348,8 @@ export function AdministradorSidebar({ adminNombre, ...props }: AdministradorSid
               Monstruo Creativo
             </a>
           </div>
-        </div>
-      </SidebarFooter>
-    </Sidebar>
+        )}
+      </div>
+    </aside>
   );
 }

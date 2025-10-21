@@ -194,7 +194,7 @@ export function RecepcionistaSidebar({ recepcionistaNombre, ...props }: Recepcio
           <SidebarMenuItem>
             <div className="flex items-center gap-2 px-3 py-2 text-xs text-muted-foreground">
               <Activity className="size-3" />
-              <span>Sistema Activo</span>
+              <span>Clínica Operativa</span>
               <div className="ml-auto size-2 rounded-full bg-success animate-pulse" />
             </div>
           </SidebarMenuItem>
