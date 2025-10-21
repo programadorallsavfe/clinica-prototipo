@@ -270,16 +270,16 @@ export function initializeDefaultData() {
         especialidadId: cardiologiaId,
         telefono: '987654321',
         email: 'dr.sanchez@clinic.com',
-        activo: true,
+      activo: true,
       });
       doctoresStorage.create({
-        id: generateId('doc'),
+    id: generateId('doc'),
         nombres: 'Maria',
         apellidos: 'Gomez',
         especialidadId: pediatriaId,
         telefono: '912345678',
         email: 'dr.gomez@clinic.com',
-        activo: true,
+    activo: true,
       });
     }
 
@@ -288,16 +288,16 @@ export function initializeDefaultData() {
       const jperezUser = usuariosStorage.findOne(u => u.username === 'jperez');
       if (jperezUser) {
         pacientesStorage.create({
-          id: generateId('pac'),
+    id: generateId('pac'),
           usuarioId: jperezUser.id,
-          nombres: 'Juan',
+    nombres: 'Juan',
           apellidos: 'Perez',
           documento: '12345678',
           telefono: '999888777',
           email: 'jperez@clinic.com',
-          preferenciaContacto: 'whatsapp',
+    preferenciaContacto: 'whatsapp',
           fechaRegistro: new Date().toISOString(),
-          activo: true,
+    activo: true,
         });
       }
     }
