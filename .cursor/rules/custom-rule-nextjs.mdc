@@ -1,0 +1,170 @@
+# REGLAS DE DESARROLLO
+
+## Principios Fundamentales
+
+### 1. Arquitectura Limpia y Ordenada
+- **Separación de responsabilidades**: Cada módulo debe tener una función específica y bien definida
+- **Estructura de carpetas consistente**: Seguir la organización establecida del proyecto
+- **Patrones de diseño**: Implementar patrones probados y mantenibles
+- **Dependencias mínimas**: Evitar dependencias innecesarias entre componentes
+
+### 2. Principio de Responsabilidad Única
+- **Un componente, una función**: Cada componente debe tener una sola responsabilidad
+- **Métodos específicos**: Las funciones deben hacer una sola cosa y hacerla bien
+- **Separación de lógica**: Separar la lógica de negocio de la presentación
+- **Reutilización**: Crear componentes que puedan ser reutilizados en diferentes contextos
+
+### 3. Código Mantenible y Bien Estructurado
+- **Nomenclatura clara**: Usar nombres descriptivos para variables, funciones y componentes
+- **Comentarios útiles**: Documentar código complejo o lógica de negocio importante
+- **Consistencia**: Mantener el mismo estilo de código en todo el proyecto
+- **Refactoring**: Refactorizar código cuando sea necesario para mejorar la legibilidad
+
+## Estilos y CSS
+
+### 4. Uso Correcto de @globals.css
+- **Variables CSS**: Utilizar las variables CSS definidas en globals.css para colores, espaciados y tipografías
+- **Tema claro/oscuro**: Implementar correctamente el sistema de temas usando las variables CSS
+- **Componentes UI**: Usar los estilos base definidos para mantener consistencia visual
+- **Responsive design**: Aplicar los breakpoints y estilos responsive definidos
+
+### 5. Estilos Consistentes
+- **Paleta de colores**: Usar únicamente los colores definidos en las variables CSS
+- **Tipografía**: Aplicar las fuentes y tamaños establecidos en el sistema de diseño
+- **Espaciado**: Utilizar el sistema de espaciado consistente (--spacing)
+- **Bordes y radios**: Aplicar los valores de border-radius y border definidos
+
+## Estructura de Componentes
+
+### 6. Organización de Archivos
+- **Componentes reutilizables**: Crear en `/components/ui/`
+- **Componentes específicos**: Crear en `/components/` con nombres descriptivos
+- **Páginas**: Organizar en `/app/` siguiendo la estructura de rutas
+- **Hooks personalizados**: Crear en `/hooks/` para lógica reutilizable
+
+### 7. Nomenclatura y Convenciones
+- **Componentes**: Usar PascalCase (ej: `UserProfile`, `DataTable`)
+- **Archivos**: Usar kebab-case (ej: `user-profile.tsx`, `data-table.tsx`)
+- **Funciones**: Usar camelCase (ej: `handleSubmit`, `fetchUserData`)
+- **Constantes**: Usar UPPER_SNAKE_CASE (ej: `API_ENDPOINTS`, `MAX_ITEMS`)
+
+## Calidad del Código
+
+### 8. Estándares de Calidad
+- **TypeScript**: Usar tipos estrictos y interfaces bien definidas
+- **Error handling**: Implementar manejo de errores apropiado
+- **Performance**: Optimizar renders y evitar re-renders innecesarios
+- **Accesibilidad**: Implementar atributos ARIA y navegación por teclado
+
+### 9. Testing y Validación
+- **Validación de datos**: Validar entradas de usuario y datos de API
+- **Manejo de estados**: Gestionar correctamente los estados de carga, error y éxito
+- **Edge cases**: Considerar casos límite y manejar errores graciosamente
+
+## Backend y Base de Datos
+
+### 10. Sistema de Diseño Visual
+
+#### Filosofía Visual
+- **Minimalismo expresivo**: Menos elementos, más contraste, tipografías con personalidad y aire generoso
+- **Jerarquía por intención**: 1 acción primaria por vista, 1–2 secundarias; todo lo demás es apoyo
+- **Asimetrías controladas**: Rompe la monotonía con grid y composiciones 2/3 – 1/3, pero mantén alineaciones ópticas
+
+#### Lenguaje Visual (Sistema)
+- **Color por roles**: bg, surface, border, fg, muted, accent, success, warning, danger. Evita nombres de tonos (blue-500)
+- **Tonal mapping**: En light usa superficies casi blancas y acentos sobrios; en dark usa grises profundos con acentos saturados
+- **Tipografía**:
+  - Escala fluida con clamp() (ej. h1: clamp(28px, 4vw, 44px))
+  - Títulos con ligera compresión (tracking -1% a -2%) y body con tracking 0%–+1%
+  - Peso: 600 en títulos, 400 en cuerpo; 500 en botones
+- **Elevación y profundidad**:
+  - Nivel 0: plano (sin sombra)
+  - Nivel 1 (cards): sombra suave + borde 1px translúcido
+  - Nivel 2 (popovers): sombra media + blur muy sutil
+  - Nivel 3 (modal): sombra marcada + backdrop con luz direccional (gradiente radial tenue)
+- **Bordes**: rounded-2xl por defecto; xl en inputs; full sólo en chips/avatars
+
+#### Motion System (Sin Saturar)
+- **Propósito > adorno**: Anima para orientar (transiciones entre estados, foco, jerarquía)
+- **Duraciones**: 120–180ms (UI rápida), 200–260ms (navegación), 300–400ms (entradas grandes)
+- **Curvas**: ease-out para entradas, ease-in para salidas; "spring" leve (stiffness baja) en microinteracciones
+- **Micro**:
+  - Hover: elevación +2px y tinte del borde (no agrandar más de 1.02)
+  - Press: compresión 0.98 y resalte del contorno
+  - Focus: ring nítido (2px) con doble capa (ring + ring-offset)
+
+#### Patrones de Layout "Premium"
+- **Hero funcional**: Título claro, subtítulo breve, 1 CTA y 1 acción secundaria. Ilustración/3D sutil o mockup real del producto
+- **Secciones en "bandas"**: Alterna surface y bg para marcar ritmo; usa gradientes suaves para transiciones
+- **Listas maestras**: Encabezado "sticky", filtros compactos colapsables, scroll contextual (arrastre/drag en móvil) y empty states con CTA
+- **Tableros**: Tarjetas densidad "comfortable", KPIs con micro-charts, toques de vidrio suave (glass-lite) sólo en overlays
+
+#### Componentes con Carácter (Elegantes por Defecto)
+- **Buttons**: primary (sólido), soft (tinte), ghost (texto), danger, quiet (link). Todos con loading y accesibilidad
+- **Inputs**: Borde 1px translúcido + fill surface-raise-1. Error con borde y hint; success sutil (icono + tono)
+- **Cards**: Cabecera con actions "ghost", cuerpo aireado, pie con slots (acciones o meta)
+- **Nav/Sidebar**: Icono + label; active = chip/blip lateral, no sólo color
+- **Tables**: Cabeceras "pegajosas", preview de filas (row expansion), skeleton consistente
+- **Steppers**: Claro, "progressive disclosure", estados done/current/locked diferenciados visualmente
+
+#### Estados Hermosos (Vacío, Carga, Error)
+- **Vacío**: Icono/ilustración minimal + frase empática + CTA directa
+- **Carga**: Skeletons coherentes con el contenido (no spinners sueltos)
+- **Error**: Mensaje humano ("Algo salió mal"), opción Reintentar, y enlace a soporte si aplica
+
+#### Interacciones Modernas
+- **Drag-to-scroll**: Horizontal en carruseles (oculta scrollbar, agrega inercia)
+- **Deslizar para revelar**: Acciones en ítems (móvil)
+- **Gestos**: Pull-to-refresh opcional; toasts con swipe dismiss
+- **Acciones rápidas**: Cmd/Ctrl + K (Command Palette) si tu MVP lo amerita
+
+#### Accesibilidad + Lujo
+- **Focus visible premium**: Anillo doble (color + offset) coherente con accent
+- **Contraste**: AA mínimo; en dark evita texto puro blanco (usa off-white)
+- **ARIA**: En modales, listas dinámicas y toasts (role="alert", aria-live)
+- **Motion reduce**: Respeta prefers-reduced-motion, desactiva parallax/blur pesado
+
+#### Contenido y Microcopy
+- **Tono humano**: Directo, breve, útil. Títulos que expliquen el beneficio, no la sección
+- **CTA con verbo y resultado**: "Crear cotización", "Compartir enlace"
+- **Mensajes guiados**: Placeholders que enseñen (ej. formato, ejemplo)
+
+#### Innovación Responsable (Controlada)
+- **Gradientes "neo-luxe"**: 2–3 tonos vecinos, opacidad baja, usados en acento o highlights (no fondos completos)
+- **Glass-lite**: Sólo en overlays (backdrop blur 6–10px, bordes translúcidos)
+- **3D/Depth**: Sombras direccionadas muy suaves, highlights microscópicos (1px) en bordes superiores de cards
+- **Ilustraciones**: Monocromas con acento (evita caricaturas genéricas)
+
+### 11. Mockdata
+ -Todo sera manejado mediante el localstorage, es decir sera funcional todo pero solo en memoria temporal
+ todo en el localstorage:get,post,put,delete
+### 12. Estado de la Aplicación
+- **Estado global**: Usar Context API o estado local según la necesidad
+- **Persistencia**: Implementar persistencia de datos usando Supabase cuando sea necesario
+- **Sincronización**: Mantener sincronizados los datos entre componentes usando suscripciones real-time
+- **Cache local**: Implementar estrategias de caché local para mejorar la performance
+
+## Documentación
+
+### 13. Documentación del Código
+- **README**: Mantener actualizada la documentación del proyecto
+- **Comentarios de código**: Documentar funciones complejas y lógica de negocio
+- **Props de componentes**: Documentar las props requeridas y opcionales
+- **Ejemplos de uso**: Proporcionar ejemplos de cómo usar los componentes
+
+## Cumplimiento
+
+### 14. Revisión de Código
+- **Auto-revisión**: Revisar el código antes de considerarlo completo
+- **Consistencia**: Verificar que el código siga estas reglas
+- **Mejora continua**: Buscar constantemente formas de mejorar el código
+- **Refactoring**: Refactorizar cuando sea necesario para cumplir estas reglas
+
+---
+
+**Nota**: Estas reglas deben ser seguidas en todo el desarrollo del proyecto para mantener la calidad, consistencia y mantenibilidad del código.
+description:
+globs:
+alwaysApply: false
+---
+
