@@ -8,25 +8,25 @@ import { DataTable, Columna } from '@/components/data-table';
 import { getSession } from '@/lib/auth';
 import { pacientesStorage, citasStorage, doctoresStorage, especialidadesStorage, ordenesStorage, registrosClinicosStorage, pagosStorage } from '@/lib/storage';
 import { Orden } from '@/lib/types';
-import { Calendar, FileText, ShoppingBag, User, Activity } from 'lucide-react';
+import { Calendar, FileText, ShoppingBag, User } from 'lucide-react';
 
 export default function PacientePage() {
-  const [paciente, setPaciente] = useState<any | null>(null);
-  const [proximaCita, setProximaCita] = useState<any | null>(null);
-  const [citas, setCitas] = useState<any[]>([]);
+  const [paciente, setPaciente] = useState<{ id: string; nombres: string; apellidos: string; documento: string; telefono: string; email?: string; preferenciaContacto: string; usuarioId: string } | null>(null);
+  const [proximaCita, setProximaCita] = useState<{ fecha: string; horaInicio: string; doctorNombre: string; especialidadNombre: string; estadoPago: string; precio: number } | null>(null);
+  const [citas, setCitas] = useState<{ id: string; fecha: string; horaInicio: string; especialidadNombre: string; doctorNombre: string; estado: string; estadoPago: string }[]>([]);
   const [ordenes, setOrdenes] = useState<Orden[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const session = getSession();
-    if (session?.usuarioId) {
-      cargarDatos(session.usuarioId);
+    if (session?.userId) {
+      cargarDatos(session.userId);
     }
   }, []);
 
   const cargarDatos = (usuarioId: string) => {
     // Buscar paciente por usuarioId
-    const pac = pacientesStorage.findOne((p: any) => p.usuarioId === usuarioId);
+    const pac = pacientesStorage.findOne((p: { usuarioId: string }) => p.usuarioId === usuarioId);
     
     if (!pac) {
       setLoading(false);
@@ -47,8 +47,8 @@ export default function PacientePage() {
     const citasEnriquecidas = citasPaciente.map(cita => {
       const doctor = doctoresStorage.getById(cita.doctorId);
       const especialidad = especialidadesStorage.getById(cita.especialidadId);
-      const registro = registrosClinicosStorage.findOne((r: any) => r.citaId === cita.id);
-      const pago = pagosStorage.findOne((p: any) => p.citaId === cita.id);
+      const registro = registrosClinicosStorage.findOne((r: { citaId: string }) => r.citaId === cita.id);
+      const pago = pagosStorage.findOne((p: { citaId: string }) => p.citaId === cita.id);
 
       return {
         ...cita,
@@ -77,7 +77,7 @@ export default function PacientePage() {
     setProximaCita(proxima || null);
 
     // Cargar órdenes
-    const ordenesPaciente = ordenesStorage.find((o: any) => o.pacienteId === pac.id);
+    const ordenesPaciente = ordenesStorage.find((o: { pacienteId: string }) => o.pacienteId === pac.id);
     setOrdenes(ordenesPaciente);
 
     setLoading(false);
@@ -106,17 +106,17 @@ export default function PacientePage() {
     return <Badge className={colores[estado] || ''}>{estado.replace('_', ' ')}</Badge>;
   };
 
-  const columnasCitas: Columna<any>[] = [
+  const columnasCitas: Columna<{ id: string; fecha: string; horaInicio: string; especialidadNombre: string; doctorNombre: string; estado: string; estadoPago: string }>[] = [
     {
       key: 'fecha',
       titulo: 'Fecha',
       sortable: true,
-      render: (cita: any) => new Date(cita.fecha).toLocaleDateString('es-PE'),
+      render: (cita: { fecha: string }) => new Date(cita.fecha).toLocaleDateString('es-PE'),
     },
     {
       key: 'horaInicio',
       titulo: 'Hora',
-      render: (cita: any) => cita.horaInicio,
+      render: (cita: { horaInicio: string }) => cita.horaInicio,
     },
     {
       key: 'especialidadNombre',
@@ -131,12 +131,12 @@ export default function PacientePage() {
     {
       key: 'estado',
       titulo: 'Estado',
-      render: (cita: any) => getEstadoBadge(cita.estado),
+      render: (cita: { estado: string }) => getEstadoBadge(cita.estado),
     },
     {
       key: 'estadoPago',
       titulo: 'Pago',
-      render: (cita: any) => getPagoBadge(cita.estadoPago),
+      render: (cita: { estadoPago: string }) => getPagoBadge(cita.estadoPago),
     },
   ];
 
@@ -233,7 +233,7 @@ export default function PacientePage() {
                   data={citas}
                   columnas={columnasCitas}
                   itemsPorPagina={10}
-                  keyExtractor={(cita: any) => cita.id}
+                  keyExtractor={(cita: { id: string }) => cita.id}
                 />
               </CardContent>
             </Card>
@@ -302,7 +302,7 @@ export default function PacientePage() {
                           <Badge>{orden.estado.replace('_', ' ')}</Badge>
                         </div>
                         <div className="space-y-1">
-                          {orden.items?.map((item: any) => (
+                          {orden.items?.map((item: { id: string; nombreProducto: string; cantidad: number; subtotal: number }) => (
                             <p key={item.id} className="text-sm">
                               {item.nombreProducto} x{item.cantidad} - S/ {item.subtotal}
                             </p>

@@ -4,7 +4,7 @@ export function isAuthenticated(): boolean {
   return session !== null
 }
 
-export function getSession(): any {
+export function getSession(): { username: string; rol: string; userId: string } | null {
   if (typeof window === 'undefined') return null
   const session = localStorage.getItem('clinica_session')
   return session ? JSON.parse(session) : null

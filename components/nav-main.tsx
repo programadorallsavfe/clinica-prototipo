@@ -14,7 +14,7 @@ import {
 export interface NavMainItem {
   title: string
   url?: string
-  icon?: React.ComponentType<any>
+  icon?: React.ComponentType<{ className?: string }>
   isActive?: boolean
   onClick?: () => void
   items?: NavMainItem[]

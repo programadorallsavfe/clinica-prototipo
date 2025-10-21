@@ -24,10 +24,10 @@ import { Users, FileText, Calendar, Plus, Clock } from 'lucide-react';
 export default function RecepcionistaPage() {
   const [activeTab, setActiveTab] = useState('citas');
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [cotizaciones, setCotizaciones] = useState<any[]>([]);
-  const [citas, setCitas] = useState<any[]>([]);
-  const [especialidades, setEspecialidades] = useState<any[]>([]);
-  const [doctores, setDoctores] = useState<any[]>([]);
+  const [cotizaciones, setCotizaciones] = useState<{ id: string; nombreCliente: string; especialidadNombre: string; doctorNombre: string; precio: number; estado: string }[]>([]);
+  const [citas, setCitas] = useState<{ id: string; horaInicio: string; pacienteNombre: string; doctorNombre: string; especialidadNombre: string; estado: string; horaInicioReal?: string }[]>([]);
+  const [especialidades, setEspecialidades] = useState<{ id: string; nombre: string; precioBase: number }[]>([]);
+  const [doctores, setDoctores] = useState<{ id: string; nombres: string; apellidos: string }[]>([]);
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   
   // Formularios
@@ -37,7 +37,7 @@ export default function RecepcionistaPage() {
   const [showNuevoPaciente, setShowNuevoPaciente] = useState(false);
 
   const [citaActiva, setCitaActiva] = useState<Cita | null>(null);
-  const [sessionUser, setSessionUser] = useState<any>(null);
+  const [sessionUser, setSessionUser] = useState<{ userId: string; username: string } | null>(null);
 
   useEffect(() => {
     const session = getSession();
@@ -122,15 +122,17 @@ export default function RecepcionistaPage() {
     };
     pacientesStorage.create(nuevoPaciente);
 
-    logAuditoria(
-      sessionUser.usuarioId,
-      sessionUser.username,
+    if (sessionUser) {
+      logAuditoria(
+        sessionUser.userId,
+        sessionUser.username,
       'Crear paciente',
       'Paciente',
       nuevoPaciente.id,
       undefined,
       nuevoPaciente
     );
+    }
 
     alert(`✅ Paciente creado exitosamente!\n\n👤 Usuario: ${username}\n🔑 Contraseña: ${password}\n\n📱 Enviar por WhatsApp al: ${telefono}`);
     
@@ -144,15 +146,17 @@ export default function RecepcionistaPage() {
       nombre: formData.get('nombre') as string,
       telefono: formData.get('telefono') as string,
       email: formData.get('email') as string || undefined,
-      canal: formData.get('canal') as any,
+      canal: formData.get('canal') as 'web' | 'whatsapp' | 'telefono' | 'presencial',
       motivo: formData.get('motivo') as string,
       estado: 'nuevo',
       fechaCreacion: getCurrentTimestamp(),
-      creadoPor: sessionUser.usuarioId,
+      creadoPor: sessionUser?.userId || '',
     };
 
     leadsStorage.create(nuevoLead);
-    logAuditoria(sessionUser.usuarioId, sessionUser.username, 'Crear lead', 'Lead', nuevoLead.id, undefined, nuevoLead);
+    if (sessionUser) {
+      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear lead', 'Lead', nuevoLead.id, undefined, nuevoLead);
+    }
     
     setShowNuevoLead(false);
     cargarDatos();
@@ -178,12 +182,14 @@ export default function RecepcionistaPage() {
       comentarios: formData.get('comentarios') as string || undefined,
       fechaCaducidad: fechaCaducidad.toISOString(),
       fechaCreacion: getCurrentTimestamp(),
-      creadoPor: sessionUser.usuarioId,
+      creadoPor: sessionUser?.userId || '',
       fechaEnvio: getCurrentTimestamp(),
     };
 
     cotizacionesStorage.create(nuevaCotizacion);
-    logAuditoria(sessionUser.usuarioId, sessionUser.username, 'Crear cotización', 'Cotizacion', nuevaCotizacion.id, undefined, nuevaCotizacion);
+    if (sessionUser) {
+      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear cotización', 'Cotizacion', nuevaCotizacion.id, undefined, nuevaCotizacion);
+    }
     
     alert('✅ Cotización creada. En producción se enviaría por WhatsApp.');
     setShowNuevaCotizacion(false);
@@ -233,11 +239,13 @@ export default function RecepcionistaPage() {
       estadoPago: 'pendiente',
       motivo: formData.get('motivo') as string || undefined,
       fechaCreacion: getCurrentTimestamp(),
-      creadoPor: sessionUser.usuarioId,
+      creadoPor: sessionUser?.userId || '',
     };
 
     citasStorage.create(nuevaCita);
-    logAuditoria(sessionUser.usuarioId, sessionUser.username, 'Crear cita', 'Cita', nuevaCita.id, undefined, nuevaCita);
+    if (sessionUser) {
+      logAuditoria(sessionUser.userId, sessionUser.username, 'Crear cita', 'Cita', nuevaCita.id, undefined, nuevaCita);
+    }
     
     alert('✅ Cita creada exitosamente');
     setShowNuevaCita(false);
@@ -253,7 +261,9 @@ export default function RecepcionistaPage() {
       estado: 'en_curso',
     });
 
-    logAuditoria(sessionUser.usuarioId, sessionUser.username, 'Iniciar cronómetro', 'Cita', citaId, { estado: cita.estado }, { estado: 'en_curso', horaInicioReal: horaInicio });
+    if (sessionUser) {
+      logAuditoria(sessionUser.userId, sessionUser.username, 'Iniciar cronómetro', 'Cita', citaId, { estado: cita.estado }, { estado: 'en_curso', horaInicioReal: horaInicio });
+    }
     cargarDatos();
   };
 
@@ -268,12 +278,14 @@ export default function RecepcionistaPage() {
       duracionReal: duracionMinutos,
     });
 
-    logAuditoria(sessionUser.usuarioId, sessionUser.username, 'Detener cronómetro', 'Cita', citaId, undefined, { horaFinReal: horaFin, duracionReal: duracionMinutos });
+    if (sessionUser) {
+      logAuditoria(sessionUser.userId, sessionUser.username, 'Detener cronómetro', 'Cita', citaId, undefined, { horaFinReal: horaFin, duracionReal: duracionMinutos });
+    }
     alert(`⏱️ Cita finalizada. Duración: ${duracionMinutos} minutos`);
     cargarDatos();
   };
 
-  const columnasCitas: Columna<any>[] = [
+  const columnasCitas: Columna<{ id: string; horaInicio: string; pacienteNombre: string; doctorNombre: string; especialidadNombre: string; estado: string; horaInicioReal?: string }>[] = [
     {
       key: 'horaInicio',
       titulo: 'Hora',
@@ -297,7 +309,7 @@ export default function RecepcionistaPage() {
     {
       key: 'estado',
       titulo: 'Estado',
-      render: (cita: any) => {
+      render: (cita: { estado: string }) => {
         const colores: Record<string, string> = {
           programada: 'bg-blue-100 text-blue-800',
           en_curso: 'bg-yellow-100 text-yellow-800',
@@ -309,7 +321,7 @@ export default function RecepcionistaPage() {
     {
       key: 'acciones',
       titulo: 'Cronómetro',
-      render: (cita: any) => {
+      render: (cita: { id: string; estado: string; horaInicioReal?: string }) => {
         if (cita.estado === 'programada') {
           return (
             <Button
@@ -426,21 +438,21 @@ export default function RecepcionistaPage() {
                 )}
 
                 <DataTable
-                  data={leads}
+                  data={leads as unknown as Record<string, unknown>[]}
                   columnas={[
                     { key: 'nombre', titulo: 'Nombre', sortable: true },
                     { key: 'telefono', titulo: 'Teléfono' },
-                    { key: 'canal', titulo: 'Canal', render: (l: any) => <Badge>{l.canal}</Badge> },
-                    { key: 'estado', titulo: 'Estado', render: (l: any) => <Badge variant="outline">{l.estado}</Badge> },
+                    { key: 'canal', titulo: 'Canal', render: (l: Record<string, unknown>) => <Badge>{l.canal as string}</Badge> },
+                    { key: 'estado', titulo: 'Estado', render: (l: Record<string, unknown>) => <Badge variant="outline">{l.estado as string}</Badge> },
                     { 
                       key: 'acciones', 
                       titulo: 'Acciones',
-                      render: (l: any) => <Button size="sm" onClick={() => { 
+                      render: (l: Record<string, unknown>) => <Button size="sm" onClick={() => { 
                         setShowNuevaCotizacion(true); 
                       }}>Cotizar</Button> 
                     },
                   ]}
-                  keyExtractor={(lead: any) => lead.id}
+                  keyExtractor={(lead: Record<string, unknown>) => lead.id as string}
                 />
               </CardContent>
             </Card>
@@ -528,7 +540,7 @@ export default function RecepcionistaPage() {
                   data={citas}
                   columnas={columnasCitas}
                   itemsPorPagina={15}
-                  keyExtractor={(cita: any) => cita.id}
+                  keyExtractor={(cita: { id: string }) => cita.id}
                 />
               </CardContent>
             </Card>
@@ -591,7 +603,7 @@ export default function RecepcionistaPage() {
                     { key: 'email', titulo: 'Email' },
                   ]}
                   itemsPorPagina={15}
-                  keyExtractor={(paciente: any) => paciente.id}
+                  keyExtractor={(paciente: { id: string }) => paciente.id}
                 />
               </CardContent>
             </Card>
@@ -610,10 +622,10 @@ export default function RecepcionistaPage() {
                     { key: 'nombreCliente', titulo: 'Cliente', sortable: true },
                     { key: 'especialidadNombre', titulo: 'Especialidad' },
                     { key: 'doctorNombre', titulo: 'Doctor' },
-                    { key: 'precio', titulo: 'Precio', render: (c: any) => `S/ ${c.precio}` },
-                    { key: 'estado', titulo: 'Estado', render: (c: any) => <Badge>{c.estado}</Badge> },
+                    { key: 'precio', titulo: 'Precio', render: (c: { precio: number }) => `S/ ${c.precio}` },
+                    { key: 'estado', titulo: 'Estado', render: (c: { estado: string }) => <Badge>{c.estado}</Badge> },
                   ]}
-                  keyExtractor={(cotizacion: any) => cotizacion.id}
+                  keyExtractor={(cotizacion: { id: string }) => cotizacion.id}
                 />
               </CardContent>
             </Card>

@@ -12,7 +12,7 @@ export default function Home() {
     if (isAuthenticated()) {
       const session = getSession();
       if (session?.rol) {
-        const ruta = getRutaPorRol(session.rol as any);
+        const ruta = getRutaPorRol(session.rol as string);
         router.push(ruta);
         return;
       }

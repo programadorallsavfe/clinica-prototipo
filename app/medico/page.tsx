@@ -8,7 +8,7 @@ import { getSession } from '@/lib/auth';
 import { Calendar, Clock, User, Stethoscope } from 'lucide-react';
 
 export default function MedicoPage() {
-  const [sessionUser, setSessionUser] = useState<any>(null);
+  const [sessionUser, setSessionUser] = useState<{ username: string; rol: string } | null>(null);
 
   useEffect(() => {
     const session = getSession();
