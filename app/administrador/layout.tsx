@@ -29,7 +29,7 @@ export default function AdministradorLayout({
     }
 
     // Obtener nombre del admin
-    const usuario = usuariosStorage.getById(session.usuarioId);
+    const usuario = usuariosStorage.getById(session.userId);
     if (usuario) {
       setAdminNombre(usuario.username);
     }
