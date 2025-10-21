@@ -90,7 +90,6 @@ export function RecepcionistaSidebar({ recepcionistaNombre, ...props }: Recepcio
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              size="lg"
               onClick={() => router.push('/recepcionista')}
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-sidebar-accent/50"
             >
