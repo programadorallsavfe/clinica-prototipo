@@ -59,6 +59,7 @@ export const useEditor = ({
           config: {
             rows: 2,
             cols: 3,
+            withHeadings: true
           }
         },
         checklist: {
