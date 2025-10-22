@@ -52,8 +52,8 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
         icon: Calendar,
       },
       {
-        title: "Inventario",
-        onClick: () => router.push("/administrador/inventario"),
+        title: "Farmacia",
+        onClick: () => router.push("/administrador/farmacia"),
         icon: Package,
       },
       {
@@ -212,8 +212,8 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
               let targetPath = "";
               if (item.title === "Agendas") {
                 targetPath = "/administrador/agendas";
-              } else if (item.title === "Inventario") {
-                targetPath = "/administrador/inventario";
+              } else if (item.title === "Farmacia") {
+                targetPath = "/administrador/farmacia";
               } else if (item.title === "Reportes") {
                 targetPath = "/administrador/reportes";
               }
