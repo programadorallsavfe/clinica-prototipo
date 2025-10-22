@@ -221,7 +221,7 @@ export default function RecepcionistaPage() {
     // Validar double booking
     const validacionBooking = validarDoubleBooking(doctorId, fecha, horaInicio, horaFin);
     if (!validacionBooking.valido) {
-      alert('❌ ' + validacionBooking.mensaje);
+      alert(validacionBooking.mensaje);
       return;
     }
 
@@ -415,7 +415,7 @@ export default function RecepcionistaPage() {
                         <Label>Canal</Label>
                         <Select name="canal" required>
                           <SelectTrigger>
-                            <SelectValue />
+                            <SelectValue placeholder="Seleccionar canal" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="whatsapp">WhatsApp</SelectItem>
@@ -481,7 +481,7 @@ export default function RecepcionistaPage() {
                         <Label>Paciente</Label>
                         <Select name="pacienteId" required>
                           <SelectTrigger>
-                            <SelectValue />
+                            <SelectValue placeholder="Seleccionar paciente" />
                           </SelectTrigger>
                           <SelectContent>
                             {pacientes.map(p => (
@@ -494,7 +494,7 @@ export default function RecepcionistaPage() {
                         <Label>Especialidad</Label>
                         <Select name="especialidadId" required>
                           <SelectTrigger>
-                            <SelectValue />
+                            <SelectValue placeholder="Seleccionar especialidad" />
                           </SelectTrigger>
                           <SelectContent>
                             {especialidades.map(e => (
@@ -507,7 +507,7 @@ export default function RecepcionistaPage() {
                         <Label>Doctor</Label>
                         <Select name="doctorId" required>
                           <SelectTrigger>
-                            <SelectValue />
+                            <SelectValue placeholder="Seleccionar doctor" />
                           </SelectTrigger>
                           <SelectContent>
                             {doctores.map(d => (

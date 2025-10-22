@@ -37,7 +37,7 @@ export function getRutaPorRol(rol: string): string {
     case 'farmacia':
       return '/farmacia'
     case 'administrador':
-      return '/admin'
+      return '/administrador'
     default:
       return '/auth'
   }

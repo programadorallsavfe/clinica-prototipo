@@ -54,7 +54,7 @@ export default function AdministradorLayout({
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-lg hover:bg-muted/50 transition-colors duration-200"
+            className="p-2 rounded-lg hover:bg-muted/50 transition-color  s duration-200"
             aria-label={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
             title={isCollapsed ? "Expandir sidebar" : "Contraer sidebar"}
           >

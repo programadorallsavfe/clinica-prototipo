@@ -52,6 +52,7 @@ import {
   Award,
   Sparkles
 } from 'lucide-react';
+import { AddPacientesModal } from '@/components/modals/add-pacientes-modal';
 
 // Componentes SVG profesionales
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -263,7 +264,12 @@ export default function UsuariosPage() {
   const handleNewPatient = () => {
     console.log('Creando nuevo paciente...');
     setShowNewPatientModal(true);
-    // Aquí se abriría un modal o se navegaría a una página de creación
+  };
+
+  const handlePatientCreated = () => {
+    // Recargar datos o actualizar la lista de pacientes
+    console.log('Paciente creado exitosamente');
+    // Aquí podrías recargar los datos si fuera necesario
   };
 
   const handleExportCSV = () => {
@@ -354,7 +360,7 @@ export default function UsuariosPage() {
         paciente.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
         paciente.documento.includes(searchTerm) ||
         paciente.telefono.includes(searchTerm) ||
-        paciente.email.toLowerCase().includes(searchTerm.toLowerCase());
+        paciente.email.toLowerCase().includes(searchTerm.toLocaleLowerCase());
 
       const matchesStatus = selectedFilter === 'todos' || paciente.estadoCuenta === selectedFilter;
       
@@ -405,7 +411,7 @@ export default function UsuariosPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="7d">Últimos 7 días</SelectItem>
+                <SelectItem value="7d">Ultima semana </SelectItem>
                 <SelectItem value="30d">Últimos 30 días</SelectItem>
                 <SelectItem value="90d">Últimos 90 días</SelectItem>
                 <SelectItem value="1y">Último año</SelectItem>
@@ -874,6 +880,12 @@ export default function UsuariosPage() {
           </div>
         </CardContent>
       </Card>
+
+      <AddPacientesModal
+        isOpen={showNewPatientModal}
+        onClose={() => setShowNewPatientModal(false)}
+        onSuccess={handlePatientCreated}
+      />
     </div>
   );
 }

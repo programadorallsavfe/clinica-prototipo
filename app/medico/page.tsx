@@ -104,7 +104,7 @@ export default function MedicoPage() {
         {/* Acciones Rápidas */}
         <Card>
           <CardHeader>
-            <CardTitle>Acciones Rápidas</CardTitle>
+            <CardTitle>Acciones Rápidas</CardTitle>     
             <CardDescription>Funciones principales del panel médico</CardDescription>
           </CardHeader>
           <CardContent>
