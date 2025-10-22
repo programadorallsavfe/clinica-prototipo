@@ -32,11 +32,19 @@ import {
 } from "lucide-react";
 import { getPacienteById } from "@/lib/mockData";
 import { AddAlertasMedicasModal } from "@/components/modals/add-alertas-medicas-modal";
+import { AddSignosVitalesModal } from "@/components/modals/add-signos-vitales-modal";
+import { AddPrexistenciaMedicamentosModal } from "@/components/modals/add-prexistencia-medicamentos-modal";
+import { AlertasMedicasCard } from "@/components/cards/alertas-medicas-card";
+import { SignosVitalesCard } from "@/components/cards/signos-vitales-card";
 
 export default function FichaPacientePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
-    const paciente = getPacienteById(parseInt(id));
+    const pacienteId = parseInt(id);
+    const paciente = getPacienteById(pacienteId);
     const [isAlertasModalOpen, setIsAlertasModalOpen] = useState(false);
+    const [isSignosVitalesModalOpen, setIsSignosVitalesModalOpen] = useState(false);
+    const [isPrexistenciaModalOpen, setIsPrexistenciaModalOpen] = useState(false);
+
 
     if (!paciente) {
         return (
@@ -122,43 +130,16 @@ export default function FichaPacientePage({ params }: { params: Promise<{ id: st
                         <div className="lg:col-span-3 order-2 lg:order-1">
                             <div className="space-y-4">
                                 {/* Alertas médicas */}
-                                <Card>
-                                    <CardContent className="p-4">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
-                                                <h3 className="text-sm font-semibold text-foreground">Alertas médicas</h3>
-                                            </div>
-                                            <Button 
-                                                size="sm" 
-                                                variant="outline" 
-                                                className="h-6 px-2 text-xs"
-                                                onClick={() => setIsAlertasModalOpen(true)}
-                                            >
-                                                <Plus className="h-3 w-3 mr-1" />
-                                                Añadir
-                                            </Button>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground">No existen alertas médicas</p>
-                                    </CardContent>
-                                </Card>
+                                <AlertasMedicasCard 
+                                    pacienteId={pacienteId}
+                                    onAddAlerta={() => setIsAlertasModalOpen(true)}
+                                />
 
                                 {/* Signos vitales */}
-                                <Card>
-                                    <CardContent className="p-4">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <Heart className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                                                <h3 className="text-sm font-semibold text-foreground">Signos vitales</h3>
-                                            </div>
-                                            <Button size="sm" variant="outline" className="h-6 px-2 text-xs">
-                                                <Plus className="h-3 w-3 mr-1" />
-                                                Nueva medición
-                                            </Button>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground">No existen signos vitales</p>
-                                    </CardContent>
-                                </Card>
+                                <SignosVitalesCard 
+                                    pacienteId={pacienteId}
+                                    onAddSignos={() => setIsSignosVitalesModalOpen(true)}
+                                />
 
                                 {/* Navegación médica */}
                                 <Card>
@@ -184,7 +165,11 @@ export default function FichaPacientePage({ params }: { params: Promise<{ id: st
                                                 <ClipboardList className="h-3 w-3 mr-2 flex-shrink-0" />
                                                 Datos clínicos
                                             </Button>
-                                            <Button variant="ghost" className="w-full justify-start h-8 text-xs hover:bg-accent/30 transition-colors">
+                                            <Button 
+                                                variant="ghost" 
+                                                className="w-full justify-start h-8 text-xs hover:bg-accent/30 transition-colors"
+                                                onClick={() => setIsPrexistenciaModalOpen(true)}
+                                            >
                                                 <Stethoscope className="h-3 w-3 mr-2 flex-shrink-0" />
                                                 Preexistencias y medicación
                                             </Button>
@@ -335,7 +320,24 @@ export default function FichaPacientePage({ params }: { params: Promise<{ id: st
             <AddAlertasMedicasModal
                 isOpen={isAlertasModalOpen}
                 onClose={() => setIsAlertasModalOpen(false)}
-                pacienteId={paciente.id}
+                pacienteId={pacienteId}
+                pacienteNombre={`${paciente.nombre} ${paciente.apellidos}`}
+            />
+            
+            {/* Modal de Signos Vitales */}
+            <AddSignosVitalesModal
+                isOpen={isSignosVitalesModalOpen}
+                onClose={() => setIsSignosVitalesModalOpen(false)}
+                pacienteId={pacienteId}
+                pacienteNombre={`${paciente.nombre} ${paciente.apellidos}`}
+                edadPaciente={35} // Calcular edad real basada en fecha de nacimiento
+            />
+            
+            {/* Modal de Preexistencias y Medicación */}
+            <AddPrexistenciaMedicamentosModal
+                isOpen={isPrexistenciaModalOpen}
+                onClose={() => setIsPrexistenciaModalOpen(false)}
+                pacienteId={pacienteId}
                 pacienteNombre={`${paciente.nombre} ${paciente.apellidos}`}
             />
         </div>

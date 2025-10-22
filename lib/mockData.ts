@@ -420,3 +420,283 @@ export const getEstadisticasAgenda = (fecha?: string) => {
     anulaciones: citas.filter(c => c.estado === 'anulada' || c.estado === 'no_asiste').length
   };
 };
+
+// Interfaces para Alertas Médicas y Signos Vitales
+export interface AlertaMedica {
+  id: string;
+  pacienteId: number;
+  descripcion: string;
+  fechaCreacion: string;
+  fechaVencimiento?: string;
+  activa: boolean;
+  prioridad: 'alta' | 'media' | 'baja';
+  tipo: 'alergia' | 'medicamento' | 'condicion' | 'restriccion' | 'observacion';
+  creadoPor: string;
+}
+
+export interface SignoVital {
+  id: string;
+  pacienteId: number;
+  fechaMedicion: string;
+  presionArterialSistolica?: number;
+  presionArterialDiastolica?: number;
+  peso?: number;
+  frecuenciaCardiaca?: number;
+  altura?: number;
+  frecuenciaRespiratoria?: number;
+  temperatura?: number;
+  saturacionOxigeno?: number;
+  evaDolor?: number;
+  glucemia?: number;
+  observaciones?: string;
+  medidoPor: string;
+}
+
+// Mock data para Alertas Médicas
+export const alertasMedicasData: AlertaMedica[] = [
+  {
+    id: 'alert_001',
+    pacienteId: 1,
+    descripcion: 'Alergia a la penicilina - Reacción cutánea severa',
+    fechaCreacion: '2024-01-15',
+    fechaVencimiento: '2025-01-15',
+    activa: true,
+    prioridad: 'alta',
+    tipo: 'alergia',
+    creadoPor: 'Dr. María González'
+  },
+  {
+    id: 'alert_002',
+    pacienteId: 1,
+    descripcion: 'Diabetes tipo 2 - Controlar glucosa antes de procedimientos',
+    fechaCreacion: '2024-01-10',
+    activa: true,
+    prioridad: 'media',
+    tipo: 'condicion',
+    creadoPor: 'Dr. Carlos Mendoza'
+  },
+  {
+    id: 'alert_003',
+    pacienteId: 2,
+    descripcion: 'Hipertensión arterial - Monitorear presión en cada consulta',
+    fechaCreacion: '2024-01-12',
+    activa: true,
+    prioridad: 'media',
+    tipo: 'condicion',
+    creadoPor: 'Dra. Ana Torres'
+  },
+  {
+    id: 'alert_004',
+    pacienteId: 3,
+    descripcion: 'Alergia al látex - Usar guantes sin látex',
+    fechaCreacion: '2024-01-08',
+    activa: true,
+    prioridad: 'alta',
+    tipo: 'alergia',
+    creadoPor: 'Dr. Luis Fernández'
+  },
+  {
+    id: 'alert_005',
+    pacienteId: 4,
+    descripcion: 'Paciente embarazada - Evitar radiaciones',
+    fechaCreacion: '2024-01-20',
+    fechaVencimiento: '2024-10-15',
+    activa: true,
+    prioridad: 'alta',
+    tipo: 'condicion',
+    creadoPor: 'Dra. Carmen Vásquez'
+  },
+  {
+    id: 'alert_006',
+    pacienteId: 7725,
+    descripcion: 'Alergia a medicamentos antiinflamatorios - Reacción gastrointestinal severa',
+    fechaCreacion: '2024-01-18',
+    fechaVencimiento: '2025-01-18',
+    activa: true,
+    prioridad: 'alta',
+    tipo: 'alergia',
+    creadoPor: 'Dr. Roberto Silva'
+  },
+  {
+    id: 'alert_007',
+    pacienteId: 7725,
+    descripcion: 'Hipertensión arterial controlada - Monitorear presión en cada consulta',
+    fechaCreacion: '2024-01-15',
+    activa: true,
+    prioridad: 'media',
+    tipo: 'condicion',
+    creadoPor: 'Dra. Patricia Morales'
+  },
+  {
+    id: 'alert_008',
+    pacienteId: 7725,
+    descripcion: 'Paciente diabética - Controlar glucosa antes de procedimientos',
+    fechaCreacion: '2024-01-12',
+    activa: true,
+    prioridad: 'media',
+    tipo: 'condicion',
+    creadoPor: 'Dr. Miguel Torres'
+  }
+];
+
+// Mock data para Signos Vitales
+export const signosVitalesData: SignoVital[] = [
+  {
+    id: 'vital_001',
+    pacienteId: 1,
+    fechaMedicion: '2024-01-22T09:30:00',
+    presionArterialSistolica: 130,
+    presionArterialDiastolica: 85,
+    peso: 75.5,
+    frecuenciaCardiaca: 78,
+    altura: 165,
+    frecuenciaRespiratoria: 16,
+    temperatura: 36.8,
+    saturacionOxigeno: 98,
+    evaDolor: 2,
+    glucemia: 95,
+    observaciones: 'Paciente en buenas condiciones generales',
+    medidoPor: 'Enf. Rosa Jiménez'
+  },
+  {
+    id: 'vital_002',
+    pacienteId: 1,
+    fechaMedicion: '2024-01-20T14:15:00',
+    presionArterialSistolica: 128,
+    presionArterialDiastolica: 82,
+    peso: 75.2,
+    frecuenciaCardiaca: 76,
+    altura: 165,
+    frecuenciaRespiratoria: 15,
+    temperatura: 36.6,
+    saturacionOxigeno: 99,
+    evaDolor: 1,
+    glucemia: 92,
+    observaciones: 'Control rutinario - valores normales',
+    medidoPor: 'Enf. Carlos Ruiz'
+  },
+  {
+    id: 'vital_003',
+    pacienteId: 2,
+    fechaMedicion: '2024-01-22T10:45:00',
+    presionArterialSistolica: 145,
+    presionArterialDiastolica: 92,
+    peso: 82.3,
+    frecuenciaCardiaca: 85,
+    altura: 170,
+    frecuenciaRespiratoria: 18,
+    temperatura: 37.1,
+    saturacionOxigeno: 96,
+    evaDolor: 4,
+    glucemia: 110,
+    observaciones: 'Presión arterial elevada - requiere seguimiento',
+    medidoPor: 'Enf. María López'
+  },
+  {
+    id: 'vital_004',
+    pacienteId: 3,
+    fechaMedicion: '2024-01-21T16:20:00',
+    presionArterialSistolica: 118,
+    presionArterialDiastolica: 75,
+    peso: 68.7,
+    frecuenciaCardiaca: 72,
+    altura: 160,
+    frecuenciaRespiratoria: 14,
+    temperatura: 36.4,
+    saturacionOxigeno: 98,
+    evaDolor: 0,
+    glucemia: 88,
+    observaciones: 'Signos vitales dentro de parámetros normales',
+    medidoPor: 'Enf. Patricia Silva'
+  },
+  {
+    id: 'vital_005',
+    pacienteId: 4,
+    fechaMedicion: '2024-01-22T08:30:00',
+    presionArterialSistolica: 125,
+    presionArterialDiastolica: 78,
+    peso: 71.2,
+    frecuenciaCardiaca: 80,
+    altura: 162,
+    frecuenciaRespiratoria: 17,
+    temperatura: 36.9,
+    saturacionOxigeno: 97,
+    evaDolor: 1,
+    glucemia: 98,
+    observaciones: 'Embarazo de 28 semanas - signos vitales estables',
+    medidoPor: 'Enf. Laura García'
+  },
+  {
+    id: 'vital_006',
+    pacienteId: 7725,
+    fechaMedicion: '2024-01-22T10:15:00',
+    presionArterialSistolica: 142,
+    presionArterialDiastolica: 88,
+    peso: 68.5,
+    frecuenciaCardiaca: 82,
+    altura: 158,
+    frecuenciaRespiratoria: 16,
+    temperatura: 36.7,
+    saturacionOxigeno: 96,
+    evaDolor: 3,
+    glucemia: 125,
+    observaciones: 'Presión arterial ligeramente elevada - paciente diabética e hipertensa',
+    medidoPor: 'Enf. Ana Rodríguez'
+  },
+  {
+    id: 'vital_007',
+    pacienteId: 7725,
+    fechaMedicion: '2024-01-20T14:30:00',
+    presionArterialSistolica: 138,
+    presionArterialDiastolica: 85,
+    peso: 68.2,
+    frecuenciaCardiaca: 78,
+    altura: 158,
+    frecuenciaRespiratoria: 15,
+    temperatura: 36.5,
+    saturacionOxigeno: 98,
+    evaDolor: 2,
+    glucemia: 118,
+    observaciones: 'Control rutinario - valores dentro de parámetros aceptables',
+    medidoPor: 'Enf. Carlos Mendoza'
+  },
+  {
+    id: 'vital_008',
+    pacienteId: 7725,
+    fechaMedicion: '2024-01-18T09:45:00',
+    presionArterialSistolica: 145,
+    presionArterialDiastolica: 90,
+    peso: 68.8,
+    frecuenciaCardiaca: 85,
+    altura: 158,
+    frecuenciaRespiratoria: 17,
+    temperatura: 36.8,
+    saturacionOxigeno: 95,
+    evaDolor: 4,
+    glucemia: 135,
+    observaciones: 'Presión arterial elevada - requiere ajuste de medicación',
+    medidoPor: 'Enf. María González'
+  }
+];
+
+// Funciones utilitarias para Alertas Médicas
+export const getAlertasByPacienteId = (pacienteId: number): AlertaMedica[] => {
+  return alertasMedicasData.filter(alerta => alerta.pacienteId === pacienteId && alerta.activa);
+};
+
+export const getAlertasActivas = (): AlertaMedica[] => {
+  return alertasMedicasData.filter(alerta => alerta.activa);
+};
+
+// Funciones utilitarias para Signos Vitales
+export const getSignosVitalesByPacienteId = (pacienteId: number): SignoVital[] => {
+  return signosVitalesData.filter(signo => signo.pacienteId === pacienteId);
+};
+
+export const getUltimosSignosVitales = (pacienteId: number): SignoVital | null => {
+  const signos = getSignosVitalesByPacienteId(pacienteId);
+  if (signos.length === 0) return null;
+  
+  // Ordenar por fecha más reciente
+  return signos.sort((a, b) => new Date(b.fechaMedicion).getTime() - new Date(a.fechaMedicion).getTime())[0];
+};
