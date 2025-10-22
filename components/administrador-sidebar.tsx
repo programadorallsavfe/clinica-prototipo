@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu, Calendar } from 'lucide-react';
+import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu, Calendar, ClipboardList } from 'lucide-react';
 // Importaciones removidas - usando estructura HTML nativa
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -60,6 +60,13 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
         title: "Reportes",
         onClick: () => router.push("/administrador/reportes"),
         icon: BarChart3,
+      },
+    ],
+    navAdministracion: [
+      {
+        title: "Documentos Clínicos",
+        onClick: () => router.push("/administrador/documentos/fichas"),
+        icon: ClipboardList,
       },
     ],
     navSistema: [
@@ -209,6 +216,41 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
                 targetPath = "/administrador/inventario";
               } else if (item.title === "Reportes") {
                 targetPath = "/administrador/reportes";
+              }
+              
+              const isActive = pathname === targetPath;
+              return (
+                <button
+                  key={item.title}
+                  onClick={item.onClick}
+                  title={isCollapsed ? item.title : undefined}
+                  className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 group w-full text-left ${
+                    isActive
+                      ? "bg-primary text-primary-foreground" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Administración */}
+        <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
+          {!isCollapsed && (
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Administración
+            </h3>
+          )}
+          <div className="space-y-1">
+            {data.navAdministracion.map((item) => {
+              // Determinar la ruta específica para cada elemento
+              let targetPath = "";
+              if (item.title === "Documentos Clínicos") {
+                targetPath = "/administrador/documentos/fichas";
               }
               
               const isActive = pathname === targetPath;
