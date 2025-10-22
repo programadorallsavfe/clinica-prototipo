@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import EditorJS from '@editorjs/editorjs';
+import EditorJS, { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Table from '@editorjs/table';
@@ -10,8 +10,8 @@ import Delimiter from '@editorjs/delimiter';
 
 interface SimpleEditorProps {
   holderId: string;
-  initialData?: any;
-  onSave?: (data: any) => void;
+  initialData?: OutputData;
+  onSave?: (data: OutputData) => void;
   readOnly?: boolean;
 }
 
@@ -41,7 +41,9 @@ export const SimpleEditor = ({
           if (onSave && editorRef.current) {
             try {
               const outputData = await editorRef.current.save();
-              onSave(outputData);
+              if (outputData && outputData.time !== undefined) {
+                onSave(outputData);
+              }
             } catch (error) {
               console.error('Error saving editor data:', error);
             }

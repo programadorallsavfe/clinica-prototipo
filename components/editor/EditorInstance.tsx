@@ -16,7 +16,7 @@ interface EditorInstanceProps {
   placeholder?: string;
   readOnly?: boolean;
   onReady?: () => void;
-  onChange?: (api: any, event: any) => void;
+  onChange?: (api: unknown, event: unknown) => void;
 }
 
 export const EditorInstance = ({ 
@@ -38,14 +38,7 @@ export const EditorInstance = ({
       readOnly,
       data: data || undefined,
       tools: {
-        header: {
-          class: Header,
-          config: {
-            placeholder: 'Escriba el encabezado...',
-            levels: [1, 2, 3, 4, 5, 6],
-            defaultLevel: 2
-          }
-        },
+        header: Header,
         list: {
           class: List,
           inlineToolbar: true,
@@ -53,14 +46,7 @@ export const EditorInstance = ({
             defaultStyle: 'unordered'
           }
         },
-        table: {
-          class: Table,
-          inlineToolbar: true,
-          config: {
-            rows: 2,
-            cols: 3,
-          }
-        },
+        table: Table,
         checklist: {
           class: Checklist,
           inlineToolbar: true,

@@ -14,6 +14,7 @@ import {
   Printer
 } from 'lucide-react';
 import { SimpleEditor } from '@/components/editor/SimpleEditor';
+import { OutputData } from '@editorjs/editorjs';
 
 interface DocumentoClinico {
   id: string;
@@ -29,7 +30,7 @@ export default function DocumentoEditorPage({ params }: { params: Promise<{ slug
   const { slug } = use(params);
   const [isEditing, setIsEditing] = useState(true);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
-  const [documentData, setDocumentData] = useState<any>(null);
+  const [documentData, setDocumentData] = useState<OutputData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Función para obtener el nombre del documento basado en el slug
@@ -119,7 +120,7 @@ export default function DocumentoEditorPage({ params }: { params: Promise<{ slug
   }, [slug, currentDocumentName]);
 
   // Funciones del editor
-  const handleSave = (data: any) => {
+  const handleSave = (data: OutputData) => {
     console.log('Documento guardado:', data);
     setDocumentData(data);
     // Aquí puedes implementar la lógica para guardar en tu backend
@@ -188,7 +189,7 @@ export default function DocumentoEditorPage({ params }: { params: Promise<{ slug
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={handleSave}
+                onClick={() => console.log('Guardar documento')}
                 disabled={isLoading}
                 className="flex items-center gap-2"
               >
@@ -296,7 +297,7 @@ export default function DocumentoEditorPage({ params }: { params: Promise<{ slug
                 <div className="min-h-[600px]">
                   <SimpleEditor
                     holderId="editor-container"
-                    initialData={documentData}
+                    initialData={documentData || undefined}
                     onSave={handleSave}
                     readOnly={isPreviewMode}
                   />
