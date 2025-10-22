@@ -34,24 +34,8 @@ import {
   Activity,
   BarChart3
 } from 'lucide-react';
-
-// Tipos de datos para la agenda
-interface Cita {
-  id: string;
-  hora: string;
-  paciente: {
-    nombre: string;
-    telefono: string;
-  };
-  atencion: {
-    doctor: string;
-    tipo: 'Consulta' | 'Examen';
-  };
-  estado: 'programada' | 'confirmada_whatsapp' | 'confirmada_telefono' | 'confirmada_email' | 'en_sala_espera' | 'atendiendose' | 'atendida' | 'no_asiste' | 'anulada';
-  situacion: 'pagada' | 'no_pagada' | 'parcial';
-  fechaLlegada?: string;
-  observaciones?: string;
-}
+import { citasData, getEstadisticasAgenda, getCitasWithPacienteInfo, Cita } from '@/lib/mockData';
+import { CitaContextMenu } from '@/components/menus/cita-context-menu';
 
 interface FiltrosAgenda {
   busqueda: string;
@@ -61,145 +45,38 @@ interface FiltrosAgenda {
   situacion: string;
 }
 
-interface EstadisticasAgenda {
-  totalCitas: number;
-  citasAtendidas: number;
-  enEspera: number;
-  confirmadas: number;
-  pendientes: number;
-  anulaciones: number;
-}
-
 export default function AgendasPage() {
   // Estados para filtros
   const [filtros, setFiltros] = useState<FiltrosAgenda>({
     busqueda: '',
     profesional: 'todos',
     estado: 'todos',
-    fecha: new Date().toISOString().split('T')[0],
+    fecha: '2024-01-22', // Fecha que coincide con las citas en mockData
     situacion: 'todos'
   });
 
   // Estado para controlar qué selector está abierto
   const [selectorAbierto, setSelectorAbierto] = useState<string | null>(null);
+  
+  // Estado para el menú contextual
+  const [contextMenu, setContextMenu] = useState<{
+    isOpen: boolean;
+    citaId: string;
+    pacienteId: number;
+    pacienteNombre: string;
+    pacienteEmail: string;
+    position: { x: number; y: number };
+  }>({
+    isOpen: false,
+    citaId: '',
+    pacienteId: 0,
+    pacienteNombre: '',
+    pacienteEmail: '',
+    position: { x: 0, y: 0 }
+  });
 
-  // Datos de ejemplo para la agenda
-  const [citas, setCitas] = useState<Cita[]>([
-    {
-      id: '1',
-      hora: '08:00',
-      paciente: {
-        nombre: 'FIAMA STEFANY CARBAJAL FLORES',
-        telefono: '+51966468056'
-      },
-      atencion: {
-        doctor: 'Dr. CASTILLO ROBLES, JOSE',
-        tipo: 'Consulta'
-      },
-      estado: 'atendida',
-      situacion: 'pagada'
-    },
-    {
-      id: '2',
-      hora: '08:00',
-      paciente: {
-        nombre: 'ADRIANA EVANGELINA TORREJON LAOS',
-        telefono: '+51954097189'
-      },
-      atencion: {
-        doctor: 'Dr(a). SEGUIMIENTO. TOPICO',
-        tipo: 'Examen'
-      },
-      estado: 'confirmada_telefono',
-      situacion: 'no_pagada'
-    },
-    {
-      id: '3',
-      hora: '08:05',
-      paciente: {
-        nombre: 'VERONICA REQUEZ MENDOZA',
-        telefono: '+51967457057'
-      },
-      atencion: {
-        doctor: 'Dr(a). SEGUIMIENTO. TOPICO',
-        tipo: 'Examen'
-      },
-      estado: 'confirmada_telefono',
-      situacion: 'no_pagada'
-    },
-    {
-      id: '4',
-      hora: '08:10',
-      paciente: {
-        nombre: 'MILAGROS CELESTE MARTINEZ RODRIGUEZ',
-        telefono: '+51998588541'
-      },
-      atencion: {
-        doctor: 'Dr(a). SEGUIMIENTO. TOPICO',
-        tipo: 'Examen'
-      },
-      estado: 'confirmada_telefono',
-      situacion: 'no_pagada'
-    },
-    {
-      id: '5',
-      hora: '08:15',
-      paciente: {
-        nombre: 'ROSA ANGELA ELLEN MAGUIÑO',
-        telefono: '+51954735878'
-      },
-      atencion: {
-        doctor: 'Dr(a). SEGUIMIENTO. TOPICO',
-        tipo: 'Examen'
-      },
-      estado: 'atendida',
-      situacion: 'pagada'
-    },
-    {
-      id: '6',
-      hora: '08:20',
-      paciente: {
-        nombre: 'CRISTINA LAVERIANO TAFUR',
-        telefono: '+51987654321'
-      },
-      atencion: {
-        doctor: 'Dr(a). SEGUIMIENTO. TOPICO',
-        tipo: 'Examen'
-      },
-      estado: 'atendida',
-      situacion: 'pagada'
-    },
-    {
-      id: '7',
-      hora: '10:30',
-      paciente: {
-        nombre: 'XIOMARA XIMENA VALLADARES AYALA',
-        telefono: '0-51901453426'
-      },
-      atencion: {
-        doctor: 'Dr(a). MEJIA GASTELO. JACKELINE',
-        tipo: 'Consulta'
-      },
-      estado: 'en_sala_espera',
-      situacion: 'pagada',
-      fechaLlegada: '10:25'
-    },
-    {
-      id: '8',
-      hora: '11:00',
-      paciente: {
-        nombre: 'SHIRLEY GUISSELL RODRIGUEZ HUERTA',
-        telefono: '+51961336414'
-      },
-      atencion: {
-        doctor: 'Dr(a). MEJIA GASTELO. JACKELINE',
-        tipo: 'Consulta'
-      },
-      estado: 'en_sala_espera',
-      situacion: 'pagada',
-      fechaLlegada: '10:58'
-    }
-  ]);
+  // Estado para las citas (se puede modificar localmente)
+  const [citas, setCitas] = useState(() => getCitasWithPacienteInfo());
 
   // Filtrado de datos
   const citasFiltradas = useMemo(() => {
@@ -219,40 +96,36 @@ export default function AgendasPage() {
     });
   }, [citas, filtros]);
 
-  // Estadísticas calculadas
-  const estadisticas: EstadisticasAgenda = useMemo(() => {
-    const totalCitas = citas.length;
-    const citasAtendidas = citas.filter(c => c.estado === 'atendida').length;
-    const enEspera = citas.filter(c => c.estado === 'en_sala_espera').length;
-    const confirmadas = citas.filter(c => c.estado === 'atendida' || c.estado === 'confirmada_whatsapp').length;
-    const pendientes = citas.filter(c => c.estado === 'confirmada_telefono' || c.estado === 'confirmada_email').length;
-    const anulaciones = citas.filter(c => c.estado === 'anulada' || c.estado === 'no_asiste').length;
-
-    return {
-      totalCitas,
-      citasAtendidas,
-      enEspera,
-      confirmadas,
-      pendientes,
-      anulaciones
-    };
-  }, [citas]);
+  // Estadísticas calculadas desde datos centralizados
+  const estadisticas = useMemo(() => {
+    return getEstadisticasAgenda(filtros.fecha);
+  }, [filtros.fecha, citas]);
 
   const handleFiltroChange = (campo: string, valor: string) => {
     setFiltros(prev => ({
       ...prev,
       [campo]: valor
     }));
+    
+    // Si cambiamos la fecha, actualizar las citas
+    if (campo === 'fecha') {
+      const nuevasCitas = getCitasWithPacienteInfo(valor);
+      setCitas(nuevasCitas);
+    }
   };
 
   const limpiarFiltros = () => {
+    const fechaDefault = '2024-01-22'; // Fecha que coincide con las citas en mockData
     setFiltros({
       busqueda: '',
       profesional: 'todos',
       estado: 'todos',
-      fecha: new Date().toISOString().split('T')[0],
+      fecha: fechaDefault,
       situacion: 'todos'
     });
+    // Recargar citas con la fecha por defecto
+    const nuevasCitas = getCitasWithPacienteInfo(fechaDefault);
+    setCitas(nuevasCitas);
   };
 
   const actualizarEstadoCita = (citaId: string, nuevoEstado: string) => {
@@ -273,6 +146,24 @@ export default function AgendasPage() {
 
   const handleSelectorClose = () => {
     setSelectorAbierto(null);
+  };
+
+  const handleContextMenu = (event: React.MouseEvent, cita: any) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    setContextMenu({
+      isOpen: true,
+      citaId: cita.id,
+      pacienteId: cita.pacienteId,
+      pacienteNombre: cita.paciente.nombre,
+      pacienteEmail: cita.paciente.email || '',
+      position: { x: event.clientX, y: event.clientY }
+    });
+  };
+
+  const handleContextMenuClose = () => {
+    setContextMenu(prev => ({ ...prev, isOpen: false }));
   };
 
   // Efecto para controlar que solo un selector esté abierto
@@ -771,7 +662,12 @@ export default function AgendasPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium text-foreground">{cita.paciente.nombre}</span>
+                          <button
+                            onClick={(e) => handleContextMenu(e, cita)}
+                            className="font-bold text-foreground underline hover:text-primary transition-colors duration-200 cursor-pointer text-left"
+                          >
+                            {cita.paciente.nombre}
+                          </button>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Phone className="h-3 w-3" />
@@ -923,13 +819,28 @@ export default function AgendasPage() {
                     {/* Acciones */}
                     <TableCell className="bg-background dark:bg-card">
                       <div className="flex items-center gap-1">
-                        <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary transition-colors duration-200"
+                          title="Ver detalles"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary transition-colors duration-200"
+                          title="Editar cita"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary transition-colors duration-200"
+                          title="Ver calendario"
+                        >
                           <Calendar className="h-4 w-4" />
                         </Button>
                       </div>
@@ -992,6 +903,17 @@ export default function AgendasPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Menú contextual */}
+      <CitaContextMenu
+        citaId={contextMenu.citaId}
+        pacienteId={contextMenu.pacienteId}
+        pacienteNombre={contextMenu.pacienteNombre}
+        pacienteEmail={contextMenu.pacienteEmail}
+        isOpen={contextMenu.isOpen}
+        onClose={handleContextMenuClose}
+        position={contextMenu.position}
+      />
     </div>
     </>
   );

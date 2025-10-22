@@ -161,3 +161,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Checkbox styling for better contrast in dark mode */
+@layer components {
+  .dark [data-state="checked"] {
+    @apply bg-primary border-primary;
+  }
+  
+  .dark [data-state="unchecked"] {
+    @apply border-muted-foreground/50;
+  }
+  
+  /* Ensure checkbox checkmark is visible in dark mode */
+  .dark [data-state="checked"] svg {
+    @apply text-primary-foreground;
+  }
+}

@@ -499,18 +499,7 @@ export default function AdministradorPage() {
           </CardContent>
         </Card>
 
-        <Card className="group hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Sistema</CardTitle>
-            <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/20 transition-colors duration-200">
-              <Database className="h-4 w-4 text-green-500" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-500">{estadisticas.disponibilidadSistema}%</div>
-            <p className="text-xs text-muted-foreground mt-1">Disponibilidad</p>
-          </CardContent>
-        </Card>
+       
       </div>
 
       {/* Tabs para diferentes vistas */}

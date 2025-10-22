@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { 
   Users, 
   UserPlus, 
@@ -54,6 +55,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { AddPacientesModal } from '@/components/modals/add-pacientes-modal';
+import { pacientesData, getKPIs } from '@/lib/mockData';
 
 // Componentes SVG profesionales
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -119,132 +121,8 @@ export default function UsuariosPage() {
   const [selectedPatients, setSelectedPatients] = useState<number[]>([]);
   const [showNewPatientModal, setShowNewPatientModal] = useState(false);
 
-  // Mock data para demostración
-  const kpis = {
-    totalPacientes: 1247,
-    nuevosHoy: 12,
-    conCitaProxima: 45,
-    pagosPendientes: 8,
-    tiempoPromedioCita: '45 min',
-    conTratamientoActivo: 89,
-    ingresosMes: 45680,
-    satisfaccionPromedio: 4.8
-  };
-
-  const pacientes = [
-    {
-      id: 1,
-      nombre: 'María González Pérez',
-      documento: '73248573',
-      telefono: '+51 987 654 321',
-      email: 'maria.gonzalez@email.com',
-      edad: 34,
-      sexo: 'F',
-      estadoCuenta: 'activa',
-      verificado: true,
-      tieneCuenta: true,
-      ultimaCita: '2024-01-15',
-      proximaCita: '2024-01-22',
-      especialidad: 'Cardiología',
-      doctor: 'Dr. Carlos Mendoza',
-      consultorio: 'A-101',
-      saldo: 50,
-      deuda: 0,
-      ultimoPago: '2024-01-10',
-      cotizacionesAbiertas: 0,
-      cotizacionesAceptadas: 2,
-      ultimaCompra: '2024-01-12',
-      tiempoPromedioCita: '42 min',
-      origen: 'WhatsApp',
-      etiquetas: ['VIP', 'Recurrente'],
-      actualizadoPor: 'Recepcionista Ana',
-      fechaActualizacion: '2024-01-15'
-    },
-    {
-      id: 2,
-      nombre: 'Juan Carlos Rodríguez',
-      documento: '87654321',
-      telefono: '+51 912 345 678',
-      email: 'juan.rodriguez@email.com',
-      edad: 28,
-      sexo: 'M',
-      estadoCuenta: 'activa',
-      verificado: false,
-      tieneCuenta: false,
-      ultimaCita: '2024-01-14',
-      proximaCita: '2024-01-25',
-      especialidad: 'Dermatología',
-      doctor: 'Dra. Laura Silva',
-      consultorio: 'A-102',
-      saldo: 150,
-      deuda: 0,
-      ultimoPago: '2024-01-14',
-      cotizacionesAbiertas: 1,
-      cotizacionesAceptadas: 0,
-      ultimaCompra: '2024-01-14',
-      tiempoPromedioCita: '38 min',
-      origen: 'Web',
-      etiquetas: ['Nuevo'],
-      actualizadoPor: 'Dr. Carlos Mendoza',
-      fechaActualizacion: '2024-01-14'
-    },
-    {
-      id: 3,
-      nombre: 'Ana Patricia Morales',
-      documento: '11223344',
-      telefono: '+51 945 123 456',
-      email: 'ana.morales@email.com',
-      edad: 45,
-      sexo: 'F',
-      estadoCuenta: 'activa',
-      verificado: true,
-      tieneCuenta: true,
-      ultimaCita: '2024-01-16',
-      proximaCita: '2024-01-28',
-      especialidad: 'Ginecología',
-      doctor: 'Dra. Carmen Vega',
-      consultorio: 'B-201',
-      saldo: 320,
-      deuda: 0,
-      ultimoPago: '2024-01-16',
-      cotizacionesAbiertas: 0,
-      cotizacionesAceptadas: 3,
-      ultimaCompra: '2024-01-16',
-      tiempoPromedioCita: '55 min',
-      origen: 'Referido',
-      etiquetas: ['VIP', 'Alto Riesgo'],
-      actualizadoPor: 'Recepcionista Ana',
-      fechaActualizacion: '2024-01-16'
-    },
-    {
-      id: 4,
-      nombre: 'Roberto Silva Torres',
-      documento: '55667788',
-      telefono: '+51 998 765 432',
-      email: 'roberto.silva@email.com',
-      edad: 52,
-      sexo: 'M',
-      estadoCuenta: 'inactiva',
-      verificado: false,
-      tieneCuenta: false,
-      ultimaCita: '2023-12-20',
-      proximaCita: null,
-      especialidad: 'Neurología',
-      doctor: 'Dr. Miguel Herrera',
-      consultorio: 'B-202',
-      saldo: 0,
-      deuda: 180,
-      ultimoPago: '2023-12-20',
-      cotizacionesAbiertas: 2,
-      cotizacionesAceptadas: 1,
-      ultimaCompra: '2023-12-20',
-      tiempoPromedioCita: '60 min',
-      origen: 'Web',
-      etiquetas: ['Deuda'],
-      actualizadoPor: 'Dr. Miguel Herrera',
-      fechaActualizacion: '2023-12-20'
-    }
-  ];
+  // KPIs calculados desde datos centralizados
+  const kpis = getKPIs();
 
   const getEstadoBadge = (estado: string) => {
     switch (estado) {
@@ -306,22 +184,24 @@ export default function UsuariosPage() {
 
   const handleExportCSV = () => {
     console.log('Exportando datos a CSV...');
-    const csvData = pacientes.map(p => ({
+    const csvData = pacientesData.map(p => ({
+      id: p.id,
       nombre: p.nombre,
+      apellidos: p.apellidos,
       documento: p.documento,
       telefono: p.telefono,
       email: p.email,
+      atenciones: p.atenciones,
+      deuda: p.deuda,
       estado: p.estadoCuenta,
-      verificado: p.verificado ? 'Sí' : 'No',
-      saldo: `S/ ${p.saldo}`,
-      deuda: `S/ ${p.deuda}`
+      verificado: p.verificado ? 'Sí' : 'No'
     }));
     console.log('Datos para CSV:', csvData);
   };
 
   const handleWhatsAppReminder = () => {
     console.log('Enviando recordatorios por WhatsApp...');
-    const pacientesConCita = pacientes.filter(p => p.proximaCita);
+    const pacientesConCita = pacientesData.filter(p => p.proximaCita);
     console.log('Pacientes con cita próxima:', pacientesConCita.length);
   };
 
@@ -399,12 +279,14 @@ export default function UsuariosPage() {
 
   // Filtrado de pacientes
   const filteredPacientes = useMemo(() => {
-    return pacientes.filter(paciente => {
+    return pacientesData.filter(paciente => {
       const coincideBusqueda = !filtros.busqueda || 
         paciente.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
+        paciente.apellidos.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
         paciente.documento.includes(filtros.busqueda) ||
         paciente.telefono.includes(filtros.busqueda) ||
-        paciente.email.toLowerCase().includes(filtros.busqueda.toLowerCase());
+        paciente.email.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
+        paciente.id.toString().includes(filtros.busqueda);
 
       const coincideEstado = filtros.estado === 'todos' || paciente.estadoCuenta === filtros.estado;
       
@@ -424,24 +306,8 @@ export default function UsuariosPage() {
       return coincideBusqueda && coincideEstado && coincideVerificacion && coincideOrigen && 
              coincideEspecialidad && coincideConsultorio && coincideFecha;
     });
-  }, [pacientes, filtros]);
+  }, [pacientesData, filtros]);
 
-  const getEtiquetaBadge = (etiqueta: string) => {
-    switch (etiqueta) {
-      case 'VIP':
-        return <Badge className="bg-purple-500 text-white border-0 shadow-sm">VIP</Badge>;
-      case 'Recurrente':
-        return <Badge className="bg-blue-500 text-white border-0 shadow-sm">Recurrente</Badge>;
-      case 'Nuevo':
-        return <Badge className="bg-green-500 text-white border-0 shadow-sm">Nuevo</Badge>;
-      case 'Alto Riesgo':
-        return <Badge className="bg-orange-500 text-white border-0 shadow-sm">Alto Riesgo</Badge>;
-      case 'Deuda':
-        return <Badge className="bg-red-500 text-white border-0 shadow-sm">Deuda</Badge>;
-      default:
-        return <Badge variant="secondary">{etiqueta}</Badge>;
-    }
-  };
 
         return (
     <div className="space-y-8 p-6 bg-background min-h-screen">
@@ -855,189 +721,109 @@ export default function UsuariosPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {filteredPacientes.map((paciente) => (
-              <div 
-                key={paciente.id} 
-                className={`border border-border rounded-xl p-4 lg:p-6 hover:bg-muted/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] ${
-                  selectedPatients.includes(paciente.id) ? 'ring-2 ring-primary/50 bg-primary/5' : ''
-                }`}
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start lg:items-center">
-                  {/* Información del Paciente */}
-                  <div className="lg:col-span-3">
-                    <div className="flex items-center gap-3 lg:gap-4">
-                      <div className="relative flex-shrink-0">
-                        <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
-                          <UsersIcon className="w-5 h-5 lg:w-6 lg:h-6 text-primary" />
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[80px]">ID</TableHead>
+                  <TableHead className="w-[200px]">Nombre</TableHead>
+                  <TableHead className="w-[200px]">Apellidos</TableHead>
+                  <TableHead className="w-[100px]">Atenciones</TableHead>
+                  <TableHead className="w-[120px]">Deudan</TableHead>
+                  <TableHead className="w-[250px]">Contacto</TableHead>
+                  <TableHead className="w-[100px]">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredPacientes.map((paciente) => (
+                  <TableRow 
+                    key={paciente.id}
+                    className={`hover:bg-muted/50 transition-colors duration-200 ${
+                      selectedPatients.includes(paciente.id) ? 'bg-primary/5' : ''
+                    }`}
+                  >
+                    <TableCell className="font-medium">
+                      {paciente.id}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <UsersIcon className="w-4 h-4 text-primary" />
                         </div>
+                        <span className="font-medium">{paciente.nombre}</span>
                         {paciente.verificado && (
-                          <div className="absolute -bottom-1 -right-1 w-3 h-3 lg:w-4 lg:h-4 bg-success rounded-full border-2 border-background flex items-center justify-center">
-                            <CheckCircle className="w-2 h-2 lg:w-2.5 lg:h-2.5 text-success-foreground" />
-                          </div>
+                          <CheckCircle className="w-4 h-4 text-success" />
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-foreground text-base lg:text-lg truncate">{paciente.nombre}</h3>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 lg:gap-3 mt-1 lg:mt-2">
-                          {getVerificacionBadge(paciente.verificado)}
-                          <span className="text-xs lg:text-sm text-muted-foreground flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 lg:w-2 lg:h-2 bg-muted-foreground rounded-full"></span>
-                            {paciente.edad} años, {paciente.sexo === 'M' ? 'Masculino' : 'Femenino'}
-                          </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-foreground">{paciente.apellidos}</span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        {paciente.atenciones}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`font-medium ${
+                        paciente.deuda === 'No tiene' 
+                          ? 'text-success' 
+                          : 'text-destructive'
+                      }`}>
+                        {paciente.deuda}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm">
+                          <DniIcon className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-foreground">{paciente.documento}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <WhatsAppIcon className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-foreground">{paciente.telefono}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <GmailIcon className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-foreground truncate">{paciente.email}</span>
                         </div>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Documento y Contacto */}
-                  <div className="lg:col-span-2">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 lg:gap-3 text-xs lg:text-sm">
-                        <div className="p-1 lg:p-1.5 rounded-lg bg-muted/50 flex-shrink-0">
-                          <DniIcon className="w-3 h-3 lg:w-4 lg:h-4 text-muted-foreground" />
-                        </div>
-                        <span className="text-foreground font-medium truncate">{paciente.documento}</span>
-                      </div>
-                      <div className="flex items-center gap-2 lg:gap-3 text-xs lg:text-sm">
-                        <div className="p-1 lg:p-1.5 rounded-lg bg-muted/50 flex-shrink-0">
-                          <WhatsAppIcon className="w-3 h-3 lg:w-4 lg:h-4 text-muted-foreground" />
-                        </div>
-                        <span className="text-foreground font-medium truncate">{paciente.telefono}</span>
-                      </div>
-                      <div className="flex items-center gap-2 lg:gap-3 text-xs lg:text-sm">
-                        <div className="p-1 lg:p-1.5 rounded-lg bg-muted/50 flex-shrink-0">
-                          <GmailIcon className="w-3 h-3 lg:w-4 lg:h-4 text-muted-foreground" />
-                        </div>
-                        <span className="text-foreground font-medium truncate">{paciente.email}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Estado y Cuenta */}
-                  <div className="lg:col-span-2">
-                    <div className="space-y-2 lg:space-y-3">
-                      <div className="flex items-center gap-2 lg:gap-3">
-                        <div className="p-1.5 lg:p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                          <ShieldIcon className="w-3 h-3 lg:w-4 lg:h-4 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="mb-1 lg:mb-2">
-                            {getEstadoBadge(paciente.estadoCuenta)}
-                          </div>
-                          <div className="text-xs lg:text-sm">
-                            <span className="text-muted-foreground">Cuenta: </span>
-                            <span className={`font-medium ${paciente.tieneCuenta ? "text-success" : "text-muted-foreground"}`}>
-                              {paciente.tieneCuenta ? "Sí" : "No"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Citas */}
-                  <div className="lg:col-span-2">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <div className="p-1 lg:p-1.5 rounded-lg bg-info/10 flex-shrink-0">
-                          <CalendarIcon className="w-3 h-3 lg:w-4 lg:h-4 text-info" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs lg:text-sm">
-                            <span className="text-muted-foreground">Última: </span>
-                            <span className="text-foreground font-medium">{paciente.ultimaCita}</span>
-                          </div>
-                          <div className="text-xs lg:text-sm">
-                            <span className="text-muted-foreground">Próxima: </span>
-                            <span className="text-foreground font-medium">
-                              {paciente.proximaCita || 'Sin cita programada'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground pl-4 lg:pl-6 truncate">
-                        {paciente.especialidad} - {paciente.doctor}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Pagos y Compras */}
-                  <div className="lg:col-span-2">
-                    <div className="space-y-2 lg:space-y-3">
-                        <div className="flex items-center gap-2 lg:gap-3">
-                          <div className="p-1.5 lg:p-2 rounded-lg bg-success/10 flex-shrink-0">
-                          </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 lg:gap-2">
-                            <span className={`font-bold text-base lg:text-lg ${paciente.saldo > 0 ? "text-success" : "text-foreground"}`}>
-                              S/ {paciente.saldo.toLocaleString()}
-                            </span>
-                            {paciente.deuda > 0 && (
-                              <span className="text-destructive font-medium text-xs lg:text-sm">
-                                (Deuda: S/ {paciente.deuda.toLocaleString()})
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-2 pl-4 lg:pl-6">
-                        <Calendar className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">Último pago: {paciente.ultimoPago}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs pl-4 lg:pl-6">
-                        <div className="p-1 rounded bg-info/10 flex-shrink-0">
-                          <Package className="w-3 h-3 text-info" />
-                        </div>
-                        <span className="text-foreground truncate">Última compra: {paciente.ultimaCompra}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Etiquetas y Acciones */}
-                  <div className="lg:col-span-1">
-                    <div className="space-y-3 lg:space-y-4">
-                      <div className="flex flex-wrap gap-1 lg:gap-2">
-                        {paciente.etiquetas.map((etiqueta, index) => (
-                          <div key={index}>
-                            {getEtiquetaBadge(etiqueta)}
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex items-center justify-center lg:justify-center gap-1">
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
                         <Button 
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleViewPatient(paciente.id)}
-                          className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 p-1.5 lg:p-2"
+                          className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 p-1"
                           title="Ver detalles"
                         >
-                          <Eye className="w-3 h-3 lg:w-4 lg:h-4" />
+                          <Eye className="w-4 h-4" />
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleEditPatient(paciente.id)}
-                          className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 p-1.5 lg:p-2"
+                          className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 p-1"
                           title="Editar paciente"
                         >
-                          <Edit className="w-3 h-3 lg:w-4 lg:h-4" />
+                          <Edit className="w-4 h-4" />
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleMoreActions(paciente.id)}
-                          className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 p-1.5 lg:p-2"
+                          className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 p-1"
                           title="Más acciones"
                         >
-                          <MoreHorizontal className="w-3 h-3 lg:w-4 lg:h-4" />
+                          <MoreHorizontal className="w-4 h-4" />
                         </Button>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>

@@ -28,8 +28,8 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
     ],
     navGestionUsuarios: [
       {
-        title: "Usuarios",
-        onClick: () => router.push("/administrador/usuarios"),
+        title: "Pacientes",
+        onClick: () => router.push("/administrador/pacientes"),
         icon: Users,
       },
       {
@@ -155,8 +155,8 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
             {data.navGestionUsuarios.map((item) => {
               // Determinar la ruta específica para cada elemento
               let targetPath = "";
-              if (item.title === "Usuarios") {
-                targetPath = "/administrador/usuarios";
+              if (item.title === "Pacientes") {
+                targetPath = "/administrador/pacientes";
               } else if (item.title === "Doctores") {
                 targetPath = "/administrador/doctores";
               } else if (item.title === "Especialidades") {
