@@ -1,6 +1,53 @@
 'use client';
 
 import { use, useState } from 'react';
+
+// TypeScript interfaces
+interface ControlEmbarazo {
+    fase: number;
+    semanas: number;
+    trimestre: number;
+    fechaUltimaRegla: string;
+    fechaProbableParto: string;
+    proximoControl: string;
+    observaciones: string;
+}
+
+interface OrdenMedica {
+    id: number;
+    autor: string;
+    fecha: string;
+    atencion: string;
+    contenido: string[];
+}
+
+interface Prescripcion {
+    id: number;
+    autor: string;
+    fecha: string;
+    atencion: string;
+    contenido: string[];
+}
+
+interface AtencionData {
+    id: string;
+    numero: string;
+    tipo: string;
+    fecha: string;
+    hora: string;
+    profesional: string;
+    estado: string;
+    recurso: string;
+    sucursal: string;
+    convenio: string;
+    progreso: number;
+    totalAtenciones: number;
+    atencionActual: number;
+    controlEmbarazo?: ControlEmbarazo;
+    evolucionClinica: string;
+    ordenesMedicas: OrdenMedica[];
+    prescripciones: Prescripcion[];
+}
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -59,7 +106,7 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
     });
 
     // Base de datos visual de atenciones
-    const atencionesDB: Record<string, any> = {
+    const atencionesDB: Record<string, AtencionData> = {
         '15798': {
             id: '15798',
             numero: '15798',
@@ -646,7 +693,7 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
                                 <CollapsibleContent>
                                     <CardContent className="pt-0">
                                         <div className="space-y-4">
-                                            {atencionData.ordenesMedicas.map((orden: any) => (
+                                            {atencionData.ordenesMedicas.map((orden: OrdenMedica) => (
                                                 <div key={orden.id} className="p-4 bg-muted/30 rounded-lg border border-border">
                                                     <div className="flex items-start justify-between mb-3">
                                                         <div>
@@ -748,7 +795,7 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
                                 <CollapsibleContent>
                                     <CardContent className="pt-0">
                                         <div className="space-y-4">
-                                            {atencionData.prescripciones.map((prescripcion: any) => (
+                                            {atencionData.prescripciones.map((prescripcion: Prescripcion) => (
                                                 <div key={prescripcion.id} className="p-4 bg-muted/30 rounded-lg border border-border">
                                                     <div className="flex items-start justify-between mb-3">
                                                         <div>
