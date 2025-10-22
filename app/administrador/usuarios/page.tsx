@@ -50,7 +50,8 @@ import {
   Zap,
   Target,
   Award,
-  Sparkles
+  Sparkles,
+  RefreshCw
 } from 'lucide-react';
 import { AddPacientesModal } from '@/components/modals/add-pacientes-modal';
 
@@ -103,10 +104,16 @@ const ShieldIcon = ({ className }: { className?: string }) => (
 
 export default function UsuariosPage() {
   // Estados para filtros y funcionalidad
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('todos');
-  const [verificationFilter, setVerificationFilter] = useState('todos');
-  const [originFilter, setOriginFilter] = useState('todos');
+  const [filtros, setFiltros] = useState({
+    busqueda: '',
+    estado: 'todos',
+    verificacion: 'todos',
+    origen: 'todos',
+    fechaDesde: '',
+    fechaHasta: '',
+    especialidad: 'todos',
+    consultorio: 'todos'
+  });
   const [dateRange, setDateRange] = useState('30d');
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
   const [selectedPatients, setSelectedPatients] = useState<number[]>([]);
@@ -140,6 +147,7 @@ export default function UsuariosPage() {
       proximaCita: '2024-01-22',
       especialidad: 'Cardiología',
       doctor: 'Dr. Carlos Mendoza',
+      consultorio: 'A-101',
       saldo: 50,
       deuda: 0,
       ultimoPago: '2024-01-10',
@@ -167,6 +175,7 @@ export default function UsuariosPage() {
       proximaCita: '2024-01-25',
       especialidad: 'Dermatología',
       doctor: 'Dra. Laura Silva',
+      consultorio: 'A-102',
       saldo: 150,
       deuda: 0,
       ultimoPago: '2024-01-14',
@@ -194,6 +203,7 @@ export default function UsuariosPage() {
       proximaCita: '2024-01-28',
       especialidad: 'Ginecología',
       doctor: 'Dra. Carmen Vega',
+      consultorio: 'B-201',
       saldo: 320,
       deuda: 0,
       ultimoPago: '2024-01-16',
@@ -221,6 +231,7 @@ export default function UsuariosPage() {
       proximaCita: null,
       especialidad: 'Neurología',
       doctor: 'Dr. Miguel Herrera',
+      consultorio: 'B-202',
       saldo: 0,
       deuda: 180,
       ultimoPago: '2023-12-20',
@@ -258,6 +269,27 @@ export default function UsuariosPage() {
         <XCircle className="w-3 h-3 mr-1" />
         No verificado
       </Badge>;
+  };
+
+  // Funciones de manejo de filtros
+  const handleFiltroChange = (campo: string, valor: string) => {
+    setFiltros(prev => ({
+      ...prev,
+      [campo]: valor
+    }));
+  };
+
+  const limpiarFiltros = () => {
+    setFiltros({
+      busqueda: '',
+      estado: 'todos',
+      verificacion: 'todos',
+      origen: 'todos',
+      fechaDesde: '',
+      fechaHasta: '',
+      especialidad: 'todos',
+      consultorio: 'todos'
+    });
   };
 
   // Funciones de manejo de eventos
@@ -315,24 +347,36 @@ export default function UsuariosPage() {
     // Aplicar filtros según el segmento
     switch (segment) {
       case 'pending-yape':
-        setSelectedFilter('todos');
-        setVerificationFilter('todos');
-        setOriginFilter('todos');
+        setFiltros(prev => ({
+          ...prev,
+          estado: 'todos',
+          verificacion: 'todos',
+          origen: 'todos'
+        }));
         break;
       case 'open-quote':
-        setSelectedFilter('activa');
-        setVerificationFilter('todos');
-        setOriginFilter('todos');
+        setFiltros(prev => ({
+          ...prev,
+          estado: 'activa',
+          verificacion: 'todos',
+          origen: 'todos'
+        }));
         break;
       case 'no-show':
-        setSelectedFilter('inactiva');
-        setVerificationFilter('todos');
-        setOriginFilter('todos');
+        setFiltros(prev => ({
+          ...prev,
+          estado: 'inactiva',
+          verificacion: 'todos',
+          origen: 'todos'
+        }));
         break;
       case 'vip':
-        setSelectedFilter('activa');
-        setVerificationFilter('verificado');
-        setOriginFilter('todos');
+        setFiltros(prev => ({
+          ...prev,
+          estado: 'activa',
+          verificacion: 'verificado',
+          origen: 'todos'
+        }));
         break;
     }
   };
@@ -356,23 +400,31 @@ export default function UsuariosPage() {
   // Filtrado de pacientes
   const filteredPacientes = useMemo(() => {
     return pacientes.filter(paciente => {
-      const matchesSearch = searchTerm === '' || 
-        paciente.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        paciente.documento.includes(searchTerm) ||
-        paciente.telefono.includes(searchTerm) ||
-        paciente.email.toLowerCase().includes(searchTerm.toLocaleLowerCase());
+      const coincideBusqueda = !filtros.busqueda || 
+        paciente.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
+        paciente.documento.includes(filtros.busqueda) ||
+        paciente.telefono.includes(filtros.busqueda) ||
+        paciente.email.toLowerCase().includes(filtros.busqueda.toLowerCase());
 
-      const matchesStatus = selectedFilter === 'todos' || paciente.estadoCuenta === selectedFilter;
+      const coincideEstado = filtros.estado === 'todos' || paciente.estadoCuenta === filtros.estado;
       
-      const matchesVerification = verificationFilter === 'todos' || 
-        (verificationFilter === 'verificado' && paciente.verificado) ||
-        (verificationFilter === 'no-verificado' && !paciente.verificado);
+      const coincideVerificacion = filtros.verificacion === 'todos' || 
+        (filtros.verificacion === 'verificado' && paciente.verificado) ||
+        (filtros.verificacion === 'no-verificado' && !paciente.verificado);
 
-      const matchesOrigin = originFilter === 'todos' || paciente.origen.toLowerCase() === originFilter;
+      const coincideOrigen = filtros.origen === 'todos' || paciente.origen.toLowerCase() === filtros.origen;
 
-      return matchesSearch && matchesStatus && matchesVerification && matchesOrigin;
+      const coincideEspecialidad = filtros.especialidad === 'todos' || paciente.especialidad === filtros.especialidad;
+
+      const coincideConsultorio = filtros.consultorio === 'todos' || paciente.consultorio === filtros.consultorio;
+
+      const coincideFecha = !filtros.fechaDesde || !filtros.fechaHasta || 
+        (paciente.ultimaCita >= filtros.fechaDesde && paciente.ultimaCita <= filtros.fechaHasta);
+
+      return coincideBusqueda && coincideEstado && coincideVerificacion && coincideOrigen && 
+             coincideEspecialidad && coincideConsultorio && coincideFecha;
     });
-  }, [searchTerm, selectedFilter, verificationFilter, originFilter, pacientes]);
+  }, [pacientes, filtros]);
 
   const getEtiquetaBadge = (etiqueta: string) => {
     switch (etiqueta) {
@@ -504,43 +556,67 @@ export default function UsuariosPage() {
 
       {/* Filtros y Búsqueda */}
       <Card className="shadow-xl border-border/50 bg-background">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-3 text-xl">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Filter className="w-5 h-5 text-primary" />
+        <CardHeader className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filtros Avanzados
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Filtra y busca información específica del sistema
+              </CardDescription>
             </div>
-            Filtros y Búsqueda Avanzada
-          </CardTitle>
+            {/* Indicador de filtros activos */}
+            {Object.values(filtros).some(valor => valor !== '' && valor !== 'todos') && (
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  Filtros activos
+                </Badge>
+                <Button 
+                  onClick={limpiarFiltros} 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  Limpiar
+                </Button>
+              </div>
+            )}
+          </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <Search className="w-4 h-4 text-primary" />
-                Búsqueda Global
-              </label>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Búsqueda general */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Búsqueda</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Nombre, DNI, teléfono, email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 hover:border-primary/50 focus:border-primary transition-colors duration-200"
+                  placeholder="Buscar por nombre, email..."
+                  value={filtros.busqueda}
+                  onChange={(e) => handleFiltroChange('busqueda', e.target.value)}
+                  className="pl-10"
                 />
               </div>
             </div>
 
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <UserRoundSearch className="w-4 h-4 text-primary" />
-                Estado de Cuenta
-              </label>
-              <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-                <SelectTrigger className="hover:border-primary/50 transition-colors duration-200">
-                  <SelectValue />
+            {/* Filtro por estado */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Estado</label>
+              <Select value={filtros.estado} onValueChange={(value) => handleFiltroChange('estado', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar estado">
+                    {filtros.estado === 'todos' ? 'Todos los estados' :
+                     filtros.estado === 'activa' ? 'Activa' :
+                     filtros.estado === 'inactiva' ? 'Inactiva' :
+                     filtros.estado === 'bloqueada' ? 'Bloqueada' :
+                     'Seleccionar estado'}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="todos">Todos los estados</SelectItem>
                   <SelectItem value="activa">Activa</SelectItem>
                   <SelectItem value="inactiva">Inactiva</SelectItem>
                   <SelectItem value="bloqueada">Bloqueada</SelectItem>
@@ -548,14 +624,17 @@ export default function UsuariosPage() {
               </Select>
             </div>
 
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <UserCheck className="w-4 h-4 text-primary" />
-                Verificación
-              </label>
-              <Select value={verificationFilter} onValueChange={setVerificationFilter}>
-                <SelectTrigger className="hover:border-primary/50 transition-colors duration-200">
-                  <SelectValue placeholder="Seleccionar" />
+            {/* Filtro por verificación */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Verificación</label>
+              <Select value={filtros.verificacion} onValueChange={(value) => handleFiltroChange('verificacion', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar verificación">
+                    {filtros.verificacion === 'todos' ? 'Todos' :
+                     filtros.verificacion === 'verificado' ? 'Verificado' :
+                     filtros.verificacion === 'no-verificado' ? 'No verificado' :
+                     'Seleccionar verificación'}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos</SelectItem>
@@ -565,75 +644,157 @@ export default function UsuariosPage() {
               </Select>
             </div>
 
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <Globe className="w-4 h-4 text-primary" />
-                Origen
-              </label>
-              <Select value={originFilter} onValueChange={setOriginFilter}>
-                <SelectTrigger className="hover:border-primary/50 transition-colors duration-200">
-                  <SelectValue placeholder="Seleccionar" />
+            {/* Filtro por origen */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Origen</label>
+              <Select value={filtros.origen} onValueChange={(value) => handleFiltroChange('origen', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar origen">
+                    {filtros.origen === 'todos' ? 'Todos los orígenes' :
+                     filtros.origen === 'web' ? 'Web' :
+                     filtros.origen === 'whatsapp' ? 'WhatsApp' :
+                     filtros.origen === 'referido' ? 'Referido' :
+                     'Seleccionar origen'}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="todos">Todos los orígenes</SelectItem>
                   <SelectItem value="web">Web</SelectItem>
                   <SelectItem value="whatsapp">WhatsApp</SelectItem>
                   <SelectItem value="referido">Referido</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          {/* Segmentos guardados */}
-          <div className="space-y-3">
-            <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" />
-              Segmentos Guardados
-            </label>
-            <div className="flex flex-wrap gap-2 lg:gap-3">
-              <Badge 
-                variant="outline" 
-                className={`cursor-pointer hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105 ${
-                  selectedSegment === 'pending-yape' ? 'bg-primary/10 text-primary border-primary' : ''
-                }`}
-                onClick={() => handleSegmentClick('pending-yape')}
-              >
-                <Wallet className="w-3 h-3 mr-1" />
-                Pendientes validar Yape
-              </Badge>
-              <Badge 
-                variant="outline" 
-                className={`cursor-pointer hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105 ${
-                  selectedSegment === 'open-quote' ? 'bg-primary/10 text-primary border-primary' : ''
-                }`}
-                onClick={() => handleSegmentClick('open-quote')}
-              >
-                <ReceiptText className="w-3 h-3 mr-1" />
-                Con cotización abierta
-              </Badge>
-              <Badge 
-                variant="outline" 
-                className={`cursor-pointer hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105 ${
-                  selectedSegment === 'no-show' ? 'bg-primary/10 text-primary border-primary' : ''
-                }`}
-                onClick={() => handleSegmentClick('no-show')}
-              >
-                <UserX className="w-3 h-3 mr-1" />
-                No muestran en 6+ meses
-              </Badge>
-              <Badge 
-                variant="outline" 
-                className={`cursor-pointer hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105 ${
-                  selectedSegment === 'vip' ? 'bg-primary/10 text-primary border-primary' : ''
-                }`}
-                onClick={() => handleSegmentClick('vip')}
-              >
-                <Award className="w-3 h-3 mr-1" />
-                Pacientes VIP
-              </Badge>
+            {/* Filtro por especialidad */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Especialidad</label>
+              <Select value={filtros.especialidad} onValueChange={(value) => handleFiltroChange('especialidad', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar especialidad">
+                    {filtros.especialidad === 'todos' ? 'Todas las especialidades' :
+                     filtros.especialidad === 'Cardiología' ? 'Cardiología' :
+                     filtros.especialidad === 'Dermatología' ? 'Dermatología' :
+                     filtros.especialidad === 'Ginecología' ? 'Ginecología' :
+                     filtros.especialidad === 'Neurología' ? 'Neurología' :
+                     'Seleccionar especialidad'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todas las especialidades</SelectItem>
+                  <SelectItem value="Cardiología">Cardiología</SelectItem>
+                  <SelectItem value="Dermatología">Dermatología</SelectItem>
+                  <SelectItem value="Ginecología">Ginecología</SelectItem>
+                  <SelectItem value="Neurología">Neurología</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Filtro por consultorio */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Consultorio</label>
+              <Select value={filtros.consultorio} onValueChange={(value) => handleFiltroChange('consultorio', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar consultorio">
+                    {filtros.consultorio === 'todos' ? 'Todos los consultorios' :
+                     filtros.consultorio === 'A-101' ? 'A-101' :
+                     filtros.consultorio === 'A-102' ? 'A-102' :
+                     filtros.consultorio === 'B-201' ? 'B-201' :
+                     filtros.consultorio === 'B-202' ? 'B-202' :
+                     'Seleccionar consultorio'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos los consultorios</SelectItem>
+                  <SelectItem value="A-101">A-101</SelectItem>
+                  <SelectItem value="A-102">A-102</SelectItem>
+                  <SelectItem value="B-201">B-201</SelectItem>
+                  <SelectItem value="B-202">B-202</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Filtro por fecha desde */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Fecha Desde</label>
+              <Input
+                type="date"
+                value={filtros.fechaDesde}
+                onChange={(e) => handleFiltroChange('fechaDesde', e.target.value)}
+              />
+            </div>
+
+            {/* Filtro por fecha hasta */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Fecha Hasta</label>
+              <Input
+                type="date"
+                value={filtros.fechaHasta}
+                onChange={(e) => handleFiltroChange('fechaHasta', e.target.value)}
+              />
+            </div>
+
+            {/* Botones de acción */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground opacity-0">Acciones</label>
+              <div className="flex gap-2">
+                <Button size="sm" className="flex-1">
+                  <Download className="h-4 w-4 mr-2" />
+                  Exportar
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
+        
+        {/* Filtros activos */}
+        {Object.values(filtros).some(valor => valor !== '' && valor !== 'todos') && (
+          <div className="px-6 pb-4">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Filtros aplicados:</span>
+              {filtros.busqueda && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  Búsqueda: "{filtros.busqueda}"
+                </Badge>
+              )}
+              {filtros.estado !== 'todos' && (
+                <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  Estado: {filtros.estado}
+                </Badge>
+              )}
+              {filtros.verificacion !== 'todos' && (
+                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                  Verificación: {filtros.verificacion === 'verificado' ? 'Verificado' : 'No verificado'}
+                </Badge>
+              )}
+              {filtros.origen !== 'todos' && (
+                <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                  Origen: {filtros.origen}
+                </Badge>
+              )}
+              {filtros.especialidad !== 'todos' && (
+                <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                  Especialidad: {filtros.especialidad}
+                </Badge>
+              )}
+              {filtros.consultorio !== 'todos' && (
+                <Badge variant="secondary" className="bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200">
+                  Consultorio: {filtros.consultorio}
+                </Badge>
+              )}
+              {filtros.fechaDesde && (
+                <Badge variant="secondary" className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                  Desde: {filtros.fechaDesde}
+                </Badge>
+              )}
+              {filtros.fechaHasta && (
+                <Badge variant="secondary" className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                  Hasta: {filtros.fechaHasta}
+                </Badge>
+              )}
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Tabla de Pacientes */}

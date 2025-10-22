@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu } from 'lucide-react';
+import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu, Calendar } from 'lucide-react';
 // Importaciones removidas - usando estructura HTML nativa
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +46,11 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
       },
     ],
     navOperaciones: [
+      {
+        title: "Agendas",
+        onClick: () => router.push("/administrador/agendas"),
+        icon: Calendar,
+      },
       {
         title: "Inventario",
         onClick: () => router.push("/administrador/inventario"),
@@ -198,7 +203,9 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
             {data.navOperaciones.map((item) => {
               // Determinar la ruta específica para cada elemento
               let targetPath = "";
-              if (item.title === "Inventario") {
+              if (item.title === "Agendas") {
+                targetPath = "/administrador/agendas";
+              } else if (item.title === "Inventario") {
                 targetPath = "/administrador/inventario";
               } else if (item.title === "Reportes") {
                 targetPath = "/administrador/reportes";
