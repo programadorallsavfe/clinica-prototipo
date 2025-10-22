@@ -309,11 +309,11 @@ export default function FarmaciaPage() {
         setEditingProducto({});
     };
 
-    const handleInputChange = (field: keyof Producto, value: any) => {
+    const handleInputChange = (field: keyof Producto, value: string | number | boolean) => {
         setEditingProducto(prev => ({ ...prev, [field]: value }));
     };
 
-    const getStockStatus = (stock: number, stockSeguridad: number) => {
+    const getStockStatus = (stock: number, stockSeguridad: number): { status: string; color: 'destructive' | 'secondary' | 'default' } => {
         if (stock === 0) return { status: 'Agotado', color: 'destructive' };
         if (stock <= stockSeguridad) return { status: 'Bajo', color: 'destructive' };
         if (stock <= stockSeguridad * 2) return { status: 'Medio', color: 'secondary' };
@@ -583,7 +583,7 @@ export default function FarmaciaPage() {
                                                             <TableCell>
                                                                 <div className="flex items-center gap-2">
                                                                     <span className="font-medium">{producto.stock}</span>
-                                                                    <Badge variant={stockStatus.color as any} className="text-xs">
+                                                                    <Badge variant={stockStatus.color} className="text-xs">
                                                                         {stockStatus.status}
                                                                     </Badge>
                                                                 </div>
