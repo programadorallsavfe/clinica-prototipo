@@ -91,9 +91,9 @@ export default function DoctoresPage() {
   const [doctores] = useState<Doctor[]>([
     {
       id: '1',
-      nombre: 'Juan Carlos',
+      nombre: 'Alexandra ',
       apellidos: 'Pérez González',
-      email: 'juan.perez@clinica.com',
+      email: 'ale.perez@clinica.com',
       telefono: '+51 987 654 321',
       especialidad: 'Cardiología',
       subespecialidad: 'Cardiología Intervencionista',

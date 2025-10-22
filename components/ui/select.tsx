@@ -10,6 +10,10 @@ interface SelectProps {
   onValueChange?: (value: string) => void
   name?: string
   required?: boolean
+  /** Controlled open state (optional) */
+  open?: boolean
+  /** Called when open state changes (optional) */
+  onOpenChange?: (open: boolean) => void
 }
 
 interface SelectTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -44,22 +48,33 @@ const SelectContext = React.createContext<{
   handleSelect: () => {}
 })
 
-function Select({ children, value, onValueChange, name, required }: SelectProps) {
-  const [isOpen, setIsOpen] = React.useState(false)
+function Select({ children, value, onValueChange, name, required, open, onOpenChange }: SelectProps) {
+  const isControlled = typeof open === 'boolean'
+  const [internalOpen, setInternalOpen] = React.useState<boolean>(open ?? false)
   const [selectedValue, setSelectedValue] = React.useState(value || "")
-  
+
   React.useEffect(() => {
     setSelectedValue(value || "")
   }, [value])
-  
+
+  // Keep internalOpen in sync when controlled
+  React.useEffect(() => {
+    if (isControlled) setInternalOpen(open as boolean)
+  }, [open, isControlled])
+
+  const setIsOpen = (val: boolean) => {
+    if (!isControlled) setInternalOpen(val)
+    onOpenChange?.(val)
+  }
+
   const handleSelect = (newValue: string) => {
     setSelectedValue(newValue)
     setIsOpen(false)
     onValueChange?.(newValue)
   }
-  
+
   return (
-    <SelectContext.Provider value={{ selectedValue, isOpen, setIsOpen, handleSelect }}>
+    <SelectContext.Provider value={{ selectedValue, isOpen: internalOpen, setIsOpen, handleSelect }}>
       <div className="relative">
         {name && <input type="hidden" name={name} value={selectedValue} required={required} />}
         {children}

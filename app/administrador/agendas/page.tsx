@@ -141,7 +141,16 @@ export default function AgendasPage() {
   };
 
   const handleSelectorOpen = (citaId: string) => {
-    setSelectorAbierto(citaId);
+    // Si hay otro selector abierto, cerrarlo primero
+    if (selectorAbierto && selectorAbierto !== citaId) {
+      setSelectorAbierto(null);
+      // Pequeño delay para asegurar que se cierre antes de abrir el nuevo
+      setTimeout(() => {
+        setSelectorAbierto(citaId);
+      }, 50);
+    } else {
+      setSelectorAbierto(citaId);
+    }
   };
 
   const handleSelectorClose = () => {
@@ -171,60 +180,20 @@ export default function AgendasPage() {
 
   // Efecto para controlar que solo un selector esté abierto
   useEffect(() => {
-    const handleSelectTriggerClick = (event: MouseEvent) => {
-      const target = event.target as Element;
-      const trigger = target.closest('[data-radix-select-trigger]');
-      
-      if (trigger) {
-        const citaId = trigger.getAttribute('data-cita-id');
-        if (citaId) {
-          // Si hay otro selector abierto, cerrarlo
-          if (selectorAbierto && selectorAbierto !== citaId) {
-            // Forzar el cierre del selector anterior
-            const previousTrigger = document.querySelector(`[data-radix-select-trigger][data-cita-id="${selectorAbierto}"]`);
-            if (previousTrigger) {
-              (previousTrigger as HTMLElement).click();
-            }
-          }
-          setSelectorAbierto(citaId);
-        }
-      }
-    };
-
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
+      // Si se hace clic fuera de cualquier selector, cerrar todos
       if (!target.closest('[data-radix-select-trigger]') && !target.closest('[data-radix-select-content]')) {
         setSelectorAbierto(null);
       }
     };
 
-    // Observar cambios en el estado de los selectores
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'data-state') {
-          const target = mutation.target as Element;
-          if (target.getAttribute('data-state') === 'closed' && selectorAbierto) {
-            setSelectorAbierto(null);
-          }
-        }
-      });
-    });
-
-    // Observar todos los triggers de select
-    const selectTriggers = document.querySelectorAll('[data-radix-select-trigger]');
-    selectTriggers.forEach(trigger => {
-      observer.observe(trigger, { attributes: true, attributeFilter: ['data-state'] });
-    });
-
-    document.addEventListener('click', handleSelectTriggerClick);
     document.addEventListener('mousedown', handleClickOutside);
     
     return () => {
-      document.removeEventListener('click', handleSelectTriggerClick);
       document.removeEventListener('mousedown', handleClickOutside);
-      observer.disconnect();
     };
-  }, [selectorAbierto]);
+  }, []);
 
   // Función para determinar si el dropdown debe abrirse hacia arriba
   const shouldOpenUpward = (index: number) => {
@@ -335,14 +304,6 @@ export default function AgendasPage() {
         /* Controlar que solo un selector esté abierto a la vez */
         [data-radix-select-content] {
           z-index: 9999 !important;
-        }
-        /* Ocultar selectores que no están activos */
-        [data-radix-select-content]:not([data-state="open"]) {
-          display: none !important;
-        }
-        /* Asegurar que solo el selector activo sea visible */
-        [data-radix-select-trigger][data-state="open"] + [data-radix-select-content] {
-          display: block !important;
         }
       `}</style>
       <div className="space-y-6 p-6">
@@ -696,8 +657,16 @@ export default function AgendasPage() {
                     {/* Estado de la cita - Editable */}
                     <TableCell className="bg-background dark:bg-card">
                       <Select 
-                        value={cita.estado} 
+                        value={cita.estado}
+                        open={selectorAbierto === cita.id}
                         onValueChange={(value) => actualizarEstadoCita(cita.id, value)}
+                        onOpenChange={(open: boolean) => {
+                          if (open) {
+                            handleSelectorOpen(cita.id);
+                          } else {
+                            handleSelectorClose();
+                          }
+                        }}
                       >
                         <SelectTrigger 
                           data-cita-id={cita.id}

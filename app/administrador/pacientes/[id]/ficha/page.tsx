@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,14 +36,162 @@ import { AddSignosVitalesModal } from "@/components/modals/add-signos-vitales-mo
 import { AddPrexistenciaMedicamentosModal } from "@/components/modals/add-prexistencia-medicamentos-modal";
 import { AlertasMedicasCard } from "@/components/cards/alertas-medicas-card";
 import { SignosVitalesCard } from "@/components/cards/signos-vitales-card";
+import { AtencionCard } from "@/components/atencion-card";
+import { AtencionMedica } from "@/lib/types";
+import { useRouter } from 'next/navigation';
 
 export default function FichaPacientePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const pacienteId = parseInt(id);
     const paciente = getPacienteById(pacienteId);
+    const router = useRouter();
     const [isAlertasModalOpen, setIsAlertasModalOpen] = useState(false);
     const [isSignosVitalesModalOpen, setIsSignosVitalesModalOpen] = useState(false);
     const [isPrexistenciaModalOpen, setIsPrexistenciaModalOpen] = useState(false);
+    const [atencionesHoy, setAtencionesHoy] = useState<AtencionMedica[]>([]);
+    const [atencionesRecientes, setAtencionesRecientes] = useState<AtencionMedica[]>([]);
+
+    // Cargar atenciones al montar el componente
+    useEffect(() => {
+        loadAtenciones();
+    }, [pacienteId]);
+
+    const loadAtenciones = () => {
+        // Datos de ejemplo visuales - siempre se muestran
+        const atencionesEjemplo: AtencionMedica[] = [
+            {
+                id: '15798',
+                numero: '15798',
+                pacienteId: pacienteId.toString(),
+                tipo: 'Examen ECOGRAFIA OBSTETRICA',
+                tipoCategoria: 'control',
+                fecha: '22 OCT 2025',
+                hora: '09:30 hrs',
+                profesional: 'DR. JOSE CARLOS CASTILLO',
+                estado: 'atendida',
+                recurso: 'Sin asignar',
+                sucursal: 'FEMINIS SALUD',
+                convenio: 'Sin convenio',
+                progreso: 100,
+                totalAtenciones: 5,
+                atencionActual: 2,
+                controlEmbarazo: {
+                    fase: 2,
+                    semanas: 14,
+                    trimestre: 2,
+                    fechaUltimaRegla: '15 JUL 2025',
+                    fechaProbableParto: '22 ABR 2026',
+                    proximoControl: '15 NOV 2025',
+                    observaciones: 'Control prenatal trimestre 2 - Ecografía morfológica'
+                },
+                etiquetas: ['Control prenatal', 'Trimestre 2', 'Ecografía'],
+                evolucionClinica: 'Paciente gestante de 14 semanas. Ecografía morfológica dentro de parámetros normales.',
+                ordenesMedicas: [
+                    {
+                        id: 1,
+                        autor: 'Dr. Castillo',
+                        fecha: '18/10/2025 - 09:45',
+                        atencion: '#15798',
+                        contenido: ['GLUCOSA EN SANGRE', 'HEMOGLOBINA Y HEMATOCRITO']
+                    }
+                ],
+                prescripciones: [
+                    {
+                        id: 1,
+                        autor: 'Dr. Castillo',
+                        fecha: '18/10/2025 - 09:50',
+                        atencion: '#15798',
+                        contenido: ['ÁCIDO FÓLICO 5mg - 1 tableta diaria']
+                    }
+                ],
+                fechaCreacion: new Date().toISOString(),
+                creadoPor: 'admin'
+            },
+            {
+                id: '15794',
+                numero: '15794',
+                pacienteId: pacienteId.toString(),
+                tipo: 'Consulta Ginecológica',
+                tipoCategoria: 'consulta',
+                fecha: '22 OCT 2025',
+                hora: '08:00 hrs',
+                profesional: 'DR. JOSE CARLOS CASTILLO',
+                estado: 'atendida',
+                recurso: 'Sin asignar',
+                sucursal: 'FEMINIS SALUD',
+                convenio: 'Sin convenio',
+                progreso: 100,
+                totalAtenciones: 1,
+                atencionActual: 1,
+                etiquetas: ['Primera consulta', 'Confirmación embarazo'],
+                evolucionClinica: 'Paciente refiere amenorrea de 8 semanas. Test de embarazo positivo.',
+                fechaCreacion: new Date().toISOString(),
+                creadoPor: 'admin'
+            },
+            {
+                id: '15750',
+                numero: '15750',
+                pacienteId: pacienteId.toString(),
+                tipo: 'Control Prenatal - Fase 1',
+                tipoCategoria: 'control',
+                fecha: '10 OCT 2025',
+                hora: '11:00 hrs',
+                profesional: 'DR. JOSE CARLOS CASTILLO',
+                estado: 'atendida',
+                recurso: 'Consultorio 1',
+                sucursal: 'FEMINIS SALUD',
+                convenio: 'Sin convenio',
+                progreso: 100,
+                totalAtenciones: 5,
+                atencionActual: 1,
+                controlEmbarazo: {
+                    fase: 1,
+                    semanas: 10,
+                    trimestre: 1,
+                    fechaUltimaRegla: '15 JUL 2025',
+                    fechaProbableParto: '22 ABR 2026',
+                    proximoControl: '22 OCT 2025',
+                    observaciones: 'Primer control prenatal'
+                },
+                etiquetas: ['Control prenatal', 'Trimestre 1'],
+                fechaCreacion: new Date().toISOString(),
+                creadoPor: 'admin'
+            },
+            {
+                id: '15725',
+                numero: '15725',
+                pacienteId: pacienteId.toString(),
+                tipo: 'Consulta por Síntomas',
+                tipoCategoria: 'consulta',
+                fecha: '25 SEP 2025',
+                hora: '14:30 hrs',
+                profesional: 'DR. JOSE CARLOS CASTILLO',
+                estado: 'atendida',
+                recurso: 'Consultorio 1',
+                sucursal: 'FEMINIS SALUD',
+                convenio: 'Sin convenio',
+                progreso: 100,
+                totalAtenciones: 1,
+                atencionActual: 1,
+                etiquetas: ['Consulta general'],
+                fechaCreacion: new Date().toISOString(),
+                creadoPor: 'admin'
+            }
+        ];
+
+        // Para visualización: filtrar "hoy" y "recientes"
+        const hoyFiltradas = atencionesEjemplo.filter(a => a.fecha === '22 OCT 2025');
+        const recientesFiltradas = atencionesEjemplo.filter(a => 
+            a.fecha === '10 OCT 2025' || a.fecha === '25 SEP 2025' || a.fecha === '22 OCT 2025'
+        );
+
+        setAtencionesHoy(hoyFiltradas);
+        setAtencionesRecientes(recientesFiltradas);
+    };
+
+    const handleAtencionClick = (atencionId: string) => {
+        router.push(`/administrador/pacientes/${pacienteId}/ficha/atencion/${atencionId}`);
+    };
 
 
     if (!paciente) {
@@ -229,55 +377,52 @@ export default function FichaPacientePage({ params }: { params: Promise<{ id: st
 
                                     {/* Atención hoy */}
                                     <div className="mb-6">
-                                        <h3 className="text-lg font-semibold mb-3">Atención hoy</h3>
-                                        <Card 
-                                            className="border-l-4 border-l-blue-500 cursor-pointer hover:shadow-md transition-shadow duration-200"
-                                            onClick={() => window.location.href = `/administrador/pacientes/${pacienteId}/ficha/atencion/15794`}
-                                        >
-                                            <CardContent className="p-4">
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <Badge variant="secondary">#15794</Badge>
-                                                            <span className="font-medium">Consulta GINECOLÓGICA</span>
-                                                        </div>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-sm">
-                                                            <div>
-                                                                <span className="text-muted-foreground">Fecha:</span>
-                                                                <span className="ml-2">18 OCT 2025 | 09:00 hs</span>
-                                                            </div>
-                                                            <div>
-                                                                <span className="text-muted-foreground">Profesional:</span>
-                                                                <span className="ml-2">Dr. JOSE CARLOS CASTILLO</span>
-                                                            </div>
-                                                            <div>
-                                                                <span className="text-muted-foreground">Estado:</span>
-                                                                <Badge className="ml-2 bg-green-100 text-green-800">
-                                                                    <CheckCircle className="h-3 w-3 mr-1" />
-                                                                    Atendido
-                                                                </Badge>
-                                                            </div>
-                                                            <div>
-                                                                <span className="text-muted-foreground">Recurso:</span>
-                                                                <span className="ml-2">Sin asignar</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600 font-bold">
-                                                        1/1
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
+                                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                                            <Clock className="h-5 w-5 text-primary" />
+                                            Atención hoy
+                                        </h3>
+                                        {atencionesHoy.length > 0 ? (
+                                            <div className="space-y-3">
+                                                {atencionesHoy.map((atencion) => (
+                                                    <AtencionCard
+                                                        key={atencion.id}
+                                                        atencion={atencion}
+                                                        pacienteId={pacienteId}
+                                                        onClick={() => handleAtencionClick(atencion.id)}
+                                                    />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg bg-muted/20">
+                                                <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                                <p className="text-sm">Sin atenciones programadas para hoy</p>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Atenciones pasadas */}
+                                    {/* Atenciones recientes */}
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-3">Atenciones pasadas</h3>
-                                        <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-                                            <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                                            <p>SIN ATENCIONES PASADAS</p>
-                                        </div>
+                                        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                                            <FileText className="h-5 w-5 text-primary" />
+                                            Atenciones recientes (últimos 30 días)
+                                        </h3>
+                                        {atencionesRecientes.length > 0 ? (
+                                            <div className="space-y-3">
+                                                {atencionesRecientes.map((atencion) => (
+                                                    <AtencionCard
+                                                        key={atencion.id}
+                                                        atencion={atencion}
+                                                        pacienteId={pacienteId}
+                                                        onClick={() => handleAtencionClick(atencion.id)}
+                                                    />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg bg-muted/20">
+                                                <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                                <p className="text-sm">No hay atenciones recientes</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>

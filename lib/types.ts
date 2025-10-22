@@ -104,3 +104,60 @@ export interface Orden {
   items?: { nombre: string; cantidad: number; precio: number }[]
   total?: number
 }
+
+// Tipos para gestión de atenciones médicas
+export interface ControlEmbarazo {
+  fase: number // 1, 2, 3, 4, 5, etc.
+  semanas?: number
+  trimestre?: 1 | 2 | 3
+  fechaUltimaRegla?: string
+  fechaProbableParto?: string
+  proximoControl?: string
+  observaciones?: string
+}
+
+export interface OrdenMedica {
+  id: number
+  autor: string
+  fecha: string
+  atencion: string
+  contenido: string[]
+}
+
+export interface Prescripcion {
+  id: number
+  autor: string
+  fecha: string
+  atencion: string
+  contenido: string[]
+}
+
+export interface AtencionMedica {
+  id: string
+  numero: string
+  pacienteId: string
+  tipo: string
+  tipoCategoria?: 'consulta' | 'control' | 'procedimiento' | 'emergencia'
+  fecha: string
+  hora: string
+  profesional: string
+  profesionalId?: string
+  estado: 'programada' | 'en_curso' | 'atendida' | 'cancelada' | 'no_asiste'
+  recurso: string
+  sucursal: string
+  convenio: string
+  progreso: number
+  totalAtenciones: number
+  atencionActual: number
+  // Control de embarazo (opcional)
+  controlEmbarazo?: ControlEmbarazo
+  // Etiquetas personalizables
+  etiquetas?: string[]
+  // Información clínica
+  evolucionClinica?: string
+  ordenesMedicas?: OrdenMedica[]
+  prescripciones?: Prescripcion[]
+  // Metadatos
+  fechaCreacion: string
+  creadoPor?: string
+}

@@ -57,63 +57,115 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
         ordenes: false,
         prescripciones: false
     });
-    const [editableContent, setEditableContent] = useState({
-        evolucion: `Hace 2 a 3 semanas dolor pélvico... sensación de ocupamiento para defecar... no deposiciones diarreicas, no náuseas, no vómitos... antecedente quirúrgico: colecistectomía + apendicectomía...`,
-        ordenes: `EXAMEN DE ORINA COMPLETO\nPARÁSITOS TRES MÉTODOS`,
-        prescripciones: `INDICACIONES GENERALES:\n- Disminuir el consumo de harinas (pan, arroz, fideos, papa, yuca, camote)\n- Aumentar el consumo de frutas con cáscara\n- Aumentar el consumo de verduras y ensaladas\n- Aumentar el consumo de líquidos`
-    });
 
-    // Mock data para la atención específica
-    const atencionData = {
-        id: atencionId,
-        numero: "15794",
-        tipo: "Consulta Ginecológica",
-        fecha: "18 OCT 2025",
-        hora: "08:00 hrs",
-        profesional: "DR. JOSE CARLOS CASTILLO",
-        estado: "Atendido",
-        recurso: "Sin asignar",
-        sucursal: "FEMINIS SALUD",
-        convenio: "Sin convenio",
-        progreso: 100,
-        totalAtenciones: 1,
-        atencionActual: 1,
-        paciente: {
-            nombre: "BERTHA EUGENIO ESPINOZA",
-            edad: "45 años",
-            sexo: "Femenino",
-            telefono: "+51 987 654 321",
-            email: "bertha.eugenio@email.com"
+    // Base de datos visual de atenciones
+    const atencionesDB: Record<string, any> = {
+        '15798': {
+            id: '15798',
+            numero: '15798',
+            tipo: 'Examen ECOGRAFIA OBSTETRICA',
+            fecha: '22 OCT 2025',
+            hora: '09:30 hrs',
+            profesional: 'DR. JOSE CARLOS CASTILLO',
+            estado: 'Atendido',
+            recurso: 'Sin asignar',
+            sucursal: 'FEMINIS SALUD',
+            convenio: 'Sin convenio',
+            progreso: 100,
+            totalAtenciones: 5,
+            atencionActual: 2,
+            controlEmbarazo: {
+                fase: 2,
+                semanas: 14,
+                trimestre: 2,
+                fechaUltimaRegla: '15 JUL 2025',
+                fechaProbableParto: '22 ABR 2026',
+                proximoControl: '15 NOV 2025',
+                observaciones: 'Control prenatal trimestre 2 - Ecografía morfológica'
+            },
+            evolucionClinica: 'Paciente gestante de 14 semanas. Ecografía morfológica dentro de parámetros normales. Frecuencia cardíaca fetal: 145 lpm. Movimientos fetales presentes. Líquido amniótico normal. Placenta ubicada en cara anterior. No se observan anomalías estructurales evidentes en este momento.',
+            ordenesMedicas: [
+                {
+                    id: 1,
+                    autor: 'Dr. Castillo',
+                    fecha: '22/10/2025 - 09:45',
+                    atencion: '#15798',
+                    contenido: [
+                        'GLUCOSA EN SANGRE',
+                        'HEMOGLOBINA Y HEMATOCRITO',
+                        'GRUPO SANGUÍNEO Y FACTOR RH',
+                        'PERFIL DE COAGULACIÓN'
+                    ]
+                }
+            ],
+            prescripciones: [
+                {
+                    id: 1,
+                    autor: 'Dr. Castillo',
+                    fecha: '22/10/2025 - 09:50',
+                    atencion: '#15798',
+                    contenido: [
+                        'ÁCIDO FÓLICO 5mg - 1 tableta diaria',
+                        'SULFATO FERROSO 300mg - 1 cápsula diaria',
+                        'CALCIO 600mg - 1 tableta cada 12 horas',
+                        'Control prenatal en 4 semanas'
+                    ]
+                }
+            ]
         },
-        evolucionClinica: `Hace 2 a 3 semanas dolor pélvico... sensación de ocupamiento para defecar... no deposiciones diarreicas, no náuseas, no vómitos... antecedente quirúrgico: colecistectomía + apendicectomía...`,
-        ordenesMedicas: [
-            {
-                id: 1,
-                autor: "Dr. Administrador",
-                fecha: "18/10/2025 - 10:38",
-                atencion: "#15794",
-                contenido: [
-                    "EXAMEN DE ORINA COMPLETO",
-                    "PARÁSITOS TRES MÉTODOS"
-                ]
-            }
-        ],
-        prescripciones: [
-            {
-                id: 1,
-                autor: "Administrador",
-                fecha: "18/10/2025 - 10:10",
-                atencion: "#15794",
-                contenido: [
-                    "INDICACIONES GENERALES:",
-                    "- Disminuir el consumo de harinas (pan, arroz, fideos, papa, yuca, camote)",
-                    "- Aumentar el consumo de frutas con cáscara",
-                    "- Aumentar el consumo de verduras y ensaladas",
-                    "- Aumentar el consumo de líquidos"
-                ]
-            }
-        ]
+        '15794': {
+            id: '15794',
+            numero: '15794',
+            tipo: 'Consulta Ginecológica',
+            fecha: '22 OCT 2025',
+            hora: '08:00 hrs',
+            profesional: 'DR. JOSE CARLOS CASTILLO',
+            estado: 'Atendido',
+            recurso: 'Sin asignar',
+            sucursal: 'FEMINIS SALUD',
+            convenio: 'Sin convenio',
+            progreso: 100,
+            totalAtenciones: 1,
+            atencionActual: 1,
+            evolucionClinica: 'Paciente refiere amenorrea de 8 semanas. Test de embarazo positivo. Se confirma embarazo por ecografía transvaginal. Embrión único viable de 8.2 semanas por LCN. Frecuencia cardíaca: 165 lpm. Sin complicaciones evidentes.',
+            ordenesMedicas: [
+                {
+                    id: 1,
+                    autor: 'Dr. Administrador',
+                    fecha: '22/10/2025 - 08:38',
+                    atencion: '#15794',
+                    contenido: [
+                        'PERFIL TIROIDEO (TSH, T3, T4)',
+                        'EXAMEN DE ORINA COMPLETO',
+                        'UROCULTIVO'
+                    ]
+                }
+            ],
+            prescripciones: [
+                {
+                    id: 1,
+                    autor: 'Administrador',
+                    fecha: '22/10/2025 - 08:40',
+                    atencion: '#15794',
+                    contenido: [
+                        'ÁCIDO FÓLICO 5mg - 1 tableta diaria en ayunas',
+                        'Evitar automedicación',
+                        'Reposo relativo',
+                        'Control en 4 semanas'
+                    ]
+                }
+            ]
+        }
     };
+
+    // Obtener datos de la atención actual
+    const atencionData = atencionesDB[atencionId] || atencionesDB['15794'];
+
+    const [editableContent, setEditableContent] = useState({
+        evolucion: atencionData.evolucionClinica || '',
+        ordenes: atencionData.ordenesMedicas?.[0]?.contenido?.join('\n') || '',
+        prescripciones: atencionData.prescripciones?.[0]?.contenido?.join('\n') || ''
+    });
 
     const toggleSection = (section: keyof typeof openSections) => {
         setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -155,7 +207,7 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
                             <Separator orientation="vertical" className="h-6 hidden sm:block" />
                             <div className="min-w-0 flex-1">
                                 <div className="text-xs sm:text-sm text-muted-foreground hidden lg:block truncate">
-                                    Administrador → Pacientes → [ID paciente] → Ficha → Atención [ID atención]
+                                    Administrador / Pacientes 
                                 </div>
                                 <h1 className="text-lg sm:text-xl font-semibold text-foreground truncate">
                                     Atención #{atencionData.numero}
@@ -246,6 +298,126 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* 🧩 Línea de Tiempo de Controles Prenatales */}
+                {atencionData.controlEmbarazo && (
+                    <Card className="mb-4 sm:mb-6 bg-accent/30 border-primary/20">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                                <Heart className="h-5 w-5 text-primary" />
+                                Control Prenatal - Trimestre {atencionData.controlEmbarazo.trimestre}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Información del embarazo */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-card rounded-lg border border-border">
+                                <div>
+                                    <div className="text-xs text-muted-foreground mb-1">Semanas</div>
+                                    <div className="text-lg font-bold text-primary">
+                                        {atencionData.controlEmbarazo.semanas} sem
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="text-xs text-muted-foreground mb-1">Fase actual</div>
+                                    <div className="text-lg font-bold text-info">
+                                        Fase {atencionData.controlEmbarazo.fase}
+                                    </div>
+                                </div>
+                                <div className="col-span-2">
+                                    <div className="text-xs text-muted-foreground mb-1">Fecha probable de parto</div>
+                                    <div className="text-sm font-semibold text-foreground">
+                                        {atencionData.controlEmbarazo.fechaProbableParto || 'No registrado'}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Línea de tiempo de controles */}
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <h4 className="text-sm font-semibold text-foreground">Línea de Tiempo de Controles</h4>
+                                    <Badge variant="outline" className="text-xs">
+                                        Control {atencionData.atencionActual} de {atencionData.totalAtenciones}
+                                    </Badge>
+                                </div>
+                                
+                                {/* Timeline visual */}
+                                <div className="relative">
+                                    {/* Línea de fondo */}
+                                    <div className="absolute top-6 left-0 right-0 h-1 bg-muted rounded-full" />
+                                    
+                                    {/* Línea de progreso */}
+                                    <div 
+                                        className="absolute top-6 left-0 h-1 bg-primary rounded-full transition-all duration-500"
+                                        style={{ width: `${(atencionData.atencionActual / atencionData.totalAtenciones) * 100}%` }}
+                                    />
+                                    
+                                    {/* Puntos de control */}
+                                    <div className="relative flex justify-between">
+                                        {Array.from({ length: atencionData.totalAtenciones }, (_, i) => {
+                                            const fase = i + 1;
+                                            const isCompleted = fase <= atencionData.atencionActual;
+                                            const isCurrent = fase === atencionData.atencionActual;
+                                            
+                                            return (
+                                                <div key={fase} className="flex flex-col items-center">
+                                                    <div 
+                                                        className={`
+                                                            w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold
+                                                            border-4 transition-all duration-300 z-10
+                                                            ${isCurrent 
+                                                                ? 'bg-primary text-primary-foreground border-background scale-110 shadow-lg shadow-primary/20' 
+                                                                : isCompleted 
+                                                                ? 'bg-success text-success-foreground border-background' 
+                                                                : 'bg-muted text-muted-foreground border-background'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {isCompleted ? <CheckCircle className="h-5 w-5" /> : fase}
+                                                    </div>
+                                                    <div className="mt-2 text-center">
+                                                        <div className={`text-xs font-semibold ${isCurrent ? 'text-primary' : 'text-muted-foreground'}`}>
+                                                            Fase {fase}
+                                                        </div>
+                                                        <div className="text-xs text-muted-foreground mt-1">
+                                                            {fase === 1 && '8-12 sem'}
+                                                            {fase === 2 && '14-18 sem'}
+                                                            {fase === 3 && '22-26 sem'}
+                                                            {fase === 4 && '32-34 sem'}
+                                                            {fase === 5 && '38-40 sem'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Próximo control */}
+                            {atencionData.controlEmbarazo.proximoControl && (
+                                <div className="flex items-center gap-3 p-3 bg-card rounded-lg border border-primary/20">
+                                    <Calendar className="h-5 w-5 text-primary shrink-0" />
+                                    <div>
+                                        <div className="text-xs text-muted-foreground">Próximo Control</div>
+                                        <div className="text-sm font-semibold text-foreground">
+                                            {atencionData.controlEmbarazo.proximoControl}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Observaciones */}
+                            {atencionData.controlEmbarazo.observaciones && (
+                                <div className="p-3 bg-card rounded-lg border border-border">
+                                    <div className="text-xs text-muted-foreground mb-1">Observaciones</div>
+                                    <div className="text-sm text-foreground">
+                                        {atencionData.controlEmbarazo.observaciones}
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* 🧩 2️⃣ Tabs superiores */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -474,7 +646,7 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
                                 <CollapsibleContent>
                                     <CardContent className="pt-0">
                                         <div className="space-y-4">
-                                            {atencionData.ordenesMedicas.map((orden) => (
+                                            {atencionData.ordenesMedicas.map((orden: any) => (
                                                 <div key={orden.id} className="p-4 bg-muted/30 rounded-lg border border-border">
                                                     <div className="flex items-start justify-between mb-3">
                                                         <div>
@@ -541,7 +713,7 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
                                                         </div>
                                                     ) : (
                                                         <div className="space-y-2">
-                                                            {editableContent.ordenes.split('\n').map((item, index) => (
+                                                            {editableContent.ordenes.split('\n').map((item: string, index: number) => (
                                                                 <div key={index} className="text-sm text-foreground bg-background p-2 rounded border">
                                                                     {item}
                                                                 </div>
@@ -576,7 +748,7 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
                                 <CollapsibleContent>
                                     <CardContent className="pt-0">
                                         <div className="space-y-4">
-                                            {atencionData.prescripciones.map((prescripcion) => (
+                                            {atencionData.prescripciones.map((prescripcion: any) => (
                                                 <div key={prescripcion.id} className="p-4 bg-muted/30 rounded-lg border border-border">
                                                     <div className="flex items-start justify-between mb-3">
                                                         <div>
@@ -643,7 +815,7 @@ export default function AtencionDetallePage({ params }: { params: Promise<{ id: 
                                                         </div>
                                                     ) : (
                                                         <div className="space-y-2">
-                                                            {editableContent.prescripciones.split('\n').map((item, index) => (
+                                                            {editableContent.prescripciones.split('\n').map((item: string, index: number) => (
                                                                 <div key={index} className="text-sm text-foreground">
                                                                     {item}
                                                                 </div>
