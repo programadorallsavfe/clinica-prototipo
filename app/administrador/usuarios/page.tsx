@@ -754,7 +754,7 @@ export default function UsuariosPage() {
               <span className="text-sm font-medium text-muted-foreground">Filtros aplicados:</span>
               {filtros.busqueda && (
                 <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                  Búsqueda: "{filtros.busqueda}"
+                  Búsqueda: &quot;{filtros.busqueda}&quot;
                 </Badge>
               )}
               {filtros.estado !== 'todos' && (
