@@ -34,7 +34,7 @@ import {
   Activity,
   BarChart3
 } from 'lucide-react';
-import { citasData, getEstadisticasAgenda, getCitasWithPacienteInfo, Cita } from '@/lib/mockData';
+import { citasData, getEstadisticasAgenda, getCitasWithPacienteInfo, Cita, pacientesData, Paciente } from '@/lib/mockData';
 import { CitaContextMenu } from '@/components/menus/cita-context-menu';
 
 interface FiltrosAgenda {
@@ -148,16 +148,19 @@ export default function AgendasPage() {
     setSelectorAbierto(null);
   };
 
-  const handleContextMenu = (event: React.MouseEvent, cita: any) => {
+  const handleContextMenu = (event: React.MouseEvent, cita: Cita) => {
     event.preventDefault();
     event.stopPropagation();
+    
+    // Obtener información del paciente usando el pacienteId
+    const paciente = pacientesData.find((p: Paciente) => p.id === cita.pacienteId);
     
     setContextMenu({
       isOpen: true,
       citaId: cita.id,
       pacienteId: cita.pacienteId,
-      pacienteNombre: cita.paciente.nombre,
-      pacienteEmail: cita.paciente.email || '',
+      pacienteNombre: paciente ? `${paciente.nombre} ${paciente.apellidos}` : 'Paciente no encontrado',
+      pacienteEmail: paciente?.email || '',
       position: { x: event.clientX, y: event.clientY }
     });
   };
