@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,51 +30,62 @@ import {
     Eye,
     Pencil,
     Save,
-    X
+    X,
+    ChevronUp,
+    ChevronDown
 } from "lucide-react";
 
 // TypeScript interfaces
-interface Medicamento {
+interface Producto {
     id: string;
     nombre: string;
-    principioActivo: string;
+    registroSanitario: string;
+    marca: string;
     concentracion: string;
-    formaFarmaceutica: string;
-    laboratorio: string;
-    codigoBarras?: string;
-    precioCompra: number;
+    unidadMedida: string;
+    cantidad: number;
+    presentacionComercial: string;
+    tipoProducto: string;
+    codigoInterno: string;
+    precioPromedio: number;
     precioVenta: number;
+    stockSeguridad: number;
     stock: number;
-    stockMinimo: number;
-    indicaciones: string[];
-    contraindicaciones: string[];
-    efectosAdversos: string[];
-    fechaVencimiento?: string;
-    lote?: string;
-    categoria: string;
-    requiereReceta: boolean;
+    lote: string;
+    fechaExpiracion: string;
+    bodega: string;
     activo: boolean;
     fechaCreacion: string;
     fechaActualizacion: string;
 }
 
+interface Lote {
+    id: string;
+    productoId: string;
+    numeroLote: string;
+    fechaExpiracion: string;
+    stock: number;
+    precioUnitario: number;
+    bodega: string;
+}
+
 interface MovimientoStock {
     id: string;
-    medicamentoId: string;
+    productoId: string;
     tipo: 'entrada' | 'salida';
     cantidad: number;
     motivo: string;
     fecha: string;
     usuario: string;
-    lote?: string;
-    fechaVencimiento?: string;
+    numeroLote?: string;
+    fechaExpiracion?: string;
     precioUnitario: number;
     total: number;
 }
 
-interface VentaMedicamento {
+interface VentaProducto {
     id: string;
-    medicamentoId: string;
+    productoId: string;
     cantidad: number;
     precioUnitario: number;
     descuento: number;
@@ -90,75 +101,117 @@ export default function FarmaciaPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("todos");
     const [isEditing, setIsEditing] = useState<string | null>(null);
-    const [editingMedicamento, setEditingMedicamento] = useState<Partial<Medicamento>>({});
+    const [editingProducto, setEditingProducto] = useState<Partial<Producto>>({});
+    const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
 
     // Mock data - En producción vendría de una API
-    const [medicamentos, setMedicamentos] = useState<Medicamento[]>([
+    const [productos, setProductos] = useState<Producto[]>([
         {
             id: '1',
-            nombre: 'Paracetamol 500mg',
-            principioActivo: 'Paracetamol',
-            concentracion: '500mg',
-            formaFarmaceutica: 'Tableta',
-            laboratorio: 'Bayer',
-            codigoBarras: '1234567890123',
-            precioCompra: 0.50,
-            precioVenta: 1.20,
-            stock: 150,
-            stockMinimo: 20,
-            indicaciones: ['Dolor', 'Fiebre'],
-            contraindicaciones: ['Hepatopatía severa'],
-            efectosAdversos: ['Náuseas', 'Rash cutáneo'],
-            fechaVencimiento: '2025-12-31',
-            lote: 'LOT001',
-            categoria: 'Analgésicos',
-            requiereReceta: false,
+            nombre: 'B-NEUROFLAX 2ML INY X 10 AMP.',
+            registroSanitario: 'RS-001-2024',
+            marca: 'Bayer',
+            concentracion: '2',
+            unidadMedida: 'ml (Mililitros)',
+            cantidad: 10,
+            presentacionComercial: 'Caja X10',
+            tipoProducto: 'Insumo',
+            codigoInterno: '1014',
+            precioPromedio: 10.00,
+            precioVenta: 25.00,
+            stockSeguridad: 3,
+            stock: 9,
+            lote: '12822503',
+            fechaExpiracion: '2027-05-31',
+            bodega: 'Bodega central',
             activo: true,
             fechaCreacion: '2024-01-15',
             fechaActualizacion: '2024-01-15'
         },
         {
             id: '2',
-            nombre: 'Ibuprofeno 400mg',
-            principioActivo: 'Ibuprofeno',
-            concentracion: '400mg',
-            formaFarmaceutica: 'Tableta',
-            laboratorio: 'Pfizer',
-            codigoBarras: '1234567890124',
-            precioCompra: 0.80,
-            precioVenta: 2.00,
-            stock: 75,
-            stockMinimo: 15,
-            indicaciones: ['Dolor', 'Inflamación', 'Fiebre'],
-            contraindicaciones: ['Úlcera péptica', 'Insuficiencia renal'],
-            efectosAdversos: ['Gastritis', 'Cefalea'],
-            fechaVencimiento: '2025-10-15',
-            lote: 'LOT002',
-            categoria: 'Antiinflamatorios',
-            requiereReceta: false,
+            nombre: 'UROTAN-D-FORTE 200MG X 100TAB',
+            registroSanitario: 'RS-002-2024',
+            marca: 'Pfizer',
+            concentracion: '200',
+            unidadMedida: 'mg (Miligramos)',
+            cantidad: 100,
+            presentacionComercial: 'Caja X100',
+            tipoProducto: 'Medicamento',
+            codigoInterno: '0.801',
+            precioPromedio: 0.80,
+            precioVenta: 2.50,
+            stockSeguridad: 10,
+            stock: 100,
+            lote: '204115',
+            fechaExpiracion: '2027-04-30',
+            bodega: 'Bodega central',
             activo: true,
             fechaCreacion: '2024-01-15',
             fechaActualizacion: '2024-01-15'
         },
         {
             id: '3',
-            nombre: 'Amoxicilina 500mg',
-            principioActivo: 'Amoxicilina',
-            concentracion: '500mg',
-            formaFarmaceutica: 'Cápsula',
-            laboratorio: 'GSK',
-            codigoBarras: '1234567890125',
-            precioCompra: 1.20,
-            precioVenta: 3.50,
+            nombre: 'INSTAFIBRA',
+            registroSanitario: 'RS-003-2024',
+            marca: 'GSK',
+            concentracion: '500',
+            unidadMedida: 'g (Gramos)',
+            cantidad: 1,
+            presentacionComercial: 'Frasco',
+            tipoProducto: 'Suplemento',
+            codigoInterno: 'SUP001',
+            precioPromedio: 61.67,
+            precioVenta: 85.00,
+            stockSeguridad: 2,
             stock: 5,
-            stockMinimo: 10,
-            indicaciones: ['Infecciones bacterianas'],
-            contraindicaciones: ['Alergia a penicilinas'],
-            efectosAdversos: ['Diarrea', 'Náuseas', 'Rash'],
-            fechaVencimiento: '2025-08-20',
-            lote: 'LOT003',
-            categoria: 'Antibióticos',
-            requiereReceta: true,
+            lote: 'HSU',
+            fechaExpiracion: '2027-02-28',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '4',
+            nombre: 'OFS 440 G (SUPLEMENTO DIETETICO)',
+            registroSanitario: 'RS-004-2024',
+            marca: 'Nestlé',
+            concentracion: '440',
+            unidadMedida: 'g (Gramos)',
+            cantidad: 1,
+            presentacionComercial: 'Frasco',
+            tipoProducto: 'Suplemento',
+            codigoInterno: 'SUP002',
+            precioPromedio: 93.00,
+            precioVenta: 120.00,
+            stockSeguridad: 1,
+            stock: 2,
+            lote: 'ISA',
+            fechaExpiracion: '2027-03-10',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '5',
+            nombre: 'HEMOCYTON B (COMPLEJO B) JARABE',
+            registroSanitario: 'RS-005-2024',
+            marca: 'Roche',
+            concentracion: '100',
+            unidadMedida: 'ml (Mililitros)',
+            cantidad: 1,
+            presentacionComercial: 'Frasco',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'VIT001',
+            precioPromedio: 20.00,
+            precioVenta: 35.00,
+            stockSeguridad: 3,
+            stock: 11,
+            lote: '206255',
+            fechaExpiracion: '2027-06-30',
+            bodega: 'Bodega central',
             activo: true,
             fechaCreacion: '2024-01-15',
             fechaActualizacion: '2024-01-15'
@@ -168,109 +221,119 @@ export default function FarmaciaPage() {
     const [movimientosStock, setMovimientosStock] = useState<MovimientoStock[]>([
         {
             id: '1',
-            medicamentoId: '1',
+            productoId: '1',
             tipo: 'entrada',
             cantidad: 100,
             motivo: 'Compra proveedor',
             fecha: '2024-01-10',
             usuario: 'Admin',
-            lote: 'LOT001',
-            fechaVencimiento: '2025-12-31',
-            precioUnitario: 0.50,
-            total: 50.00
+            numeroLote: '12822503',
+            fechaExpiracion: '2027-05-31',
+            precioUnitario: 10.00,
+            total: 1000.00
         },
         {
             id: '2',
-            medicamentoId: '1',
+            productoId: '1',
             tipo: 'salida',
             cantidad: 25,
             motivo: 'Venta',
             fecha: '2024-01-12',
             usuario: 'Farmacéutico',
-            precioUnitario: 1.20,
-            total: 30.00
+            precioUnitario: 25.00,
+            total: 625.00
         }
     ]);
 
-    const categorias = [
-        'Analgésicos',
-        'Antiinflamatorios',
-        'Antibióticos',
-        'Antihistamínicos',
-        'Antihipertensivos',
-        'Antidiabéticos',
-        'Vitaminas',
-        'Suplementos',
-        'Ginecológicos',
-        'Obstétricos'
+    const tiposProducto = [
+        'Insumo',
+        'Medicamento',
+        'Suplemento',
+        'Equipo Médico',
+        'Material de Curación',
+        'Reactivo',
+        'Consumible'
     ];
 
-    const formasFarmaceuticas = [
-        'Tableta',
-        'Cápsula',
-        'Jarabe',
-        'Inyección',
-        'Crema',
-        'Pomada',
-        'Supositorio',
-        'Gotas',
-        'Spray',
-        'Parche'
+    const unidadesMedida = [
+        'ml (Mililitros)',
+        'mg (Miligramos)',
+        'g (Gramos)',
+        'kg (Kilogramos)',
+        'L (Litros)',
+        'unidad',
+        'caja',
+        'frasco',
+        'ampolla',
+        'vial'
     ];
 
     // Filtros
-    const medicamentosFiltrados = medicamentos.filter(med => {
-        const matchesSearch = med.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            med.principioActivo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            med.laboratorio.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === 'todos' || med.categoria === selectedCategory;
+    const productosFiltrados = productos.filter(prod => {
+        const matchesSearch = prod.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            prod.registroSanitario.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            prod.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            prod.codigoInterno.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'todos' || prod.tipoProducto === selectedCategory;
         return matchesSearch && matchesCategory;
     });
 
     // Alertas de stock bajo
-    const stockBajo = medicamentos.filter(med => med.stock <= med.stockMinimo);
+    const stockBajo = productos.filter(prod => prod.stock <= prod.stockSeguridad);
 
     // Estadísticas
-    const totalMedicamentos = medicamentos.length;
-    const medicamentosActivos = medicamentos.filter(med => med.activo).length;
-    const valorInventario = medicamentos.reduce((total, med) => total + (med.stock * med.precioCompra), 0);
-    const medicamentosVencidos = medicamentos.filter(med => 
-        med.fechaVencimiento && new Date(med.fechaVencimiento) < new Date()
+    const totalProductos = productos.length;
+    const productosActivos = productos.filter(prod => prod.activo).length;
+    const valorInventario = productos.reduce((total, prod) => total + (prod.stock * prod.precioPromedio), 0);
+    const productosVencidos = productos.filter(prod => 
+        prod.fechaExpiracion && new Date(prod.fechaExpiracion) < new Date()
     ).length;
 
-    const handleEdit = (medicamento: Medicamento) => {
-        setIsEditing(medicamento.id);
-        setEditingMedicamento(medicamento);
+    const handleEdit = (producto: Producto) => {
+        setIsEditing(producto.id);
+        setEditingProducto(producto);
     };
 
     const handleSave = () => {
         if (isEditing) {
-            setMedicamentos(prev => prev.map(med => 
-                med.id === isEditing ? { ...med, ...editingMedicamento } : med
+            setProductos(prev => prev.map(prod => 
+                prod.id === isEditing ? { ...prod, ...editingProducto } : prod
             ));
         }
         setIsEditing(null);
-        setEditingMedicamento({});
+        setEditingProducto({});
     };
 
     const handleCancel = () => {
         setIsEditing(null);
-        setEditingMedicamento({});
+        setEditingProducto({});
     };
 
-    const handleInputChange = (field: keyof Medicamento, value: any) => {
-        setEditingMedicamento(prev => ({ ...prev, [field]: value }));
+    const handleInputChange = (field: keyof Producto, value: any) => {
+        setEditingProducto(prev => ({ ...prev, [field]: value }));
     };
 
-    const getStockStatus = (stock: number, stockMinimo: number) => {
+    const getStockStatus = (stock: number, stockSeguridad: number) => {
         if (stock === 0) return { status: 'Agotado', color: 'destructive' };
-        if (stock <= stockMinimo) return { status: 'Bajo', color: 'destructive' };
-        if (stock <= stockMinimo * 2) return { status: 'Medio', color: 'secondary' };
+        if (stock <= stockSeguridad) return { status: 'Bajo', color: 'destructive' };
+        if (stock <= stockSeguridad * 2) return { status: 'Medio', color: 'secondary' };
         return { status: 'Normal', color: 'default' };
     };
 
-    const getUtilidad = (precioVenta: number, precioCompra: number) => {
-        return ((precioVenta - precioCompra) / precioCompra * 100).toFixed(1);
+    const getUtilidad = (precioVenta: number, precioPromedio: number) => {
+        return ((precioVenta - precioPromedio) / precioPromedio * 100).toFixed(1);
+    };
+
+    const toggleProductExpansion = (productId: string) => {
+        setExpandedProduct(expandedProduct === productId ? null : productId);
+    };
+
+    const getDaysUntilExpiration = (fechaExpiracion: string) => {
+        const today = new Date();
+        const expiration = new Date(fechaExpiracion);
+        const diffTime = expiration.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
     };
 
     return (
@@ -278,17 +341,21 @@ export default function FarmaciaPage() {
             {/* Header */}
             <div className="border-b border-border bg-card">
                 <div className="container mx-auto px-4 sm:px-6 py-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                             <h1 className="text-2xl font-bold text-foreground">Farmacia</h1>
                             <p className="text-sm text-muted-foreground">
-                                Gestión de medicamentos, inventario y reportes
+                                Gestión de productos, inventario y reportes
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button>
+                            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                                 <Plus className="h-4 w-4 mr-2" />
-                                Nuevo Medicamento
+                                Ingresar
+                            </Button>
+                            <Button variant="outline" className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground">
+                                <Package className="h-4 w-4 mr-2" />
+                                Sacar
                             </Button>
                             <Button variant="outline">
                                 <Download className="h-4 w-4 mr-2" />
@@ -302,47 +369,47 @@ export default function FarmaciaPage() {
             <div className="container mx-auto px-4 sm:px-6 py-6">
                 {/* Estadísticas */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <Card>
+                    <Card className="border-l-4 border-l-primary">
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm text-muted-foreground">Total Medicamentos</p>
-                                    <p className="text-2xl font-bold text-primary">{totalMedicamentos}</p>
+                                    <p className="text-sm text-muted-foreground">Total Productos</p>
+                                    <p className="text-2xl font-bold text-primary">{totalProductos}</p>
                                 </div>
                                 <Package className="h-8 w-8 text-primary" />
                             </div>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="border-l-4 border-l-success">
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Valor Inventario</p>
-                                    <p className="text-2xl font-bold text-green-600">S/ {valorInventario.toFixed(2)}</p>
+                                    <p className="text-2xl font-bold text-success">S/ {valorInventario.toFixed(2)}</p>
                                 </div>
-                                <DollarSign className="h-8 w-8 text-green-600" />
+                                <DollarSign className="h-8 w-8 text-success" />
                             </div>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="border-l-4 border-l-destructive">
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Stock Bajo</p>
-                                    <p className="text-2xl font-bold text-red-600">{stockBajo.length}</p>
+                                    <p className="text-2xl font-bold text-destructive">{stockBajo.length}</p>
                                 </div>
-                                <AlertTriangle className="h-8 w-8 text-red-600" />
+                                <AlertTriangle className="h-8 w-8 text-destructive" />
                             </div>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="border-l-4 border-l-warning">
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Vencidos</p>
-                                    <p className="text-2xl font-bold text-orange-600">{medicamentosVencidos}</p>
+                                    <p className="text-2xl font-bold text-warning">{productosVencidos}</p>
                                 </div>
-                                <Calendar className="h-8 w-8 text-orange-600" />
+                                <Calendar className="h-8 w-8 text-warning" />
                             </div>
                         </CardContent>
                     </Card>
@@ -350,20 +417,23 @@ export default function FarmaciaPage() {
 
                 {/* Alertas */}
                 {stockBajo.length > 0 && (
-                    <Card className="mb-6 border-red-200 bg-red-50">
+                    <Card className="mb-6 border-warning bg-warning/10">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-red-800">
+                            <CardTitle className="flex items-center gap-2 text-warning">
                                 <AlertTriangle className="h-5 w-5" />
-                                Alertas de Stock Bajo
+                                Hay {stockBajo.length} productos con el stock mínimo o menos de lo establecido
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
-                                {stockBajo.map(med => (
-                                    <div key={med.id} className="flex items-center justify-between p-2 bg-white rounded border">
-                                        <span className="font-medium">{med.nombre}</span>
+                                {stockBajo.map(prod => (
+                                    <div key={prod.id} className="flex items-center justify-between p-3 bg-background rounded border border-warning/20">
+                                        <div>
+                                            <span className="font-medium">{prod.nombre}</span>
+                                            <p className="text-sm text-muted-foreground">Cód. Interno: {prod.codigoInterno}</p>
+                                        </div>
                                         <Badge variant="destructive">
-                                            Stock: {med.stock} (Mín: {med.stockMinimo})
+                                            Stock: {prod.stock} (Mín: {prod.stockSeguridad})
                                         </Badge>
                                     </div>
                                 ))}
@@ -396,32 +466,32 @@ export default function FarmaciaPage() {
                     {/* Tab: Inventario */}
                     <TabsContent value="inventario" className="space-y-6">
                         {/* Filtros */}
-                        <Card>
+                        <Card className="border-primary/20">
                             <CardContent className="p-4">
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     <div className="flex-1">
                                         <div className="relative">
                                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input
-                                                placeholder="Buscar medicamentos..."
+                                                placeholder="Buscar productos..."
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                                className="pl-10"
+                                                className="pl-10 border-primary/30 focus:border-primary"
                                             />
                                         </div>
                                     </div>
                                     <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                                        <SelectTrigger className="w-full sm:w-48">
-                                            <SelectValue placeholder="Categoría" />
+                                        <SelectTrigger className="w-full sm:w-48 border-primary/30">
+                                            <SelectValue placeholder="Tipo de Producto" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="todos">Todas las categorías</SelectItem>
-                                            {categorias.map(cat => (
-                                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                            <SelectItem value="todos">Todos los tipos</SelectItem>
+                                            {tiposProducto.map(tipo => (
+                                                <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    <Button variant="outline">
+                                    <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
                                         <Filter className="h-4 w-4 mr-2" />
                                         Filtros
                                     </Button>
@@ -429,89 +499,161 @@ export default function FarmaciaPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Tabla de medicamentos */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Inventario de Medicamentos</CardTitle>
+                        {/* Tabla de productos */}
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="text-primary">Inventario de Productos</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="overflow-x-auto">
                                     <Table>
                                         <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Medicamento</TableHead>
-                                                <TableHead>Laboratorio</TableHead>
-                                                <TableHead>Stock</TableHead>
-                                                <TableHead>Precio Compra</TableHead>
-                                                <TableHead>Precio Venta</TableHead>
-                                                <TableHead>Utilidad</TableHead>
-                                                <TableHead>Vencimiento</TableHead>
-                                                <TableHead>Acciones</TableHead>
+                                            <TableRow className="border-primary/20">
+                                                <TableHead className="text-primary font-semibold">Producto / Reg. Sanitario</TableHead>
+                                                <TableHead className="text-primary font-semibold">N. Lote</TableHead>
+                                                <TableHead className="text-primary font-semibold">Expiración</TableHead>
+                                                <TableHead className="text-primary font-semibold">Stock</TableHead>
+                                                <TableHead className="text-primary font-semibold">Cód. Interno</TableHead>
+                                                <TableHead className="text-primary font-semibold">Precio Promedio</TableHead>
+                                                <TableHead className="text-primary font-semibold">Acciones</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {medicamentosFiltrados.map((medicamento) => {
-                                                const stockStatus = getStockStatus(medicamento.stock, medicamento.stockMinimo);
-                                                const utilidad = getUtilidad(medicamento.precioVenta, medicamento.precioCompra);
+                                            {productosFiltrados.map((producto) => {
+                                                const stockStatus = getStockStatus(producto.stock, producto.stockSeguridad);
+                                                const utilidad = getUtilidad(producto.precioVenta, producto.precioPromedio);
+                                                const diasVencimiento = getDaysUntilExpiration(producto.fechaExpiracion);
+                                                const isExpanded = expandedProduct === producto.id;
                                                 
                                                 return (
-                                                    <TableRow key={medicamento.id}>
-                                                        <TableCell>
-                                                            <div>
-                                                                <div className="font-medium">{medicamento.nombre}</div>
-                                                                <div className="text-sm text-muted-foreground">
-                                                                    {medicamento.principioActivo} {medicamento.concentracion}
+                                                    <React.Fragment key={producto.id}>
+                                                        <TableRow className="hover:bg-primary/5">
+                                                            <TableCell>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => toggleProductExpansion(producto.id)}
+                                                                        className="p-1 h-6 w-6"
+                                                                    >
+                                                                        {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                                                                    </Button>
+                                                                    <div>
+                                                                        <div className="font-medium text-foreground">{producto.nombre}</div>
+                                                                        <div className="text-sm text-muted-foreground">
+                                                                            {producto.registroSanitario}
+                                                                        </div>
+                                                                        <Badge variant="outline" className="text-xs mt-1">
+                                                                            {producto.tipoProducto}
+                                                                        </Badge>
+                                                                    </div>
                                                                 </div>
-                                                                <Badge variant="outline" className="text-xs">
-                                                                    {medicamento.categoria}
-                                                                </Badge>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell>{medicamento.laboratorio}</TableCell>
-                                                        <TableCell>
-                                                            <div className="flex items-center gap-2">
-                                                                <span>{medicamento.stock}</span>
-                                                                <Badge variant={stockStatus.color as any}>
-                                                                    {stockStatus.status}
-                                                                </Badge>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell>S/ {medicamento.precioCompra.toFixed(2)}</TableCell>
-                                                        <TableCell>S/ {medicamento.precioVenta.toFixed(2)}</TableCell>
-                                                        <TableCell>
-                                                            <span className="text-green-600 font-medium">
-                                                                {utilidad}%
-                                                            </span>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {medicamento.fechaVencimiento ? (
-                                                                <span className={
-                                                                    new Date(medicamento.fechaVencimiento) < new Date() 
-                                                                        ? 'text-red-600' 
-                                                                        : 'text-foreground'
-                                                                }>
-                                                                    {new Date(medicamento.fechaVencimiento).toLocaleDateString()}
-                                                                </span>
-                                                            ) : '-'}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <div className="flex items-center gap-1">
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    onClick={() => handleEdit(medicamento)}
-                                                                >
-                                                                    <Edit className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button variant="ghost" size="sm">
-                                                                    <Eye className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button variant="ghost" size="sm">
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-sm">
+                                                                    <div className="font-medium">{producto.lote}</div>
+                                                                    <div className="text-muted-foreground">Total lotes: 1</div>
+                                                                    <div className="text-success text-xs">
+                                                                        Próximo lote: Vence en {Math.floor(diasVencimiento / 30)} meses
+                                                                    </div>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="text-sm">
+                                                                    <div className={
+                                                                        diasVencimiento < 0 
+                                                                            ? 'text-destructive font-medium' 
+                                                                            : diasVencimiento < 30 
+                                                                            ? 'text-warning font-medium'
+                                                                            : 'text-foreground'
+                                                                    }>
+                                                                        {new Date(producto.fechaExpiracion).toLocaleDateString('es-ES', { 
+                                                                            day: 'numeric', 
+                                                                            month: 'short', 
+                                                                            year: 'numeric' 
+                                                                        })}
+                                                                    </div>
+                                                                    {diasVencimiento < 30 && (
+                                                                        <div className="text-xs text-warning">
+                                                                            {diasVencimiento < 0 ? 'Vencido' : `${diasVencimiento} días`}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-medium">{producto.stock}</span>
+                                                                    <Badge variant={stockStatus.color as any} className="text-xs">
+                                                                        {stockStatus.status}
+                                                                    </Badge>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <span className="font-mono text-sm">{producto.codigoInterno}</span>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div>
+                                                                    <div className="font-medium text-success">S/ {producto.precioPromedio.toFixed(2)}</div>
+                                                                    <div className="text-xs text-muted-foreground">
+                                                                        Utilidad: {utilidad}%
+                                                                    </div>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="flex items-center gap-1">
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => handleEdit(producto)}
+                                                                        className="text-primary hover:bg-primary/10"
+                                                                    >
+                                                                        <Edit className="h-4 w-4" />
+                                                                    </Button>
+                                                                    <Button variant="ghost" size="sm" className="text-info hover:bg-info/10">
+                                                                        <Eye className="h-4 w-4" />
+                                                                    </Button>
+                                                                    <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10">
+                                                                        <Trash2 className="h-4 w-4" />
+                                                                    </Button>
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        {isExpanded && (
+                                                            <TableRow className="bg-muted/30">
+                                                                <TableCell colSpan={7} className="p-4">
+                                                                    <div className="bg-background rounded-lg border p-4">
+                                                                        <h4 className="font-semibold text-primary mb-3">Detalles del Lote</h4>
+                                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                                            <div>
+                                                                                <Label className="text-sm text-muted-foreground">Bodega</Label>
+                                                                                <p className="font-medium">{producto.bodega}</p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <Label className="text-sm text-muted-foreground">Número de Lote</Label>
+                                                                                <p className="font-mono">{producto.lote}</p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <Label className="text-sm text-muted-foreground">Fecha de Expiración</Label>
+                                                                                <p className="font-medium">{new Date(producto.fechaExpiracion).toLocaleDateString()}</p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <Label className="text-sm text-muted-foreground">Stock en este Lote</Label>
+                                                                                <p className="font-medium text-primary">{producto.stock}</p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <Label className="text-sm text-muted-foreground">Precio de Venta</Label>
+                                                                                <p className="font-medium text-success">S/ {producto.precioVenta.toFixed(2)}</p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <Label className="text-sm text-muted-foreground">Marca</Label>
+                                                                                <p className="font-medium">{producto.marca}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )}
+                                                    </React.Fragment>
                                                 );
                                             })}
                                         </TableBody>
@@ -523,42 +665,66 @@ export default function FarmaciaPage() {
 
                     {/* Tab: Movimientos */}
                     <TabsContent value="movimientos" className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Movimientos de Stock</CardTitle>
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="text-primary">Movimientos de Stock</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="overflow-x-auto">
                                     <Table>
                                         <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Fecha</TableHead>
-                                                <TableHead>Medicamento</TableHead>
-                                                <TableHead>Tipo</TableHead>
-                                                <TableHead>Cantidad</TableHead>
-                                                <TableHead>Motivo</TableHead>
-                                                <TableHead>Usuario</TableHead>
-                                                <TableHead>Total</TableHead>
+                                            <TableRow className="border-primary/20">
+                                                <TableHead className="text-primary font-semibold">Fecha</TableHead>
+                                                <TableHead className="text-primary font-semibold">Producto</TableHead>
+                                                <TableHead className="text-primary font-semibold">Tipo</TableHead>
+                                                <TableHead className="text-primary font-semibold">Cantidad</TableHead>
+                                                <TableHead className="text-primary font-semibold">Motivo</TableHead>
+                                                <TableHead className="text-primary font-semibold">Usuario</TableHead>
+                                                <TableHead className="text-primary font-semibold">Total</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {movimientosStock.map((movimiento) => {
-                                                const medicamento = medicamentos.find(m => m.id === movimiento.medicamentoId);
+                                                const producto = productos.find(p => p.id === movimiento.productoId);
                                                 return (
-                                                    <TableRow key={movimiento.id}>
+                                                    <TableRow key={movimiento.id} className="hover:bg-primary/5">
                                                         <TableCell>
-                                                            {new Date(movimiento.fecha).toLocaleDateString()}
+                                                            <div className="text-sm">
+                                                                {new Date(movimiento.fecha).toLocaleDateString('es-ES')}
+                                                            </div>
                                                         </TableCell>
-                                                        <TableCell>{medicamento?.nombre || 'N/A'}</TableCell>
                                                         <TableCell>
-                                                            <Badge variant={movimiento.tipo === 'entrada' ? 'default' : 'secondary'}>
+                                                            <div>
+                                                                <div className="font-medium">{producto?.nombre || 'N/A'}</div>
+                                                                <div className="text-sm text-muted-foreground">
+                                                                    Cód. Interno: {producto?.codigoInterno || 'N/A'}
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge 
+                                                                variant={movimiento.tipo === 'entrada' ? 'default' : 'secondary'}
+                                                                className={
+                                                                    movimiento.tipo === 'entrada' 
+                                                                        ? 'bg-success text-success-foreground' 
+                                                                        : 'bg-destructive text-destructive-foreground'
+                                                                }
+                                                            >
                                                                 {movimiento.tipo === 'entrada' ? 'Entrada' : 'Salida'}
                                                             </Badge>
                                                         </TableCell>
-                                                        <TableCell>{movimiento.cantidad}</TableCell>
-                                                        <TableCell>{movimiento.motivo}</TableCell>
-                                                        <TableCell>{movimiento.usuario}</TableCell>
-                                                        <TableCell>S/ {movimiento.total.toFixed(2)}</TableCell>
+                                                        <TableCell>
+                                                            <span className="font-medium">{movimiento.cantidad}</span>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <span className="text-sm">{movimiento.motivo}</span>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <span className="text-sm">{movimiento.usuario}</span>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <span className="font-medium text-success">S/ {movimiento.total.toFixed(2)}</span>
+                                                        </TableCell>
                                                     </TableRow>
                                                 );
                                             })}
@@ -571,15 +737,16 @@ export default function FarmaciaPage() {
 
                     {/* Tab: Ventas */}
                     <TabsContent value="ventas" className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Ventas de Medicamentos</CardTitle>
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="text-primary">Ventas de Productos</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-center py-8 text-muted-foreground">
-                                    <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                    <p>Módulo de ventas en desarrollo</p>
-                                    <Button className="mt-4">
+                                    <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-50 text-primary" />
+                                    <p className="text-lg font-medium mb-2">Módulo de ventas en desarrollo</p>
+                                    <p className="text-sm mb-4">Próximamente podrás registrar ventas de productos y generar reportes de facturación</p>
+                                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
                                         <Plus className="h-4 w-4 mr-2" />
                                         Nueva Venta
                                     </Button>
@@ -591,62 +758,66 @@ export default function FarmaciaPage() {
                     {/* Tab: Reportes */}
                     <TabsContent value="reportes" className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <TrendingUp className="h-5 w-5 text-green-600" />
-                                        Medicamentos Más Vendidos
+                            <Card className="border-primary/10">
+                                <CardHeader className="bg-primary/5">
+                                    <CardTitle className="flex items-center gap-2 text-primary">
+                                        <TrendingUp className="h-5 w-5 text-success" />
+                                        Productos Más Vendidos
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-center py-8 text-muted-foreground">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                        <p>Reporte en desarrollo</p>
+                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50 text-success" />
+                                        <p className="font-medium">Reporte en desarrollo</p>
+                                        <p className="text-sm">Análisis de productos con mayor demanda</p>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <TrendingDown className="h-5 w-5 text-red-600" />
-                                        Medicamentos Menos Vendidos
+                            <Card className="border-primary/10">
+                                <CardHeader className="bg-primary/5">
+                                    <CardTitle className="flex items-center gap-2 text-primary">
+                                        <TrendingDown className="h-5 w-5 text-destructive" />
+                                        Productos Menos Vendidos
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-center py-8 text-muted-foreground">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                        <p>Reporte en desarrollo</p>
+                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50 text-destructive" />
+                                        <p className="font-medium">Reporte en desarrollo</p>
+                                        <p className="text-sm">Identificación de productos con baja rotación</p>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <DollarSign className="h-5 w-5 text-blue-600" />
+                            <Card className="border-primary/10">
+                                <CardHeader className="bg-primary/5">
+                                    <CardTitle className="flex items-center gap-2 text-primary">
+                                        <DollarSign className="h-5 w-5 text-info" />
                                         Utilidad por Venta
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-center py-8 text-muted-foreground">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                        <p>Reporte en desarrollo</p>
+                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50 text-info" />
+                                        <p className="font-medium">Reporte en desarrollo</p>
+                                        <p className="text-sm">Análisis de rentabilidad por producto</p>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Package className="h-5 w-5 text-purple-600" />
-                                        Comisiones por Medicamento
+                            <Card className="border-primary/10">
+                                <CardHeader className="bg-primary/5">
+                                    <CardTitle className="flex items-center gap-2 text-primary">
+                                        <Package className="h-5 w-5 text-warning" />
+                                        Comisiones por Producto
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-center py-8 text-muted-foreground">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                        <p>Reporte en desarrollo</p>
+                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50 text-warning" />
+                                        <p className="font-medium">Reporte en desarrollo</p>
+                                        <p className="text-sm">Control de comisiones e incentivos</p>
                                     </div>
                                 </CardContent>
                             </Card>
