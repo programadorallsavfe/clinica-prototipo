@@ -230,7 +230,10 @@ export default function FichaPacientePage({ params }: { params: Promise<{ id: st
                                     {/* Atención hoy */}
                                     <div className="mb-6">
                                         <h3 className="text-lg font-semibold mb-3">Atención hoy</h3>
-                                        <Card className="border-l-4 border-l-blue-500">
+                                        <Card 
+                                            className="border-l-4 border-l-blue-500 cursor-pointer hover:shadow-md transition-shadow duration-200"
+                                            onClick={() => window.location.href = `/administrador/pacientes/${pacienteId}/ficha/atencion/15794`}
+                                        >
                                             <CardContent className="p-4">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
