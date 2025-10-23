@@ -215,6 +215,204 @@ export default function FarmaciaPage() {
             activo: true,
             fechaCreacion: '2024-01-15',
             fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '6',
+            nombre: 'PENETROFORTE CREMA',
+            registroSanitario: 'RS-006-2024',
+            marca: 'Genfar',
+            concentracion: '30',
+            unidadMedida: 'g (Gramos)',
+            cantidad: 1,
+            presentacionComercial: 'Tubo',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'CRE001',
+            precioPromedio: 15.00,
+            precioVenta: 25.00,
+            stockSeguridad: 2,
+            stock: 2,
+            lote: 'PF2024',
+            fechaExpiracion: '2026-12-31',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '7',
+            nombre: 'METAMIZOL 1 GR CONMEL',
+            registroSanitario: 'RS-007-2024',
+            marca: 'Conmel',
+            concentracion: '1000',
+            unidadMedida: 'mg (Miligramos)',
+            cantidad: 20,
+            presentacionComercial: 'Caja X20',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'MET001',
+            precioPromedio: 0.50,
+            precioVenta: 1.20,
+            stockSeguridad: 10,
+            stock: 5,
+            lote: 'MET2024',
+            fechaExpiracion: '2027-08-15',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '8',
+            nombre: 'METRONIDAZOL 500MG TAB',
+            registroSanitario: 'RS-008-2024',
+            marca: 'Bayer',
+            concentracion: '500',
+            unidadMedida: 'mg (Miligramos)',
+            cantidad: 20,
+            presentacionComercial: 'Caja X20',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'MET002',
+            precioPromedio: 0.80,
+            precioVenta: 2.00,
+            stockSeguridad: 50,
+            stock: 38,
+            lote: 'MTZ2024',
+            fechaExpiracion: '2027-03-20',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '9',
+            nombre: 'CLOFENAC (ACECLOFENACO 100MG)',
+            registroSanitario: 'RS-009-2024',
+            marca: 'GSK',
+            concentracion: '100',
+            unidadMedida: 'mg (Miligramos)',
+            cantidad: 20,
+            presentacionComercial: 'Caja X20',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'CLO001',
+            precioPromedio: 1.20,
+            precioVenta: 3.00,
+            stockSeguridad: 14,
+            stock: 7,
+            lote: 'CLO2024',
+            fechaExpiracion: '2027-05-10',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '10',
+            nombre: 'CLOTRIMAZOL 1% CREMA X 20 GRAMOS',
+            registroSanitario: 'RS-010-2024',
+            marca: 'Pfizer',
+            concentracion: '1',
+            unidadMedida: '%',
+            cantidad: 20,
+            presentacionComercial: 'Tubo 20g',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'CLO002',
+            precioPromedio: 8.00,
+            precioVenta: 15.00,
+            stockSeguridad: 5,
+            stock: 2,
+            lote: 'CLT2024',
+            fechaExpiracion: '2027-07-25',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '11',
+            nombre: 'SALBUTAMOL EN AEROSOL 100MCG X 200 DOSIS',
+            registroSanitario: 'RS-011-2024',
+            marca: 'GSK',
+            concentracion: '100',
+            unidadMedida: 'mcg (Microgramos)',
+            cantidad: 200,
+            presentacionComercial: 'Aerosol 200 dosis',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'SAL001',
+            precioPromedio: 25.00,
+            precioVenta: 45.00,
+            stockSeguridad: 1,
+            stock: 1,
+            lote: 'SAL2024',
+            fechaExpiracion: '2027-09-30',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '12',
+            nombre: 'PARCETAMOL 120MG SML SOLUCION ORAL X60 ML',
+            registroSanitario: 'RS-012-2024',
+            marca: 'Genfar',
+            concentracion: '120',
+            unidadMedida: 'mg (Miligramos)',
+            cantidad: 60,
+            presentacionComercial: 'Frasco 60ml',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'PAR001',
+            precioPromedio: 3.50,
+            precioVenta: 7.00,
+            stockSeguridad: 1,
+            stock: 1,
+            lote: 'PAR2024',
+            fechaExpiracion: '2027-04-15',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '13',
+            nombre: 'PARACETAMOL 100MG/5ML X 10ML GOTA',
+            registroSanitario: 'RS-013-2024',
+            marca: 'Bayer',
+            concentracion: '100',
+            unidadMedida: 'mg (Miligramos)',
+            cantidad: 10,
+            presentacionComercial: 'Frasco gotero 10ml',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'PAR002',
+            precioPromedio: 2.80,
+            precioVenta: 5.50,
+            stockSeguridad: 1,
+            stock: 1,
+            lote: 'PAR2024B',
+            fechaExpiracion: '2027-06-20',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
+        },
+        {
+            id: '14',
+            nombre: 'METFORMINA 850MG CAJA X 100 TABLETAS RECUBIERTAS',
+            registroSanitario: 'RS-014-2024',
+            marca: 'Merck',
+            concentracion: '850',
+            unidadMedida: 'mg (Miligramos)',
+            cantidad: 100,
+            presentacionComercial: 'Caja X100',
+            tipoProducto: 'Medicamento',
+            codigoInterno: 'MET003',
+            precioPromedio: 0.60,
+            precioVenta: 1.50,
+            stockSeguridad: 50,
+            stock: 15,
+            lote: 'MTF2024',
+            fechaExpiracion: '2027-11-10',
+            bodega: 'Bodega central',
+            activo: true,
+            fechaCreacion: '2024-01-15',
+            fechaActualizacion: '2024-01-15'
         }
     ]);
 
@@ -415,51 +613,30 @@ export default function FarmaciaPage() {
                     </Card>
                 </div>
 
-                {/* Alertas */}
-                {stockBajo.length > 0 && (
-                    <Card className="mb-6 border-warning bg-warning/10">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-warning">
-                                <AlertTriangle className="h-5 w-5" />
-                                Hay {stockBajo.length} productos con el stock mínimo o menos de lo establecido
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-2">
-                                {stockBajo.map(prod => (
-                                    <div key={prod.id} className="flex items-center justify-between p-3 bg-background rounded border border-warning/20">
-                                        <div>
-                                            <span className="font-medium">{prod.nombre}</span>
-                                            <p className="text-sm text-muted-foreground">Cód. Interno: {prod.codigoInterno}</p>
-                                        </div>
-                                        <Badge variant="destructive">
-                                            Stock: {prod.stock} (Mín: {prod.stockSeguridad})
-                                        </Badge>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
+                
 
                 {/* Tabs principales */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="inventario" className="flex items-center gap-2">
                             <Warehouse className="h-4 w-4" />
                             Inventario
+                        </TabsTrigger>
+                        <TabsTrigger value="productos" className="flex items-center gap-2">
+                            <Package className="h-4 w-4" />
+                            Productos
                         </TabsTrigger>
                         <TabsTrigger value="movimientos" className="flex items-center gap-2">
                             <BarChart3 className="h-4 w-4" />
                             Movimientos
                         </TabsTrigger>
-                        <TabsTrigger value="ventas" className="flex items-center gap-2">
-                            <ShoppingCart className="h-4 w-4" />
-                            Ventas
+                        <TabsTrigger value="stock-seguridad" className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4" />
+                            Stock de seguridad
                         </TabsTrigger>
-                        <TabsTrigger value="reportes" className="flex items-center gap-2">
+                        <TabsTrigger value="configuracion" className="flex items-center gap-2">
                             <FileText className="h-4 w-4" />
-                            Reportes
+                            Configuración
                         </TabsTrigger>
                     </TabsList>
 
@@ -728,6 +905,85 @@ export default function FarmaciaPage() {
                                                     </TableRow>
                                                 );
                                             })}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Tab: Stock de Seguridad */}
+                    <TabsContent value="stock-seguridad" className="space-y-6">
+                        {/* Header con selector de bodega y botón imprimir */}
+                        <Card className="border-primary/10">
+                            <CardContent className="p-4">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Label htmlFor="bodega" className="text-sm font-medium">Bodega central</Label>
+                                            <Select>
+                                                <SelectTrigger className="w-48">
+                                                    <SelectValue placeholder="Bodega central" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="bodega-central">Bodega central</SelectItem>
+                                                    <SelectItem value="bodega-auxiliar">Bodega auxiliar</SelectItem>
+                                                    <SelectItem value="bodega-emergencia">Bodega emergencia</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Imprimir
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Mensaje de alerta */}
+                        <Card className="border-destructive bg-destructive/10">
+                            <CardContent className="p-4">
+                                <div className="flex items-center gap-2 text-destructive">
+                                    <AlertTriangle className="h-5 w-5" />
+                                    <p className="text-sm font-medium">
+                                        El siguiente listado de productos corresponde a los productos que tienen un stock baja la cantidad considerada como crítica.
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Tabla de productos con stock bajo */}
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="text-primary">Productos con Stock Crítico</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-primary/20">
+                                                <TableHead className="text-primary font-semibold">Producto</TableHead>
+                                                <TableHead className="text-primary font-semibold text-right">Stock de seguridad</TableHead>
+                                                <TableHead className="text-primary font-semibold text-right">Stock actual</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {stockBajo.map((producto) => (
+                                                <TableRow key={producto.id} className="hover:bg-primary/5">
+                                                    <TableCell>
+                                                        <div className="font-medium text-foreground">{producto.nombre}</div>
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        <span className="font-medium">{producto.stockSeguridad}</span>
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        <span className={`font-medium ${producto.stock === 0 ? 'text-destructive' : 'text-warning'}`}>
+                                                            {producto.stock}
+                                                        </span>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
                                         </TableBody>
                                     </Table>
                                 </div>
