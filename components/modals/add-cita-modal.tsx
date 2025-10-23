@@ -422,7 +422,7 @@ export const AddCitaModal: React.FC<AddCitaModalProps> = ({ isOpen, onClose, onS
                                 <Label htmlFor="estado" className="text-sm font-medium">
                                     Estado de la Cita
                                 </Label>
-                                <Select value={formData.estado} onValueChange={(value) => handleInputChange('estado', value as any)}>
+                                <Select value={formData.estado} onValueChange={(value) => handleInputChange('estado', value as 'programada' | 'confirmada_whatsapp' | 'confirmada_telefono' | 'confirmada_email' | 'en_sala_espera' | 'atendiendose' | 'atendida' | 'no_asiste' | 'anulada')}>
                                     <SelectTrigger className="border-primary/30">
                                         <SelectValue placeholder="Seleccionar estado" />
                                     </SelectTrigger>
