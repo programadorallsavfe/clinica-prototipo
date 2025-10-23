@@ -35,8 +35,10 @@ interface Laboratorio {
   tipo: 'propio' | 'externo' | 'convenio';
   estado: 'habilitado' | 'deshabilitado';
   pacientesAtendidos: number;
-  costoPorPaciente: number;
-  montoPorPagar: number;
+  costoPorPaciente: number; // Lo que cobramos al paciente
+  porcentajePagoLaboratorio: number; // Porcentaje que pagamos al laboratorio (ej: 20%)
+  montoPorPagar: number; // Monto total a pagar al laboratorio
+  gananciaClinica: number; // Ganancia total de la clínica
   fechaCreacion: string;
   contacto?: string;
   telefono?: string;
@@ -77,8 +79,10 @@ const laboratoriosMock: Laboratorio[] = [
     tipo: 'propio',
     estado: 'habilitado',
     pacientesAtendidos: 1250,
-    costoPorPaciente: 66.76,
-    montoPorPagar: 83453.10,
+    costoPorPaciente: 100.00, // Lo que cobramos al paciente
+    porcentajePagoLaboratorio: 20, // 20% que pagamos al laboratorio
+    montoPorPagar: 25000.00, // 1250 * 100 * 0.20 = 25,000
+    gananciaClinica: 100000.00, // 1250 * 100 * 0.80 = 100,000
     fechaCreacion: '2024-01-15',
     contacto: 'Dr. María González',
     telefono: '+51 987 654 321',
@@ -91,8 +95,10 @@ const laboratoriosMock: Laboratorio[] = [
     tipo: 'convenio',
     estado: 'habilitado',
     pacientesAtendidos: 89,
-    costoPorPaciente: 49.83,
-    montoPorPagar: 4435.00,
+    costoPorPaciente: 80.00, // Lo que cobramos al paciente
+    porcentajePagoLaboratorio: 25, // 25% que pagamos al laboratorio
+    montoPorPagar: 1780.00, // 89 * 80 * 0.25 = 1,780
+    gananciaClinica: 5340.00, // 89 * 80 * 0.75 = 5,340
     fechaCreacion: '2024-02-20',
     contacto: 'Dra. Luisa Escudero',
     telefono: '+51 987 123 456',
@@ -105,8 +111,10 @@ const laboratoriosMock: Laboratorio[] = [
     tipo: 'propio',
     estado: 'habilitado',
     pacientesAtendidos: 156,
-    costoPorPaciente: 50.06,
-    montoPorPagar: 7809.00,
+    costoPorPaciente: 60.00, // Lo que cobramos al paciente
+    porcentajePagoLaboratorio: 15, // 15% que pagamos al laboratorio (menos porque es propio)
+    montoPorPagar: 1404.00, // 156 * 60 * 0.15 = 1,404
+    gananciaClinica: 7956.00, // 156 * 60 * 0.85 = 7,956
     fechaCreacion: '2024-03-10',
     contacto: 'Tec. Carlos Mendoza',
     telefono: '+51 987 789 012',
@@ -279,20 +287,27 @@ export default function LaboratorioPage() {
   const [filterEstado, setFilterEstado] = useState<string>('todos');
   const [activeTab, setActiveTab] = useState('laboratorios');
 
-  // Función para calcular el monto por pagar
-  const calcularMontoPorPagar = (pacientesAtendidos: number, costoPorPaciente: number): number => {
-    return pacientesAtendidos * costoPorPaciente;
+  // Función para calcular el monto por pagar al laboratorio
+  const calcularMontoPorPagar = (pacientesAtendidos: number, costoPorPaciente: number, porcentajePago: number): number => {
+    return pacientesAtendidos * costoPorPaciente * (porcentajePago / 100);
   };
 
-  // Función para actualizar el monto por pagar
-  const actualizarMontoPorPagar = (laboratorioId: string, nuevosPacientes: number, nuevoCosto: number) => {
+  // Función para calcular la ganancia de la clínica
+  const calcularGananciaClinica = (pacientesAtendidos: number, costoPorPaciente: number, porcentajePago: number): number => {
+    return pacientesAtendidos * costoPorPaciente * ((100 - porcentajePago) / 100);
+  };
+
+  // Función para actualizar los cálculos
+  const actualizarCalculos = (laboratorioId: string, nuevosPacientes: number, nuevoCosto: number, nuevoPorcentaje: number) => {
     setLaboratorios(prev => prev.map(lab => 
       lab.id === laboratorioId 
         ? { 
             ...lab, 
             pacientesAtendidos: nuevosPacientes,
             costoPorPaciente: nuevoCosto,
-            montoPorPagar: calcularMontoPorPagar(nuevosPacientes, nuevoCosto)
+            porcentajePagoLaboratorio: nuevoPorcentaje,
+            montoPorPagar: calcularMontoPorPagar(nuevosPacientes, nuevoCosto, nuevoPorcentaje),
+            gananciaClinica: calcularGananciaClinica(nuevosPacientes, nuevoCosto, nuevoPorcentaje)
           }
         : lab
     ));
@@ -318,6 +333,7 @@ export default function LaboratorioPage() {
   const totalLaboratorios = laboratorios.length;
   const laboratoriosHabilitados = laboratorios.filter(lab => lab.estado === 'habilitado').length;
   const montoTotalPorPagar = laboratorios.reduce((sum, lab) => sum + lab.montoPorPagar, 0);
+  const gananciaTotalClinica = laboratorios.reduce((sum, lab) => sum + lab.gananciaClinica, 0);
   const totalPacientesAtendidos = laboratorios.reduce((sum, lab) => sum + lab.pacientesAtendidos, 0);
 
   const getEstadoBadge = (estado: string) => {
@@ -405,18 +421,18 @@ export default function LaboratorioPage() {
                   <p className="text-sm text-muted-foreground">Monto por Pagar</p>
                   <p className="text-2xl font-bold text-warning">S/ {montoTotalPorPagar.toLocaleString()}</p>
                 </div>
-                <DollarSign className="h-8 w-8 text-warning" />
+                
               </div>
             </CardContent>
           </Card>
-          <Card className="border-l-4 border-l-info">
+          <Card className="border-l-4 border-l-success">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Pacientes Atendidos</p>
-                  <p className="text-2xl font-bold text-info">{totalPacientesAtendidos.toLocaleString()}</p>
+                  <p className="text-sm text-muted-foreground">Ganancia Clínica</p>
+                  <p className="text-2xl font-bold text-success">S/ {gananciaTotalClinica.toLocaleString()}</p>
                 </div>
-                <Users className="h-8 w-8 text-info" />
+                <TrendingUp className="h-8 w-8 text-success" />
               </div>
             </CardContent>
           </Card>
@@ -434,7 +450,7 @@ export default function LaboratorioPage() {
               <span className="hidden sm:inline">Habilitados</span>
             </TabsTrigger>
             <TabsTrigger value="prestaciones" className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
+              
               <span className="hidden sm:inline">Prestaciones</span>
             </TabsTrigger>
             <TabsTrigger value="solicitudes" className="flex items-center gap-2">
@@ -494,7 +510,9 @@ export default function LaboratorioPage() {
                         <TableHead className="text-center">Estado</TableHead>
                         <TableHead className="text-center">Pacientes</TableHead>
                         <TableHead className="text-center">Costo/Paciente</TableHead>
+                        <TableHead className="text-center">% Pago Lab.</TableHead>
                         <TableHead className="text-right">Por Pagar</TableHead>
+                        <TableHead className="text-right">Ganancia</TableHead>
                         <TableHead className="text-center">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -533,10 +551,21 @@ export default function LaboratorioPage() {
                               <span className="font-medium">S/ {laboratorio.costoPorPaciente.toFixed(2)}</span>
                             </div>
                           </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <span className="font-medium text-info">{laboratorio.porcentajePagoLaboratorio}%</span>
+                            </div>
+                          </TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-1">
-                              <DollarSign className="h-4 w-4 text-warning" />
-                              <span className="font-bold text-warning">S/ {laboratorio.montoPorPagar.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                              
+                              <span className="font-bold text-warning">S/ {laboratorio.montoPorPagar.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <TrendingUp className="h-4 w-4 text-success" />
+                              <span className="font-bold text-success">S/ {laboratorio.gananciaClinica.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                             </div>
                           </TableCell>
                           <TableCell className="text-center">
@@ -592,9 +621,17 @@ export default function LaboratorioPage() {
                             <span className="text-sm text-muted-foreground">Costo por Paciente:</span>
                             <span className="font-medium">S/ {laboratorio.costoPorPaciente.toFixed(2)}</span>
                           </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">% Pago Laboratorio:</span>
+                            <span className="font-medium text-info">{laboratorio.porcentajePagoLaboratorio}%</span>
+                          </div>
                           <div className="flex justify-between items-center border-t pt-2">
                             <span className="text-sm font-medium">Monto por Pagar:</span>
-                            <span className="font-bold text-warning">S/ {laboratorio.montoPorPagar.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                            <span className="font-bold text-warning">S/ {laboratorio.montoPorPagar.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">Ganancia Clínica:</span>
+                            <span className="font-bold text-success">S/ {laboratorio.gananciaClinica.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                           </div>
                         </div>
                       </CardContent>
