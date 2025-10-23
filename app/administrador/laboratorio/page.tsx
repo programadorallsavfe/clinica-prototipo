@@ -63,7 +63,7 @@ interface SolicitudLaboratorio {
   prestaciones: PrestacionLaboratorio[];
   fechaSolicitud: string;
   fechaEntrega?: string;
-  estado: 'pendiente' | 'en_proceso' | 'completado' | 'cancelado';
+  estado: 'pendiente' | 'en_proceso' | 'en_revision' | 'finalizada' | 'cancelado';
   montoTotal: number;
   observaciones?: string;
 }
@@ -114,37 +114,107 @@ const laboratoriosMock: Laboratorio[] = [
   }
 ];
 
-// Datos mock para prestaciones
+// Datos mock para prestaciones basados en la imagen
 const prestacionesMock: PrestacionLaboratorio[] = [
   {
     id: '1',
-    nombre: 'Hemograma Completo',
+    nombre: 'ACAROS INVESTIGACION',
     laboratorioId: '1',
-    costo: 25.00,
+    costo: 80.00,
     tipo: 'examen',
     estado: 'activo',
     tiempoEntrega: '24 horas',
-    requerimientos: ['Ayuno 8 horas', 'Muestra de sangre']
+    requerimientos: ['Muestra de piel']
   },
   {
     id: '2',
-    nombre: 'Perfil Prenatal',
+    nombre: 'ACIDO ASCORBICO',
     laboratorioId: '1',
-    costo: 120.00,
-    tipo: 'perfil',
+    costo: 250.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '48 horas',
+    requerimientos: ['Ayuno 8 horas', 'Muestra de sangre']
+  },
+  {
+    id: '3',
+    nombre: 'ACIDO FOLICO',
+    laboratorioId: '1',
+    costo: 70.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  {
+    id: '4',
+    nombre: 'ACIDO URICO EN ORINA SIMPLE',
+    laboratorioId: '1',
+    costo: 70.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de orina']
+  },
+  {
+    id: '5',
+    nombre: 'ACIDO URICO EN SUERO',
+    laboratorioId: '1',
+    costo: 50.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  {
+    id: '6',
+    nombre: 'ACIDO URICO ORINA 24hr',
+    laboratorioId: '1',
+    costo: 50.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Recolección 24 horas', 'Muestra de orina']
+  },
+  {
+    id: '7',
+    nombre: 'ACIDOS BILIARES',
+    laboratorioId: '1',
+    costo: 370.00,
+    tipo: 'examen',
     estado: 'activo',
     tiempoEntrega: '48 horas',
     requerimientos: ['Ayuno 12 horas', 'Muestra de sangre']
   },
   {
-    id: '3',
-    nombre: 'Biopsia de Mama',
-    laboratorioId: '2',
-    costo: 180.00,
-    tipo: 'biopsia',
+    id: '8',
+    nombre: 'ACTH am BASAL',
+    laboratorioId: '1',
+    costo: 110.00,
+    tipo: 'examen',
     estado: 'activo',
-    tiempoEntrega: '5-7 días',
-    requerimientos: ['Cita previa', 'Consentimiento informado']
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre matutina']
+  },
+  {
+    id: '9',
+    nombre: 'ACTH pm DOSAJE',
+    laboratorioId: '1',
+    costo: 185.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre vespertina']
+  },
+  {
+    id: '10',
+    nombre: 'AGLUTINACIONES EN LAMINA',
+    laboratorioId: '1',
+    costo: 40.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
   }
 ];
 
@@ -159,7 +229,7 @@ const solicitudesMock: SolicitudLaboratorio[] = [
     prestaciones: [prestacionesMock[0], prestacionesMock[1]],
     fechaSolicitud: '2024-10-15',
     fechaEntrega: '2024-10-17',
-    estado: 'completado',
+    estado: 'finalizada',
     montoTotal: 145.00,
     observaciones: 'Paciente embarazada, prioridad alta'
   },
@@ -174,6 +244,30 @@ const solicitudesMock: SolicitudLaboratorio[] = [
     estado: 'en_proceso',
     montoTotal: 180.00,
     observaciones: 'Seguimiento oncológico'
+  },
+  {
+    id: '3',
+    pacienteId: 'P003',
+    pacienteNombre: 'Carmen López',
+    laboratorioId: '1',
+    laboratorioNombre: 'FEMINIS SALUD',
+    prestaciones: [prestacionesMock[3]],
+    fechaSolicitud: '2024-10-17',
+    estado: 'pendiente',
+    montoTotal: 70.00,
+    observaciones: 'Examen de rutina'
+  },
+  {
+    id: '4',
+    pacienteId: 'P004',
+    pacienteNombre: 'Elena Martínez',
+    laboratorioId: '3',
+    laboratorioNombre: 'INSUMOS PROPIOS',
+    prestaciones: [prestacionesMock[4], prestacionesMock[5]],
+    fechaSolicitud: '2024-10-18',
+    estado: 'en_revision',
+    montoTotal: 100.00,
+    observaciones: 'Revisión de resultados'
   }
 ];
 
@@ -210,6 +304,14 @@ export default function LaboratorioPage() {
                          lab.detalle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEstado = filterEstado === 'todos' || lab.estado === filterEstado;
     return matchesSearch && matchesEstado;
+  });
+
+  // Filtrar solicitudes
+  const solicitudesFiltradas = solicitudes.filter(solicitud => {
+    if (activeTab === 'solicitudes') {
+      return filterEstado === 'todos' || solicitud.estado === filterEstado;
+    }
+    return true;
   });
 
   // Estadísticas
@@ -340,22 +442,20 @@ export default function LaboratorioPage() {
               <span className="hidden sm:inline">Solicitudes</span>
             </TabsTrigger>
           </TabsList>
-        </Tabs>
 
-        {/* Mensaje Informativo */}
-        <div className="mt-4 p-3 bg-info/10 border border-info/20 rounded-lg">
-          <div className="flex items-center gap-2 text-info">
-            <AlertCircle className="h-4 w-4" />
-            <p className="text-sm font-medium">
-              Es recomendado crear los Laboratorios (empresas) y luego añadir prestaciones.
-            </p>
-          </div>
-        </div>
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 
           {/* Tab: Laboratorios */}
           <TabsContent value="laboratorios" className="mt-6">
+            {/* Mensaje Informativo General */}
+            <div className="mb-4 p-3 bg-info/10 border border-info/20 rounded-lg">
+              <div className="flex items-center gap-2 text-info">
+                <AlertCircle className="h-4 w-4" />
+                <p className="text-sm font-medium">
+                  Es recomendado crear los Laboratorios (empresas) y luego añadir prestaciones.
+                </p>
+              </div>
+            </div>
+            
             <Card>
               <CardHeader>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -436,7 +536,7 @@ export default function LaboratorioPage() {
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-1">
                               <DollarSign className="h-4 w-4 text-warning" />
-                              <span className="font-bold text-warning">S/ {laboratorio.montoPorPagar.toLocaleString()}</span>
+                              <span className="font-bold text-warning">S/ {laboratorio.montoPorPagar.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
                             </div>
                           </TableCell>
                           <TableCell className="text-center">
@@ -494,7 +594,7 @@ export default function LaboratorioPage() {
                           </div>
                           <div className="flex justify-between items-center border-t pt-2">
                             <span className="text-sm font-medium">Monto por Pagar:</span>
-                            <span className="font-bold text-warning">S/ {laboratorio.montoPorPagar.toLocaleString()}</span>
+                            <span className="font-bold text-warning">S/ {laboratorio.montoPorPagar.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
                           </div>
                         </div>
                       </CardContent>
@@ -507,11 +607,21 @@ export default function LaboratorioPage() {
 
           {/* Tab: Prestaciones de Laboratorio */}
           <TabsContent value="prestaciones" className="mt-6">
+            {/* Mensaje Informativo para Prestaciones */}
+            <div className="mb-4 p-3 bg-info/10 border border-info/20 rounded-lg">
+              <div className="flex items-center gap-2 text-info">
+                <AlertCircle className="h-4 w-4" />
+                <p className="text-sm font-medium">
+                  Estos precios son los que se cobrarán al paciente, y son los que serán impresos en el presupuesto.
+                </p>
+              </div>
+            </div>
+            
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Prestaciones de Laboratorio</CardTitle>
-                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Button size="sm" className="bg-success hover:bg-success/90 text-success-foreground">
                     <Plus className="h-4 w-4 mr-2" />
                     Nueva Prestación
                   </Button>
@@ -522,49 +632,34 @@ export default function LaboratorioPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-20">Código</TableHead>
                         <TableHead>Nombre</TableHead>
-                        <TableHead>Laboratorio</TableHead>
-                        <TableHead>Tipo</TableHead>
-                        <TableHead className="text-right">Costo</TableHead>
-                        <TableHead>Tiempo Entrega</TableHead>
-                        <TableHead>Estado</TableHead>
-                        <TableHead className="text-center">Acciones</TableHead>
+                        <TableHead className="text-right">Precio paciente genérico</TableHead>
+                        <TableHead className="text-center w-24">Editar</TableHead>
+                        <TableHead className="text-center w-32">Deshabilitar</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {prestaciones.map((prestacion) => (
                         <TableRow key={prestacion.id} className="hover:bg-muted/50">
+                          <TableCell className="text-center">
+                            <span className="text-muted-foreground">-</span>
+                          </TableCell>
                           <TableCell className="font-medium">{prestacion.nombre}</TableCell>
-                          <TableCell>
-                            {laboratorios.find(lab => lab.id === prestacion.laboratorioId)?.nombre}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{prestacion.tipo}</Badge>
-                          </TableCell>
                           <TableCell className="text-right">
-                            <span className="font-medium">S/ {prestacion.costo.toFixed(2)}</span>
-                          </TableCell>
-                          <TableCell>{prestacion.tiempoEntrega}</TableCell>
-                          <TableCell>
-                            {prestacion.estado === 'activo' ? (
-                              <Badge variant="default" className="bg-success text-success-foreground">
-                                <CheckCircle className="h-3 w-3 mr-1" />Activo
-                              </Badge>
-                            ) : (
-                              <Badge variant="destructive">
-                                <XCircle className="h-3 w-3 mr-1" />Inactivo
-                              </Badge>
-                            )}
+                            <span className="font-medium">S/.{prestacion.costo.toFixed(2)}</span>
                           </TableCell>
                           <TableCell className="text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <Button variant="ghost" size="sm">
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </div>
+                            <Button variant="outline" size="sm" className="text-info border-info hover:bg-info/10">
+                              <Edit className="h-4 w-4 mr-1" />
+                              Editar
+                            </Button>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button variant="outline" size="sm" className="text-destructive border-destructive hover:bg-destructive/10">
+                              <XCircle className="h-4 w-4 mr-1" />
+                              Deshabilitar
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -579,7 +674,23 @@ export default function LaboratorioPage() {
           <TabsContent value="solicitudes" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Solicitudes de Laboratorio</CardTitle>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <CardTitle>Solicitudes de Laboratorio</CardTitle>
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <Select value={filterEstado} onValueChange={setFilterEstado}>
+                      <SelectTrigger className="w-full sm:w-48">
+                        <SelectValue placeholder="Filtrar por estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos los estados</SelectItem>
+                        <SelectItem value="pendiente">Pendiente</SelectItem>
+                        <SelectItem value="en_proceso">En proceso</SelectItem>
+                        <SelectItem value="en_revision">En revisión</SelectItem>
+                        <SelectItem value="finalizada">Finalizada</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -596,7 +707,7 @@ export default function LaboratorioPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {solicitudes.map((solicitud) => (
+                      {solicitudesFiltradas.map((solicitud) => (
                         <TableRow key={solicitud.id} className="hover:bg-muted/50">
                           <TableCell className="font-medium">{solicitud.pacienteNombre}</TableCell>
                           <TableCell>{solicitud.laboratorioNombre}</TableCell>
@@ -611,16 +722,26 @@ export default function LaboratorioPage() {
                           </TableCell>
                           <TableCell>{new Date(solicitud.fechaSolicitud).toLocaleDateString()}</TableCell>
                           <TableCell>
-                            {solicitud.estado === 'completado' ? (
+                            {solicitud.estado === 'finalizada' ? (
                               <Badge variant="default" className="bg-success text-success-foreground">
-                                <CheckCircle className="h-3 w-3 mr-1" />Completado
+                                <CheckCircle className="h-3 w-3 mr-1" />Finalizada
                               </Badge>
                             ) : solicitud.estado === 'en_proceso' ? (
                               <Badge variant="default" className="bg-warning text-warning-foreground">
                                 <TrendingUp className="h-3 w-3 mr-1" />En Proceso
                               </Badge>
+                            ) : solicitud.estado === 'en_revision' ? (
+                              <Badge variant="default" className="bg-info text-info-foreground">
+                                <Eye className="h-3 w-3 mr-1" />En Revisión
+                              </Badge>
+                            ) : solicitud.estado === 'pendiente' ? (
+                              <Badge variant="outline" className="border-warning text-warning">
+                                <AlertCircle className="h-3 w-3 mr-1" />Pendiente
+                              </Badge>
                             ) : (
-                              <Badge variant="outline">{solicitud.estado}</Badge>
+                              <Badge variant="destructive">
+                                <XCircle className="h-3 w-3 mr-1" />Cancelado
+                              </Badge>
                             )}
                           </TableCell>
                           <TableCell className="text-right">
