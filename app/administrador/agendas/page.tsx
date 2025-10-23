@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { citasData, getEstadisticasAgenda, getCitasWithPacienteInfo, Cita, pacientesData, Paciente } from '@/lib/mockData';
 import { CitaContextMenu } from '@/components/menus/cita-context-menu';
+import { AddCitaModal } from '@/components/modals/add-cita-modal';
 
 interface FiltrosAgenda {
   busqueda: string;
@@ -77,6 +78,9 @@ export default function AgendasPage() {
 
   // Estado para las citas (se puede modificar localmente)
   const [citas, setCitas] = useState(() => getCitasWithPacienteInfo());
+  
+  // Estado para el modal de nueva cita
+  const [isAddCitaModalOpen, setIsAddCitaModalOpen] = useState(false);
 
   // Filtrado de datos
   const citasFiltradas = useMemo(() => {
@@ -176,6 +180,20 @@ export default function AgendasPage() {
 
   const handleContextMenuClose = () => {
     setContextMenu(prev => ({ ...prev, isOpen: false }));
+  };
+
+  // Función para agregar nueva cita
+  const handleAddCita = (newCita: Omit<Cita, 'id'>) => {
+    // Buscar el paciente correspondiente
+    const paciente = pacientesData.find(p => p.id === newCita.pacienteId);
+    if (!paciente) return;
+
+    const citaConPaciente = {
+      ...newCita,
+      id: (citas.length + 1).toString(),
+      paciente: paciente
+    };
+    setCitas(prev => [...prev, citaConPaciente]);
   };
 
   // Efecto para controlar que solo un selector esté abierto
@@ -456,7 +474,11 @@ export default function AgendasPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground opacity-0">Acciones</label>
               <div className="flex gap-2">
-                <Button size="sm" className="flex-1">
+                <Button 
+                  size="sm" 
+                  className="flex-1"
+                  onClick={() => setIsAddCitaModalOpen(true)}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Nueva Cita
                 </Button>
@@ -848,6 +870,7 @@ export default function AgendasPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Button 
               className="h-24 flex flex-col space-y-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] bg-primary hover:bg-primary/90"
+              onClick={() => setIsAddCitaModalOpen(true)}
             >
               <div className="p-2 rounded-lg bg-primary-foreground/20">
                 <Plus className="h-6 w-6 text-primary-foreground" />
@@ -885,6 +908,13 @@ export default function AgendasPage() {
         isOpen={contextMenu.isOpen}
         onClose={handleContextMenuClose}
         position={contextMenu.position}
+      />
+
+      {/* Modal para agregar citas */}
+      <AddCitaModal
+        isOpen={isAddCitaModalOpen}
+        onClose={() => setIsAddCitaModalOpen(false)}
+        onSave={handleAddCita}
       />
     </div>
     </>

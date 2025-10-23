@@ -34,6 +34,7 @@ import {
     ChevronUp,
     ChevronDown
 } from "lucide-react";
+import { AddFarmaciaModal } from "@/components/modals/add-farmacia-modal";
 
 // TypeScript interfaces
 interface Producto {
@@ -103,6 +104,7 @@ export default function FarmaciaPage() {
     const [isEditing, setIsEditing] = useState<string | null>(null);
     const [editingProducto, setEditingProducto] = useState<Partial<Producto>>({});
     const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     // Mock data - En producción vendría de una API
     const [productos, setProductos] = useState<Producto[]>([
@@ -534,6 +536,16 @@ export default function FarmaciaPage() {
         return diffDays;
     };
 
+    const handleAddProduct = (newProduct: Omit<Producto, 'id' | 'fechaCreacion' | 'fechaActualizacion'>) => {
+        const producto: Producto = {
+            ...newProduct,
+            id: (productos.length + 1).toString(),
+            fechaCreacion: new Date().toISOString().split('T')[0],
+            fechaActualizacion: new Date().toISOString().split('T')[0]
+        };
+        setProductos(prev => [...prev, producto]);
+    };
+
     return (
         <div className="min-h-screen bg-background">
             {/* Header */}
@@ -547,7 +559,10 @@ export default function FarmaciaPage() {
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                            <Button 
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                                onClick={() => setIsAddModalOpen(true)}
+                            >
                                 <Plus className="h-4 w-4 mr-2" />
                                 Ingresar
                             </Button>
@@ -1081,6 +1096,13 @@ export default function FarmaciaPage() {
                     </TabsContent>
                 </Tabs>
             </div>
+
+            {/* Modal para agregar productos */}
+            <AddFarmaciaModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSave={handleAddProduct}
+            />
         </div>
     );
 }

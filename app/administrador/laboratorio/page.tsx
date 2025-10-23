@@ -26,7 +26,7 @@ import {
   Users,
   TrendingUp
 } from "lucide-react";
-
+import { AddLaboratorioMedicoModal } from "@/components/modals/add-laboratorio-medico-modal";
 // Interfaces para el módulo de laboratorio
 interface Laboratorio {
   id: string;
@@ -286,7 +286,7 @@ export default function LaboratorioPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState<string>('todos');
   const [activeTab, setActiveTab] = useState('laboratorios');
-
+  const [isAddLaboratorioMedicoModalOpen, setIsAddLaboratorioMedicoModalOpen] = useState(false);
   // Función para calcular el monto por pagar al laboratorio
   const calcularMontoPorPagar = (pacientesAtendidos: number, costoPorPaciente: number, porcentajePago: number): number => {
     return pacientesAtendidos * costoPorPaciente * (porcentajePago / 100);
@@ -311,6 +311,18 @@ export default function LaboratorioPage() {
           }
         : lab
     ));
+  };
+
+  // Función para agregar nuevo laboratorio
+  const handleAddLaboratorio = (newLaboratorio: Omit<Laboratorio, 'id' | 'fechaCreacion' | 'montoPorPagar' | 'gananciaClinica'>) => {
+    const laboratorio: Laboratorio = {
+      ...newLaboratorio,
+      id: (laboratorios.length + 1).toString(),
+      fechaCreacion: new Date().toISOString().split('T')[0],
+      montoPorPagar: calcularMontoPorPagar(newLaboratorio.pacientesAtendidos, newLaboratorio.costoPorPaciente, newLaboratorio.porcentajePagoLaboratorio),
+      gananciaClinica: calcularGananciaClinica(newLaboratorio.pacientesAtendidos, newLaboratorio.costoPorPaciente, newLaboratorio.porcentajePagoLaboratorio)
+    };
+    setLaboratorios(prev => [...prev, laboratorio]);
   };
 
   // Filtrar laboratorios
@@ -380,7 +392,11 @@ export default function LaboratorioPage() {
                 <Filter className="h-4 w-4 mr-2" />
                 Filtros
               </Button>
-              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Button 
+                size="sm" 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={() => setIsAddLaboratorioMedicoModalOpen(true)}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Nuevo Laboratorio
               </Button>
@@ -804,6 +820,13 @@ export default function LaboratorioPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modal para agregar laboratorios */}
+      <AddLaboratorioMedicoModal
+        isOpen={isAddLaboratorioMedicoModalOpen}
+        onClose={() => setIsAddLaboratorioMedicoModalOpen(false)}
+        onSave={handleAddLaboratorio}
+      />
     </div>
   );
 }
