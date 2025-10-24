@@ -289,8 +289,8 @@ export default function HistoriaClinicaPage() {
       titulo: 'Paciente',
       render: (historia: HistoriaClinica) => {
         const paciente = pacientes.find(p => p.id === historia.pacienteId);
-        return (
-          <div>
+    return (
+        <div>
             <div className="font-medium">{paciente ? `${paciente.nombres} ${paciente.apellidos}` : 'N/A'}</div>
             <div className="text-xs text-muted-foreground">{paciente?.documento || 'N/A'}</div>
           </div>
@@ -666,6 +666,6 @@ export default function HistoriaClinicaPage() {
           </Card>
         </div>
       )}
-    </div>
-  );
+        </div>
+    );
 }

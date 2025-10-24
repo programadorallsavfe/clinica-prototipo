@@ -407,7 +407,7 @@ export default function PacientesDiaPage() {
     },
   ];
 
-  return (
+    return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -734,7 +734,7 @@ export default function PacientesDiaPage() {
                     <Label className="text-sm font-medium">Antecedentes</Label>
                     <p className="text-sm text-muted-foreground p-2 bg-accent/50 rounded-lg">{pacienteSeleccionado.antecedentes}</p>
                   </div>
-                  <div>
+        <div>
                     <Label className="text-sm font-medium">Teléfono de Emergencia</Label>
                     <p className="text-sm text-muted-foreground flex items-center gap-1">
                       <Phone className="h-3 w-3" />
@@ -771,6 +771,6 @@ export default function PacientesDiaPage() {
           </Card>
         </div>
       )}
-    </div>
-  );
+        </div>
+    );
 }

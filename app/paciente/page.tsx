@@ -1,323 +1,517 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { DataTable, Columna } from '@/components/data-table';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  ChartContainer, 
+  ChartTooltip, 
+  ChartTooltipContent,
+  ChartConfig 
+} from '@/components/ui/chart';
+import { 
+  Calendar, 
+  Clock, 
+  HeartPulse, 
+  TrendingUp, 
+  TrendingDown,
+  Activity,
+  Stethoscope,
+  Pill,
+  FlaskConical,
+  RefreshCw,
+  Eye,
+  Download
+} from 'lucide-react';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { Pie, PieChart, Cell, ResponsiveContainer as PieResponsiveContainer } from 'recharts';
+import { RadialBar, RadialBarChart, PolarGrid, PolarRadiusAxis } from 'recharts';
 import { getSession } from '@/lib/auth';
-import { pacientesStorage, citasStorage, doctoresStorage, especialidadesStorage, ordenesStorage, registrosClinicosStorage, pagosStorage } from '@/lib/storage';
-import { Orden } from '@/lib/types';
-import { Calendar, FileText, ShoppingBag, User } from 'lucide-react';
+import { pacientesStorage, citasStorage, doctoresStorage, especialidadesStorage, ordenesStorage, registrosClinicosStorage } from '@/lib/storage';
+
+// Mock data para estadísticas del paciente
+const estadisticasMock = {
+  citasPorMes: [
+    { mes: 'Ene', citas: 2, completadas: 2 },
+    { mes: 'Feb', citas: 3, completadas: 2 },
+    { mes: 'Mar', citas: 1, completadas: 1 },
+    { mes: 'Abr', citas: 4, completadas: 3 },
+    { mes: 'May', citas: 2, completadas: 2 },
+    { mes: 'Jun', citas: 3, completadas: 2 }
+  ],
+  especialidadesFrecuentes: [
+    { especialidad: 'Ginecología', citas: 8, fill: 'var(--chart-1)' },
+    { especialidad: 'Medicina General', citas: 4, fill: 'var(--chart-2)' },
+    { especialidad: 'Obstetricia', citas: 3, fill: 'var(--chart-3)' },
+    { especialidad: 'Pediatría', citas: 2, fill: 'var(--chart-4)' }
+  ],
+  gastosPorMes: [
+    { mes: 'Ene', gastos: 240 },
+    { mes: 'Feb', gastos: 360 },
+    { mes: 'Mar', gastos: 120 },
+    { mes: 'Abr', gastos: 480 },
+    { mes: 'May', gastos: 240 },
+    { mes: 'Jun', gastos: 360 }
+  ],
+  saludGeneral: {
+    puntuacion: 85,
+    tendencia: 'mejorando'
+  }
+};
 
 export default function PacientePage() {
-  const [paciente, setPaciente] = useState<{ id: string; nombres: string; apellidos: string; documento: string; telefono: string; email?: string; preferenciaContacto: string; usuarioId: string } | null>(null);
-  const [proximaCita, setProximaCita] = useState<{ fecha: string; horaInicio: string; doctorNombre: string; especialidadNombre: string; estadoPago: string; precio: number } | null>(null);
-  const [citas, setCitas] = useState<{ id: string; fecha: string; horaInicio: string; especialidadNombre: string; doctorNombre: string; estado: string; estadoPago: string }[]>([]);
-  const [ordenes, setOrdenes] = useState<Orden[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [paciente, setPaciente] = useState<any>(null);
+  const [periodo, setPeriodo] = useState('6meses');
+  const [estadisticas, setEstadisticas] = useState(estadisticasMock);
 
   useEffect(() => {
     const session = getSession();
     if (session?.userId) {
-      cargarDatos(session.userId);
+      cargarDatosPaciente(session.userId);
     }
   }, []);
 
-  const cargarDatos = (usuarioId: string) => {
-    // Buscar paciente por usuarioId
+  const cargarDatosPaciente = (usuarioId: string) => {
     const pac = pacientesStorage.findOne((p: { usuarioId: string }) => p.usuarioId === usuarioId);
-    
-    if (!pac) {
-      setLoading(false);
-      return;
+    if (pac) {
+      setPaciente(pac);
     }
-
-    setPaciente(pac);
-
-    // Cargar citas del paciente
-    const citasPaciente = citasStorage.find(c => c.pacienteId === pac.id)
-      .sort((a, b) => {
-        const fechaA = new Date(a.fecha + 'T' + a.horaInicio);
-        const fechaB = new Date(b.fecha + 'T' + b.horaInicio);
-        return fechaB.getTime() - fechaA.getTime();
-      });
-
-    // Enriquecer citas con datos relacionados
-    const citasEnriquecidas = citasPaciente.map(cita => {
-      const doctor = doctoresStorage.getById(cita.doctorId);
-      const especialidad = especialidadesStorage.getById(cita.especialidadId);
-      const registro = registrosClinicosStorage.findOne((r: { citaId: string }) => r.citaId === cita.id);
-      const pago = pagosStorage.findOne((p: { citaId: string }) => p.citaId === cita.id);
-
-      return {
-        ...cita,
-        doctorNombre: doctor ? `Dr. ${doctor.nombres} ${doctor.apellidos}` : 'N/A',
-        especialidadNombre: especialidad?.nombre || 'N/A',
-        registroClinico: registro,
-        pago,
-      };
-    });
-
-    setCitas(citasEnriquecidas);
-
-    // Encontrar próxima cita
-    const ahora = new Date();
-    const proxima = citasEnriquecidas
-      .filter(c => {
-        const fechaCita = new Date(c.fecha + 'T' + c.horaInicio);
-        return fechaCita > ahora && c.estado === 'programada';
-      })
-      .sort((a, b) => {
-        const fechaA = new Date(a.fecha + 'T' + a.horaInicio);
-        const fechaB = new Date(b.fecha + 'T' + b.horaInicio);
-        return fechaA.getTime() - fechaB.getTime();
-      })[0];
-
-    setProximaCita(proxima || null);
-
-    // Cargar órdenes
-    const ordenesPaciente = ordenesStorage.find((o: { pacienteId: string }) => o.pacienteId === pac.id);
-    setOrdenes(ordenesPaciente);
-
-    setLoading(false);
   };
 
-  const getEstadoBadge = (estado: string) => {
-    const colores: Record<string, string> = {
-      programada: 'bg-blue-100 text-blue-800',
-      en_curso: 'bg-yellow-100 text-yellow-800',
-      atendida: 'bg-green-100 text-green-800',
-      cancelada: 'bg-red-100 text-red-800',
-      no_asistio: 'bg-gray-100 text-gray-800',
+  // Configuración de gráficos
+  const chartConfigCitas: ChartConfig = {
+    citas: {
+      label: "Citas Programadas",
+      color: "var(--chart-1)",
+    },
+    completadas: {
+      label: "Citas Completadas",
+      color: "var(--chart-2)",
+    },
+  };
+
+  const chartConfigGastos: ChartConfig = {
+    gastos: {
+      label: "Gastos (S/)",
+      color: "var(--chart-3)",
+    },
+  };
+
+  // Calcular métricas
+  const metricas = useMemo(() => {
+    const totalCitas = estadisticas.citasPorMes.reduce((sum, item) => sum + item.citas, 0);
+    const totalCompletadas = estadisticas.citasPorMes.reduce((sum, item) => sum + item.completadas, 0);
+    const totalGastos = estadisticas.gastosPorMes.reduce((sum, item) => sum + item.gastos, 0);
+    const promedioGastos = totalGastos / estadisticas.gastosPorMes.length;
+    const tasaAsistencia = totalCitas > 0 ? (totalCompletadas / totalCitas) * 100 : 0;
+
+    return {
+      totalCitas,
+      totalCompletadas,
+      totalGastos,
+      promedioGastos,
+      tasaAsistencia
     };
+  }, [estadisticas]);
 
-    return <Badge className={colores[estado] || ''}>{estado.replace('_', ' ').toUpperCase()}</Badge>;
-  };
-
-  const getPagoBadge = (estado: string) => {
-    const colores: Record<string, string> = {
-      pendiente: 'bg-red-100 text-red-800',
-      parcial: 'bg-yellow-100 text-yellow-800',
-      pagado: 'bg-green-100 text-green-800',
-      externo_validado: 'bg-blue-100 text-blue-800',
-    };
-
-    return <Badge className={colores[estado] || ''}>{estado.replace('_', ' ')}</Badge>;
-  };
-
-  const columnasCitas: Columna<{ id: string; fecha: string; horaInicio: string; especialidadNombre: string; doctorNombre: string; estado: string; estadoPago: string }>[] = [
-    {
-      key: 'fecha',
-      titulo: 'Fecha',
-      sortable: true,
-      render: (cita: { fecha: string }) => new Date(cita.fecha).toLocaleDateString('es-PE'),
-    },
-    {
-      key: 'horaInicio',
-      titulo: 'Hora',
-      render: (cita: { horaInicio: string }) => cita.horaInicio,
-    },
-    {
-      key: 'especialidadNombre',
-      titulo: 'Especialidad',
-      sortable: true,
-    },
-    {
-      key: 'doctorNombre',
-      titulo: 'Doctor',
-      sortable: true,
-    },
-    {
-      key: 'estado',
-      titulo: 'Estado',
-      render: (cita: { estado: string }) => getEstadoBadge(cita.estado),
-    },
-    {
-      key: 'estadoPago',
-      titulo: 'Pago',
-      render: (cita: { estadoPago: string }) => getPagoBadge(cita.estadoPago),
-    },
-  ];
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!paciente) {
-    return (
-      <div className="flex items-center justify-center min-h-screen p-4">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>Sin Acceso</CardTitle>
-            <CardDescription>No se encontró información del paciente</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
 
   return (
-    <div className="p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
+    <div className="space-y-6 bg-background text-foreground min-h-screen p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Bienvenido, {paciente.nombres}</h1>
-          <p className="text-gray-600 mt-1">Gestiona tus citas y consulta tu información médica</p>
+          <h1 className="text-3xl font-bold text-foreground">Mi Dashboard de Salud</h1>
+          <p className="text-muted-foreground">
+            Bienvenido, {paciente?.nombres || 'Paciente'} - Resumen de tu actividad médica
+          </p>
         </div>
+        <div className="flex items-center gap-2">
+          <Select value={periodo} onValueChange={setPeriodo}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="3meses">Últimos 3 meses</SelectItem>
+              <SelectItem value="6meses">Últimos 6 meses</SelectItem>
+              <SelectItem value="1año">Último año</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Actualizar
+          </Button>
+        </div>
+      </div>
 
-        {/* Próxima Cita */}
-        {proximaCita && (
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Próxima Cita
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Fecha y Hora</p>
-                  <p className="font-semibold text-lg">
-                    {new Date(proximaCita.fecha).toLocaleDateString('es-PE')} a las {proximaCita.horaInicio}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Doctor</p>
-                  <p className="font-semibold">{proximaCita.doctorNombre}</p>
-                  <p className="text-sm text-gray-500">{proximaCita.especialidadNombre}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Estado de Pago</p>
-                  {getPagoBadge(proximaCita.estadoPago)}
-                  <p className="text-lg font-semibold mt-2">S/ {proximaCita.precio}</p>
+      {/* Métricas Principales */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Citas</p>
+                <p className="text-2xl font-bold text-foreground">{metricas.totalCitas}</p>
+                <p className="text-xs text-muted-foreground">Últimos 6 meses</p>
+              </div>
+              <Calendar className="h-8 w-8 text-primary" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Tasa de Asistencia</p>
+                <p className="text-2xl font-bold text-foreground">{metricas.tasaAsistencia.toFixed(1)}%</p>
+                <p className="text-xs text-muted-foreground">Citas completadas</p>
+              </div>
+              <Activity className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Gastos Totales</p>
+                <p className="text-2xl font-bold text-foreground">S/ {metricas.totalGastos}</p>
+                <p className="text-xs text-muted-foreground">Promedio: S/ {metricas.promedioGastos.toFixed(0)}</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Salud General</p>
+                <p className="text-2xl font-bold text-foreground">{estadisticas.saludGeneral.puntuacion}/100</p>
+                <div className="flex items-center gap-1">
+                  {estadisticas.saludGeneral.tendencia === 'mejorando' ? (
+                    <TrendingUp className="h-3 w-3 text-green-600" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 text-red-600" />
+                  )}
+                  <span className="text-xs text-muted-foreground capitalize">
+                    {estadisticas.saludGeneral.tendencia}
+                  </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Contenido Principal */}
-        <Tabs defaultValue="historial" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="historial">
-              <FileText className="h-4 w-4 mr-2" />
-              Historial de Citas
-            </TabsTrigger>
-            <TabsTrigger value="perfil">
-              <User className="h-4 w-4 mr-2" />
-              Mi Perfil
-            </TabsTrigger>
-            <TabsTrigger value="ordenes">
-              <ShoppingBag className="h-4 w-4 mr-2" />
-              Mis Órdenes
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="historial">
-            <Card>
-              <CardHeader>
-                <CardTitle>Historial de Citas</CardTitle>
-                <CardDescription>Todas tus citas médicas registradas</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DataTable
-                  data={citas}
-                  columnas={columnasCitas}
-                  itemsPorPagina={10}
-                  keyExtractor={(cita: { id: string }) => cita.id}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="perfil">
-            <Card>
-              <CardHeader>
-                <CardTitle>Mis Datos Personales</CardTitle>
-                <CardDescription>Información de tu cuenta</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Nombre Completo</p>
-                    <p className="font-semibold">{paciente.nombres} {paciente.apellidos}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Documento</p>
-                    <p className="font-semibold">{paciente.documento}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Teléfono</p>
-                    <p className="font-semibold">{paciente.telefono}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-semibold">{paciente.email || 'No registrado'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Dirección</p>
-                    <p className="font-semibold">{'No registrado'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Preferencia de Contacto</p>
-                    <Badge>{paciente.preferenciaContacto}</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="ordenes">
-            <Card>
-              <CardHeader>
-                <CardTitle>Mis Órdenes</CardTitle>
-                <CardDescription>Medicamentos y exámenes comprados</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {ordenes.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No tienes órdenes registradas</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {ordenes.map((orden) => (
-                      <div key={orden.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <p className="font-semibold">Orden #{orden.id.slice(-8)}</p>
-                            <p className="text-sm text-gray-600">
-                              {new Date(orden.fechaCreacion).toLocaleDateString('es-PE')}
-                            </p>
-                          </div>
-                          <Badge>{orden.estado.replace('_', ' ')}</Badge>
-                        </div>
-                        <div className="space-y-1">
-                          {orden.items?.map((item, index) => (
-                            <p key={index} className="text-sm">
-                              {item.nombre} x{item.cantidad} - S/ {item.precio}
-                            </p>
-                          ))}
-                        </div>
-                        <p className="font-semibold mt-2 text-right">Total: S/ {orden.total || orden.precio}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              <HeartPulse className="h-8 w-8 text-red-600" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Gráficos Principales */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Gráfico de Citas por Mes */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Citas por Mes
+            </CardTitle>
+            <CardDescription>
+              Seguimiento de citas programadas vs completadas
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfigCitas} className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={estadisticas.citasPorMes}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="mes" 
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis className="text-muted-foreground" tick={{ fontSize: 12 }} />
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                  <Bar 
+                    dataKey="citas" 
+                    fill="var(--chart-1)" 
+                    radius={[4, 4, 0, 0]}
+                    name="Programadas"
+                  />
+                  <Bar 
+                    dataKey="completadas" 
+                    fill="var(--chart-2)" 
+                    radius={[4, 4, 0, 0]}
+                    name="Completadas"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        {/* Gráfico de Gastos por Mes */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Gastos Médicos
+            </CardTitle>
+            <CardDescription>
+              Evolución de gastos en servicios médicos
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfigGastos} className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={estadisticas.gastosPorMes}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="mes" 
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis className="text-muted-foreground" tick={{ fontSize: 12 }} />
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                  <Bar 
+                    dataKey="gastos" 
+                    fill="var(--chart-3)" 
+                    radius={[4, 4, 0, 0]}
+                    name="Gastos (S/)"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Gráficos Secundarios */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Gráfico de Especialidades Frecuentes */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Stethoscope className="h-5 w-5" />
+              Especialidades Frecuentes
+            </CardTitle>
+            <CardDescription>
+              Distribución de citas por especialidad médica
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{}} className="h-[300px]">
+              <PieResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={estadisticas.especialidadesFrecuentes}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="citas"
+                  >
+                    {estadisticas.especialidadesFrecuentes.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                </PieChart>
+              </PieResponsiveContainer>
+            </ChartContainer>
+            <div className="mt-4 space-y-2">
+              {estadisticas.especialidadesFrecuentes.map((item, index) => (
+                <div key={index} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: item.fill }}
+                    />
+                    <span className="text-foreground">{item.especialidad}</span>
+                  </div>
+                  <span className="text-muted-foreground">{item.citas} citas</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Indicador de Salud General */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HeartPulse className="h-5 w-5" />
+              Indicador de Salud
+            </CardTitle>
+            <CardDescription>
+              Puntuación general de tu salud basada en seguimiento médico
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-center h-[300px]">
+              <ChartContainer config={{}} className="h-[250px] w-[250px]">
+                <RadialBarChart
+                  cx="50%"
+                  cy="50%"
+                  innerRadius="60%"
+                  outerRadius="90%"
+                  barSize={20}
+                  data={[{ value: estadisticas.saludGeneral.puntuacion, fill: 'var(--chart-1)' }]}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  <PolarGrid />
+                  <PolarRadiusAxis 
+                    angle={90} 
+                    domain={[0, 100]} 
+                    tick={false}
+                    axisLine={false}
+                  />
+                  <RadialBar
+                    dataKey="value"
+                    cornerRadius={10}
+                    fill="var(--chart-1)"
+                  />
+                </RadialBarChart>
+              </ChartContainer>
+            </div>
+            <div className="text-center mt-4">
+              <p className="text-3xl font-bold text-foreground">
+                {estadisticas.saludGeneral.puntuacion}/100
+              </p>
+              <p className="text-sm text-muted-foreground">Puntuación de Salud</p>
+              <Badge 
+                className={`mt-2 ${
+                  estadisticas.saludGeneral.puntuacion >= 80 
+                    ? 'bg-green-100 text-green-800' 
+                    : estadisticas.saludGeneral.puntuacion >= 60 
+                    ? 'bg-yellow-100 text-yellow-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {estadisticas.saludGeneral.puntuacion >= 80 
+                  ? 'Excelente' 
+                  : estadisticas.saludGeneral.puntuacion >= 60 
+                  ? 'Buena' 
+                  : 'Necesita Atención'
+                }
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Resumen de Actividad Reciente */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="h-5 w-5" />
+            Resumen de Actividad
+          </CardTitle>
+          <CardDescription>
+            Información detallada de tu actividad médica reciente
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-4">
+              <h4 className="font-semibold text-foreground flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Próximas Citas
+              </h4>
+              <div className="space-y-2">
+                <div className="p-3 bg-accent/50 rounded-lg">
+                  <p className="text-sm font-medium text-foreground">Ginecología</p>
+                  <p className="text-xs text-muted-foreground">15 Dic 2024 - 10:00 AM</p>
+                  <p className="text-xs text-muted-foreground">Dr. Ana Rodríguez</p>
+                </div>
+                <div className="p-3 bg-accent/50 rounded-lg">
+                  <p className="text-sm font-medium text-foreground">Control General</p>
+                  <p className="text-xs text-muted-foreground">22 Dic 2024 - 2:00 PM</p>
+                  <p className="text-xs text-muted-foreground">Dr. Carlos Sánchez</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="font-semibold text-foreground flex items-center gap-2">
+                <Pill className="h-4 w-4" />
+                Medicamentos Activos
+              </h4>
+              <div className="space-y-2">
+                <div className="p-3 bg-accent/50 rounded-lg">
+                  <p className="text-sm font-medium text-foreground">Ácido Fólico</p>
+                  <p className="text-xs text-muted-foreground">1 comprimido diario</p>
+                  <p className="text-xs text-muted-foreground">Hasta: 15 Ene 2025</p>
+                </div>
+                <div className="p-3 bg-accent/50 rounded-lg">
+                  <p className="text-sm font-medium text-foreground">Hierro</p>
+                  <p className="text-xs text-muted-foreground">1 comprimido diario</p>
+                  <p className="text-xs text-muted-foreground">Hasta: 20 Ene 2025</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="font-semibold text-foreground flex items-center gap-2">
+                <FlaskConical className="h-4 w-4" />
+                Exámenes Pendientes
+              </h4>
+              <div className="space-y-2">
+                <div className="p-3 bg-accent/50 rounded-lg">
+                  <p className="text-sm font-medium text-foreground">Hemograma Completo</p>
+                  <p className="text-xs text-muted-foreground">Programado: 18 Dic 2024</p>
+                  <Badge variant="outline" className="text-xs">Pendiente</Badge>
+                </div>
+                <div className="p-3 bg-accent/50 rounded-lg">
+                  <p className="text-sm font-medium text-foreground">Ecografía Obstétrica</p>
+                  <p className="text-xs text-muted-foreground">Programado: 20 Dic 2024</p>
+                  <Badge variant="outline" className="text-xs">Pendiente</Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Acciones Rápidas */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Acciones Rápidas</CardTitle>
+          <CardDescription>
+            Accede rápidamente a las funciones más utilizadas
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Button variant="outline" className="h-20 flex flex-col gap-2">
+              <Calendar className="h-6 w-6" />
+              <span className="text-sm">Agendar Cita</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex flex-col gap-2">
+              <Eye className="h-6 w-6" />
+              <span className="text-sm">Ver Historial</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex flex-col gap-2">
+              <Download className="h-6 w-6" />
+              <span className="text-sm">Descargar Reporte</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex flex-col gap-2">
+              <HeartPulse className="h-6 w-6" />
+              <span className="text-sm">Emergencias</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
