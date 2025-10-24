@@ -125,12 +125,7 @@ export function Cronometro({
         )}
       </div>
 
-      <div className="text-sm text-gray-500 ml-auto">
-        {activo && !pausado && '⏱️ En curso'}
-        {pausado && '⏸️ Pausado'}
-        {!activo && segundos > 0 && '⏹️ Detenido'}
-        {!activo && segundos === 0 && '⏱️ Listo para iniciar'}
-      </div>
+   
     </div>
   );
 }

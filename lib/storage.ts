@@ -256,12 +256,19 @@ export function initializeDefaultData() {
       especialidadesStorage.create({ id: generateId('esp'), nombre: 'Cardiología', descripcion: 'Especialidad del corazón', precioBase: 120, activo: true });
       especialidadesStorage.create({ id: generateId('esp'), nombre: 'Pediatría', descripcion: 'Especialidad de niños', precioBase: 100, activo: true });
       especialidadesStorage.create({ id: generateId('esp'), nombre: 'Dermatología', descripcion: 'Especialidad de la piel', precioBase: 150, activo: true });
+      especialidadesStorage.create({ id: generateId('esp'), nombre: 'Ginecología', descripcion: 'Especialidad de la mujer', precioBase: 130, activo: true });
+      especialidadesStorage.create({ id: generateId('esp'), nombre: 'Medicina General', descripcion: 'Consulta general', precioBase: 80, activo: true });
+      especialidadesStorage.create({ id: generateId('esp'), nombre: 'Neurología', descripcion: 'Especialidad del sistema nervioso', precioBase: 160, activo: true });
     }
 
     // Doctores
     if (doctoresStorage.getAll().length === 0) {
       const cardiologiaId = especialidadesStorage.find(e => e.nombre === 'Cardiología')[0]?.id;
       const pediatriaId = especialidadesStorage.find(e => e.nombre === 'Pediatría')[0]?.id;
+      const dermatologiaId = especialidadesStorage.find(e => e.nombre === 'Dermatología')[0]?.id;
+      const ginecologiaId = especialidadesStorage.find(e => e.nombre === 'Ginecología')[0]?.id;
+      const medicinaGeneralId = especialidadesStorage.find(e => e.nombre === 'Medicina General')[0]?.id;
+      const neurologiaId = especialidadesStorage.find(e => e.nombre === 'Neurología')[0]?.id;
 
       doctoresStorage.create({
         id: generateId('doc'),
@@ -270,16 +277,52 @@ export function initializeDefaultData() {
         especialidadId: cardiologiaId,
         telefono: '987654321',
         email: 'dr.sanchez@clinic.com',
-      activo: true,
+        activo: true,
       });
       doctoresStorage.create({
-    id: generateId('doc'),
+        id: generateId('doc'),
         nombres: 'Maria',
         apellidos: 'Gomez',
         especialidadId: pediatriaId,
         telefono: '912345678',
         email: 'dr.gomez@clinic.com',
-    activo: true,
+        activo: true,
+      });
+      doctoresStorage.create({
+        id: generateId('doc'),
+        nombres: 'Carlos',
+        apellidos: 'Rodriguez',
+        especialidadId: dermatologiaId,
+        telefono: '923456789',
+        email: 'dr.rodriguez@clinic.com',
+        activo: true,
+      });
+      doctoresStorage.create({
+        id: generateId('doc'),
+        nombres: 'Ana',
+        apellidos: 'Martinez',
+        especialidadId: ginecologiaId,
+        telefono: '934567890',
+        email: 'dr.martinez@clinic.com',
+        activo: true,
+      });
+      doctoresStorage.create({
+        id: generateId('doc'),
+        nombres: 'Pedro',
+        apellidos: 'Lopez',
+        especialidadId: medicinaGeneralId,
+        telefono: '945678901',
+        email: 'dr.lopez@clinic.com',
+        activo: true,
+      });
+      doctoresStorage.create({
+        id: generateId('doc'),
+        nombres: 'Elena',
+        apellidos: 'Fernandez',
+        especialidadId: neurologiaId,
+        telefono: '956789012',
+        email: 'dr.fernandez@clinic.com',
+        activo: true,
       });
     }
 
@@ -288,22 +331,204 @@ export function initializeDefaultData() {
       const jperezUser = usuariosStorage.findOne(u => u.username === 'jperez');
       if (jperezUser) {
         pacientesStorage.create({
-    id: generateId('pac'),
+          id: generateId('pac'),
           usuarioId: jperezUser.id,
-    nombres: 'Juan',
+          nombres: 'Juan',
           apellidos: 'Perez',
           documento: '12345678',
           telefono: '999888777',
           email: 'jperez@clinic.com',
-    preferenciaContacto: 'whatsapp',
+          preferenciaContacto: 'whatsapp',
           fechaRegistro: new Date().toISOString(),
-    activo: true,
+          activo: true,
         });
       }
+
+      // Crear usuarios adicionales para pacientes
+      const usuariosPacientes = [
+        { username: 'mgarcia', password: 'mgarcia123', email: 'mgarcia@email.com', telefono: '987654321' },
+        { username: 'clopez', password: 'clopez123', email: 'clopez@email.com', telefono: '912345678' },
+        { username: 'arodriguez', password: 'arodriguez123', email: 'arodriguez@email.com', telefono: '923456789' },
+        { username: 'pfernandez', password: 'pfernandez123', email: 'pfernandez@email.com', telefono: '934567890' },
+        { username: 'amartinez', password: 'amartinez123', email: 'amartinez@email.com', telefono: '945678901' },
+        { username: 'jgonzalez', password: 'jgonzalez123', email: 'jgonzalez@email.com', telefono: '956789012' },
+        { username: 'lhernandez', password: 'lhernandez123', email: 'lhernandez@email.com', telefono: '967890123' },
+        { username: 'cramirez', password: 'cramirez123', email: 'cramirez@email.com', telefono: '978901234' }
+      ];
+
+      const pacientesData = [
+        { nombres: 'María', apellidos: 'García', documento: '23456789', preferenciaContacto: 'whatsapp' as const },
+        { nombres: 'Carlos', apellidos: 'López', documento: '34567890', preferenciaContacto: 'email' as const },
+        { nombres: 'Ana', apellidos: 'Rodríguez', documento: '45678901', preferenciaContacto: 'telefono' as const },
+        { nombres: 'Pedro', apellidos: 'Fernández', documento: '56789012', preferenciaContacto: 'whatsapp' as const },
+        { nombres: 'Andrea', apellidos: 'Martínez', documento: '67890123', preferenciaContacto: 'email' as const },
+        { nombres: 'José', apellidos: 'González', documento: '78901234', preferenciaContacto: 'whatsapp' as const },
+        { nombres: 'Laura', apellidos: 'Hernández', documento: '89012345', preferenciaContacto: 'telefono' as const },
+        { nombres: 'Carmen', apellidos: 'Ramírez', documento: '90123456', preferenciaContacto: 'whatsapp' as const }
+      ];
+
+      usuariosPacientes.forEach((usuario, index) => {
+        const nuevoUsuario = usuariosStorage.create({
+          id: generateId('user'),
+          username: usuario.username,
+          password: usuario.password,
+          rol: 'paciente',
+          email: usuario.email,
+          telefono: usuario.telefono,
+          activo: true,
+          fechaCreacion: new Date().toISOString(),
+        });
+
+        pacientesStorage.create({
+          id: generateId('pac'),
+          usuarioId: nuevoUsuario.id,
+          nombres: pacientesData[index].nombres,
+          apellidos: pacientesData[index].apellidos,
+          documento: pacientesData[index].documento,
+          telefono: usuario.telefono,
+          email: usuario.email,
+          preferenciaContacto: pacientesData[index].preferenciaContacto,
+          fechaRegistro: new Date().toISOString(),
+          activo: true,
+        });
+      });
+    }
+
+    // Leads
+    if (leadsStorage.getAll().length === 0) {
+      const leadsData = [
+        { nombre: 'Sofia Mendoza', telefono: '987654321', email: 'sofia.mendoza@email.com', canal: 'whatsapp' as const, motivo: 'Consulta por dolor de cabeza frecuente', estado: 'nuevo' as const },
+        { nombre: 'Roberto Silva', telefono: '912345678', email: 'roberto.silva@email.com', canal: 'web' as const, motivo: 'Interesado en consulta de cardiología', estado: 'contactado' as const },
+        { nombre: 'Elena Vargas', telefono: '923456789', email: 'elena.vargas@email.com', canal: 'telefono' as const, motivo: 'Consulta pediátrica para su hijo', estado: 'cotizado' as const },
+        { nombre: 'Miguel Torres', telefono: '934567890', email: 'miguel.torres@email.com', canal: 'presencial' as const, motivo: 'Revisión dermatológica', estado: 'convertido' as const },
+        { nombre: 'Isabel Morales', telefono: '945678901', email: 'isabel.morales@email.com', canal: 'whatsapp' as const, motivo: 'Consulta ginecológica', estado: 'nuevo' as const },
+        { nombre: 'Fernando Castro', telefono: '956789012', email: 'fernando.castro@email.com', canal: 'web' as const, motivo: 'Consulta general', estado: 'contactado' as const },
+        { nombre: 'Patricia Ruiz', telefono: '967890123', email: 'patricia.ruiz@email.com', canal: 'telefono' as const, motivo: 'Consulta para su madre', estado: 'nuevo' as const },
+        { nombre: 'Diego Herrera', telefono: '978901234', email: 'diego.herrera@email.com', canal: 'whatsapp' as const, motivo: 'Consulta de seguimiento', estado: 'cotizado' as const }
+      ];
+
+      leadsData.forEach(lead => {
+        leadsStorage.create({
+          id: generateId('lead'),
+          nombre: lead.nombre,
+          telefono: lead.telefono,
+          email: lead.email,
+          canal: lead.canal,
+          motivo: lead.motivo,
+          estado: lead.estado,
+          fechaCreacion: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(), // Últimos 7 días
+          creadoPor: 'recepcion',
+        });
+      });
+    }
+
+    // Cotizaciones
+    if (cotizacionesStorage.getAll().length === 0) {
+      const especialidades = especialidadesStorage.getAll();
+      const doctores = doctoresStorage.getAll();
+      const leads = leadsStorage.getAll();
+
+      const cotizacionesData = [
+        { leadId: leads[0]?.id, especialidadId: especialidades[0]?.id, doctorId: doctores[0]?.id, precio: 120, estado: 'enviada' as const, fechaPropuesta: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], horaPropuesta: '10:00' },
+        { leadId: leads[1]?.id, especialidadId: especialidades[1]?.id, doctorId: doctores[1]?.id, precio: 100, estado: 'aceptada' as const, fechaPropuesta: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], horaPropuesta: '14:30' },
+        { leadId: leads[2]?.id, especialidadId: especialidades[0]?.id, doctorId: doctores[0]?.id, precio: 120, estado: 'rechazada' as const, fechaPropuesta: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], horaPropuesta: '16:00' },
+        { leadId: leads[3]?.id, especialidadId: especialidades[2]?.id, doctorId: doctores[0]?.id, precio: 150, estado: 'expirada' as const, fechaPropuesta: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], horaPropuesta: '11:30' },
+        { leadId: leads[4]?.id, especialidadId: especialidades[1]?.id, doctorId: doctores[1]?.id, precio: 100, estado: 'enviada' as const, fechaPropuesta: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], horaPropuesta: '09:00' }
+      ];
+
+      cotizacionesData.forEach(cot => {
+        if (cot.leadId && cot.especialidadId && cot.doctorId) {
+          const fechaCaducidad = new Date();
+          fechaCaducidad.setDate(fechaCaducidad.getDate() + 7);
+          
+          cotizacionesStorage.create({
+            id: generateId('cot'),
+            leadId: cot.leadId,
+            especialidadId: cot.especialidadId,
+            doctorId: cot.doctorId,
+            fechaPropuesta: cot.fechaPropuesta,
+            horaPropuesta: cot.horaPropuesta,
+            precio: cot.precio,
+            estado: cot.estado,
+            comentarios: 'Cotización generada automáticamente',
+            fechaCaducidad: fechaCaducidad.toISOString(),
+            fechaCreacion: new Date().toISOString(),
+            creadoPor: 'recepcion',
+            fechaEnvio: new Date().toISOString(),
+          });
+        }
+      });
+    }
+
+    // Citas del día
+    if (citasStorage.getAll().length === 0) {
+      const pacientes = pacientesStorage.getAll();
+      const especialidades = especialidadesStorage.getAll();
+      const doctores = doctoresStorage.getAll();
+      const hoy = new Date().toISOString().split('T')[0];
+
+      const citasData = [
+        { pacienteId: pacientes[0]?.id, especialidadId: especialidades[0]?.id, doctorId: doctores[0]?.id, horaInicio: '09:00', duracionMinutos: 30, precio: 120, estado: 'programada' as const, estadoPago: 'pendiente' as const },
+        { pacienteId: pacientes[1]?.id, especialidadId: especialidades[1]?.id, doctorId: doctores[1]?.id, horaInicio: '09:30', duracionMinutos: 30, precio: 100, estado: 'en_curso' as const, estadoPago: 'pagado' as const },
+        { pacienteId: pacientes[2]?.id, especialidadId: especialidades[0]?.id, doctorId: doctores[0]?.id, horaInicio: '10:00', duracionMinutos: 30, precio: 120, estado: 'atendida' as const, estadoPago: 'pagado' as const },
+        { pacienteId: pacientes[3]?.id, especialidadId: especialidades[2]?.id, doctorId: doctores[0]?.id, horaInicio: '10:30', duracionMinutos: 30, precio: 150, estado: 'programada' as const, estadoPago: 'pendiente' as const },
+        { pacienteId: pacientes[4]?.id, especialidadId: especialidades[1]?.id, doctorId: doctores[1]?.id, horaInicio: '11:00', duracionMinutos: 30, precio: 100, estado: 'programada' as const, estadoPago: 'pendiente' as const },
+        { pacienteId: pacientes[5]?.id, especialidadId: especialidades[0]?.id, doctorId: doctores[0]?.id, horaInicio: '11:30', duracionMinutos: 30, precio: 120, estado: 'cancelada' as const, estadoPago: 'pendiente' as const },
+        { pacienteId: pacientes[6]?.id, especialidadId: especialidades[1]?.id, doctorId: doctores[1]?.id, horaInicio: '14:00', duracionMinutos: 30, precio: 100, estado: 'programada' as const, estadoPago: 'pagado' as const },
+        { pacienteId: pacientes[7]?.id, especialidadId: especialidades[2]?.id, doctorId: doctores[0]?.id, horaInicio: '14:30', duracionMinutos: 30, precio: 150, estado: 'programada' as const, estadoPago: 'pendiente' as const }
+      ];
+
+      citasData.forEach(cita => {
+        if (cita.pacienteId && cita.especialidadId && cita.doctorId) {
+          const [h, m] = cita.horaInicio.split(':').map(Number);
+          const fechaFin = new Date();
+          fechaFin.setHours(h, m + cita.duracionMinutos);
+          const horaFin = fechaFin.toTimeString().slice(0, 5);
+
+          citasStorage.create({
+            id: generateId('cita'),
+            pacienteId: cita.pacienteId,
+            doctorId: cita.doctorId,
+            especialidadId: cita.especialidadId,
+            fecha: hoy,
+            horaInicio: cita.horaInicio,
+            horaFin: horaFin,
+            duracionMinutos: cita.duracionMinutos,
+            estado: cita.estado,
+            precio: cita.precio,
+            estadoPago: cita.estadoPago,
+            motivo: 'Consulta médica general',
+            fechaCreacion: new Date().toISOString(),
+            creadoPor: 'recepcion',
+            ...(cita.estado === 'en_curso' && { horaInicioReal: new Date().toISOString() }),
+            ...(cita.estado === 'atendida' && { 
+              horaInicioReal: new Date().toISOString(),
+              horaFinReal: new Date().toISOString(),
+              duracionReal: cita.duracionMinutos
+            })
+          });
+        }
+      });
     }
 
     localStorage.setItem('defaultDataInitialized', 'true');
   }
+}
+
+// Función para forzar la reinicialización de datos de mock
+export function forceInitializeMockData() {
+  // Limpiar datos existentes
+  localStorage.removeItem('defaultDataInitialized');
+  localStorage.removeItem('leads');
+  localStorage.removeItem('cotizaciones');
+  localStorage.removeItem('citas');
+  localStorage.removeItem('pacientes');
+  localStorage.removeItem('usuarios');
+  localStorage.removeItem('doctores');
+  localStorage.removeItem('especialidades');
+  
+  // Reinicializar
+  initializeDefaultData();
 }
 
 // ============================================

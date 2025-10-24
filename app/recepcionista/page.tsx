@@ -15,11 +15,11 @@ import { getSession, generarUsername, generarPasswordTemporal } from '@/lib/auth
 import { 
   leadsStorage, cotizacionesStorage, citasStorage, pacientesStorage, 
   usuariosStorage, doctoresStorage, especialidadesStorage, consultoriosStorage,
-  generateId, getCurrentTimestamp, logAuditoria
+  generateId, getCurrentTimestamp, logAuditoria, forceInitializeMockData
 } from '@/lib/storage';
 import { validarDoubleBooking, validarDisponibilidadDoctor, calcularDuracionMinutos } from '@/lib/validations';
 import { Lead, Cotizacion, Cita, Paciente, Usuario } from '@/lib/types';
-import { Users, FileText, Calendar, Plus, Clock, Activity } from 'lucide-react';
+import { Users, FileText, Calendar, Plus, Clock, Activity, RefreshCw } from 'lucide-react';
 
 export default function RecepcionistaPage() {
   const [activeTab, setActiveTab] = useState('citas');
@@ -281,7 +281,6 @@ export default function RecepcionistaPage() {
     if (sessionUser) {
       logAuditoria(sessionUser.userId, sessionUser.username, 'Detener cronómetro', 'Cita', citaId, undefined, { horaFinReal: horaFin, duracionReal: duracionMinutos });
     }
-    alert(`⏱️ Cita finalizada. Duración: ${duracionMinutos} minutos`);
     cargarDatos();
   };
 
@@ -361,10 +360,8 @@ export default function RecepcionistaPage() {
           <p className="text-muted-foreground">Gestión de pacientes, cotizaciones y citas</p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-primary border-primary">
-            <Activity className="h-3 w-3 mr-1" />
-            Sistema operativo
-          </Badge>
+          
+      
         </div>
       </div>
 
@@ -404,7 +401,7 @@ export default function RecepcionistaPage() {
               </CardHeader>
               <CardContent>
                 {showNuevoLead && (
-                  <form onSubmit={(e) => { e.preventDefault(); crearNuevoLead(new FormData(e.currentTarget)); }} className="mb-6 p-6 border border-border rounded-lg space-y-4 bg-card">
+                  <form onSubmit={(e) => { e.preventDefault(); crearNuevoLead(new FormData(e.currentTarget)); }} className="mb-8 p-6 border border-border rounded-lg space-y-4 bg-card relative z-10">
                     <h3 className="font-semibold text-foreground">Crear Nuevo Lead</h3>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
@@ -425,7 +422,7 @@ export default function RecepcionistaPage() {
                           <SelectTrigger>
                             <SelectValue placeholder="Seleccionar canal" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="z-50">
                             <SelectItem value="whatsapp">WhatsApp</SelectItem>
                             <SelectItem value="web">Web</SelectItem>
                             <SelectItem value="telefono">Teléfono</SelectItem>
@@ -482,7 +479,7 @@ export default function RecepcionistaPage() {
               </CardHeader>
               <CardContent>
                 {showNuevaCita && (
-                  <form onSubmit={(e) => { e.preventDefault(); crearNuevaCita(new FormData(e.currentTarget)); }} className="mb-6 p-6 border border-border rounded-lg space-y-4 bg-accent/50">
+                  <form onSubmit={(e) => { e.preventDefault(); crearNuevaCita(new FormData(e.currentTarget)); }} className="mb-8 p-6 border border-border rounded-lg space-y-4 bg-accent/50 relative z-10">
                     <h3 className="font-semibold text-foreground">Crear Nueva Cita</h3>
                     <div className="grid md:grid-cols-3 gap-4">
                       <div>
@@ -491,7 +488,7 @@ export default function RecepcionistaPage() {
                           <SelectTrigger>
                             <SelectValue placeholder="Seleccionar paciente" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="z-50">
                             {pacientes.map(p => (
                               <SelectItem key={p.id} value={p.id}>{p.nombres} {p.apellidos}</SelectItem>
                             ))}
@@ -504,7 +501,7 @@ export default function RecepcionistaPage() {
                           <SelectTrigger>
                             <SelectValue placeholder="Seleccionar especialidad" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="z-50">
                             {especialidades.map(e => (
                               <SelectItem key={e.id} value={e.id}>{e.nombre} - S/{e.precioBase}</SelectItem>
                             ))}
@@ -517,7 +514,7 @@ export default function RecepcionistaPage() {
                           <SelectTrigger>
                             <SelectValue placeholder="Seleccionar doctor" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="z-50">
                             {doctores.map(d => (
                               <SelectItem key={d.id} value={d.id}>Dr. {d.nombres} {d.apellidos}</SelectItem>
                             ))}
@@ -570,7 +567,7 @@ export default function RecepcionistaPage() {
               </CardHeader>
               <CardContent>
                 {showNuevoPaciente && (
-                  <form onSubmit={(e) => { e.preventDefault(); crearNuevoPaciente(new FormData(e.currentTarget)); }} className="mb-6 p-6 border border-border rounded-lg space-y-4 bg-success/10">
+                  <form onSubmit={(e) => { e.preventDefault(); crearNuevoPaciente(new FormData(e.currentTarget)); }} className="mb-8 p-6 border border-border rounded-lg space-y-4 bg-success/10 relative z-10">
                     <h3 className="font-semibold text-foreground">Crear Nuevo Paciente</h3>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>

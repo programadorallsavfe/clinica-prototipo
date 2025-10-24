@@ -50,11 +50,7 @@ export function RecepcionistaSidebar({ recepcionistaNombre, isCollapsed, onToggl
       },
     ],
     navOperaciones: [
-      {
-        title: "Pagos",
-        onClick: () => router.push("/recepcionista/pagos"),
-        icon: CreditCard,
-      },
+      
       {
         title: "Órdenes",
         onClick: () => router.push("/recepcionista/ordenes"),
