@@ -16,7 +16,7 @@ const login = (username: string, password: string) => {
     'recepcion': { password: 'recep123', rol: 'recepcionista' },
     'dr.sanchez': { password: 'doctor123', rol: 'medico' },
     'jperez': { password: 'paciente123', rol: 'paciente' },
-    'farmacia': { password: 'farma123', rol: 'farmacia' }
+   
   };
 
   const usuario = usuarios[username as keyof typeof usuarios];
@@ -65,7 +65,6 @@ const getRutaPorRol = (rol: string) => {
     'recepcionista': '/recepcionista',
     'medico': '/medico',
     'paciente': '/paciente',
-    'farmacia': '/farmacia'
   };
   return rutas[rol as keyof typeof rutas] || '/auth';
 };
@@ -259,10 +258,7 @@ export default function AuthPage() {
                       <span className="text-muted-foreground">Paciente:</span>
                       <span className="font-mono text-foreground">jperez / paciente123</span>
                     </li>
-                    <li className="flex justify-between items-center py-1">
-                      <span className="text-muted-foreground">Farmacia:</span>
-                      <span className="font-mono text-foreground">farmacia / farma123</span>
-                    </li>
+                    
                   </ul>
                 </div>
               </form>
