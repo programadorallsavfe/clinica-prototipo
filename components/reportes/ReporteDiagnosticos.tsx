@@ -24,6 +24,29 @@ interface ReporteDiagnosticosProps {
   periodo: 'dia' | 'mes' | 'año';
 }
 
+// Tipos para los datos de diagnósticos
+interface DiagnosticoBase {
+  embarazo: number;
+  hipertension: number;
+  diabetes: number;
+  infeccion: number;
+  otros: number;
+}
+
+interface DiagnosticoDia extends DiagnosticoBase {
+  fecha: string;
+}
+
+interface DiagnosticoMes extends DiagnosticoBase {
+  mes: string;
+}
+
+interface DiagnosticoAño extends DiagnosticoBase {
+  año: string;
+}
+
+type DiagnosticoItem = DiagnosticoDia | DiagnosticoMes | DiagnosticoAño;
+
 export default function ReporteDiagnosticos({ periodo = 'mes' }: ReporteDiagnosticosProps) {
   
   // Mock data para reportes de diagnósticos
@@ -54,6 +77,20 @@ export default function ReporteDiagnosticos({ periodo = 'mes' }: ReporteDiagnost
   };
 
   const dataActual = diagnosticosData[periodo];
+
+  // Función helper para obtener el valor de fecha/mes/año de manera type-safe
+  const getPeriodoValue = (item: DiagnosticoItem, periodo: 'dia' | 'mes' | 'año'): string => {
+    switch (periodo) {
+      case 'dia':
+        return (item as DiagnosticoDia).fecha;
+      case 'mes':
+        return (item as DiagnosticoMes).mes;
+      case 'año':
+        return (item as DiagnosticoAño).año;
+      default:
+        return '';
+    }
+  };
 
   const getTotalPeriodo = () => {
     return dataActual.reduce((sum, item) => 
@@ -265,7 +302,7 @@ export default function ReporteDiagnosticos({ periodo = 'mes' }: ReporteDiagnost
                   return (
                     <tr key={index} className="border-b hover:bg-muted/50">
                       <td className="p-3 font-medium">
-                        {periodo === 'dia' ? (item as any).fecha : periodo === 'mes' ? (item as any).mes : (item as any).año}
+                        {getPeriodoValue(item, periodo)}
                       </td>
                       <td className="text-right p-3">
                         <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
