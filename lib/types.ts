@@ -259,3 +259,33 @@ export interface SistemaPago {
   fechaProcesamiento?: string
   referencia?: string
 }
+
+// TIPOS PARA VENTAS AUXILIARES
+export interface Producto {
+  id: string
+  nombre: string
+  descripcion?: string
+  tipo: 'medicamento' | 'examen' | 'insumo'
+  precioVenta: number
+  precioCompra?: number
+  stock?: number
+  stockMinimo?: number
+  activo: boolean
+  fechaCreacion: string
+  creadoPor: string
+}
+
+export interface VentaAuxiliar {
+  id: string
+  pacienteId: string
+  productoId: string
+  cantidad: number
+  precioUnitario: number
+  descuento: number
+  total: number
+  estado: 'pendiente' | 'confirmada' | 'entregada' | 'cancelada'
+  tipo: 'medicamento' | 'examen' | 'insumo'
+  observaciones?: string
+  fechaCreacion: string
+  creadoPor: string
+}

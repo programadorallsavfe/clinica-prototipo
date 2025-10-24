@@ -206,6 +206,12 @@ export const registrosClinicosStorage = new StorageManager<RegistroClinico>('reg
 export const pagosStorage = new StorageManager<Pago>('pagos')
 export const ordenesStorage = new StorageManager<Orden>('ordenes')
 
+// Importar tipos para ventas auxiliares
+import { VentaAuxiliar, Producto } from './types'
+
+export const ventasAuxiliaresStorage = new StorageManager<VentaAuxiliar>('ventas_auxiliares')
+export const productosStorage = new StorageManager<Producto>('productos')
+
 export function generateId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 }
@@ -508,6 +514,38 @@ export function initializeDefaultData() {
             })
           });
         }
+      });
+    }
+
+    // Productos para ventas auxiliares
+    if (productosStorage.getAll().length === 0) {
+      const productosData = [
+        { nombre: 'Paracetamol 500mg', descripcion: 'Analgésico y antipirético', tipo: 'medicamento' as const, precioVenta: 2.50, precioCompra: 1.80, stock: 100, stockMinimo: 20 },
+        { nombre: 'Ibuprofeno 400mg', descripcion: 'Antiinflamatorio no esteroideo', tipo: 'medicamento' as const, precioVenta: 3.20, precioCompra: 2.40, stock: 80, stockMinimo: 15 },
+        { nombre: 'Amoxicilina 500mg', descripcion: 'Antibiótico de amplio espectro', tipo: 'medicamento' as const, precioVenta: 8.50, precioCompra: 6.20, stock: 50, stockMinimo: 10 },
+        { nombre: 'Hemograma Completo', descripcion: 'Análisis de sangre completo', tipo: 'examen' as const, precioVenta: 25.00, precioCompra: 15.00, stock: 999, stockMinimo: 0 },
+        { nombre: 'Glicemia en Ayunas', descripcion: 'Medición de glucosa en sangre', tipo: 'examen' as const, precioVenta: 12.00, precioCompra: 8.00, stock: 999, stockMinimo: 0 },
+        { nombre: 'Perfil Lipídico', descripcion: 'Análisis de colesterol y triglicéridos', tipo: 'examen' as const, precioVenta: 35.00, precioCompra: 22.00, stock: 999, stockMinimo: 0 },
+        { nombre: 'Jeringa 5ml', descripcion: 'Jeringa estéril de 5 mililitros', tipo: 'insumo' as const, precioVenta: 1.50, precioCompra: 0.80, stock: 200, stockMinimo: 50 },
+        { nombre: 'Algodón Estéril', descripcion: 'Algodón estéril para curaciones', tipo: 'insumo' as const, precioVenta: 3.00, precioCompra: 2.00, stock: 150, stockMinimo: 30 },
+        { nombre: 'Gasas Estériles', descripcion: 'Gasas estériles 10x10cm', tipo: 'insumo' as const, precioVenta: 2.80, precioCompra: 1.90, stock: 100, stockMinimo: 25 },
+        { nombre: 'Aspirina 100mg', descripcion: 'Antiagregante plaquetario', tipo: 'medicamento' as const, precioVenta: 1.80, precioCompra: 1.20, stock: 120, stockMinimo: 20 }
+      ];
+
+      productosData.forEach(producto => {
+        productosStorage.create({
+          id: generateId('prod'),
+          nombre: producto.nombre,
+          descripcion: producto.descripcion,
+          tipo: producto.tipo,
+          precioVenta: producto.precioVenta,
+          precioCompra: producto.precioCompra,
+          stock: producto.stock,
+          stockMinimo: producto.stockMinimo,
+          activo: true,
+          fechaCreacion: new Date().toISOString(),
+          creadoPor: 'admin'
+        });
       });
     }
 
