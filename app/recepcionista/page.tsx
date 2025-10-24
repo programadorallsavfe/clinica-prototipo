@@ -19,7 +19,7 @@ import {
 } from '@/lib/storage';
 import { validarDoubleBooking, validarDisponibilidadDoctor, calcularDuracionMinutos } from '@/lib/validations';
 import { Lead, Cotizacion, Cita, Paciente, Usuario } from '@/lib/types';
-import { Users, FileText, Calendar, Plus, Clock } from 'lucide-react';
+import { Users, FileText, Calendar, Plus, Clock, Activity } from 'lucide-react';
 
 export default function RecepcionistaPage() {
   const [activeTab, setActiveTab] = useState('citas');
@@ -355,9 +355,17 @@ export default function RecepcionistaPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Recepción</h1>
-        <p className="text-gray-600">Gestión de pacientes, cotizaciones y citas</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Recepción</h1>
+          <p className="text-muted-foreground">Gestión de pacientes, cotizaciones y citas</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-primary border-primary">
+            <Activity className="h-3 w-3 mr-1" />
+            Sistema operativo
+          </Badge>
+        </div>
       </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -396,8 +404,8 @@ export default function RecepcionistaPage() {
               </CardHeader>
               <CardContent>
                 {showNuevoLead && (
-                  <form onSubmit={(e) => { e.preventDefault(); crearNuevoLead(new FormData(e.currentTarget)); }} className="mb-6 p-4 border rounded-lg space-y-4">
-                    <h3 className="font-semibold">Crear Nuevo Lead</h3>
+                  <form onSubmit={(e) => { e.preventDefault(); crearNuevoLead(new FormData(e.currentTarget)); }} className="mb-6 p-6 border border-border rounded-lg space-y-4 bg-card">
+                    <h3 className="font-semibold text-foreground">Crear Nuevo Lead</h3>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <Label>Nombre</Label>
@@ -474,8 +482,8 @@ export default function RecepcionistaPage() {
               </CardHeader>
               <CardContent>
                 {showNuevaCita && (
-                  <form onSubmit={(e) => { e.preventDefault(); crearNuevaCita(new FormData(e.currentTarget)); }} className="mb-6 p-4 border rounded-lg space-y-4 bg-blue-50">
-                    <h3 className="font-semibold">Crear Nueva Cita</h3>
+                  <form onSubmit={(e) => { e.preventDefault(); crearNuevaCita(new FormData(e.currentTarget)); }} className="mb-6 p-6 border border-border rounded-lg space-y-4 bg-accent/50">
+                    <h3 className="font-semibold text-foreground">Crear Nueva Cita</h3>
                     <div className="grid md:grid-cols-3 gap-4">
                       <div>
                         <Label>Paciente</Label>
@@ -562,8 +570,8 @@ export default function RecepcionistaPage() {
               </CardHeader>
               <CardContent>
                 {showNuevoPaciente && (
-                  <form onSubmit={(e) => { e.preventDefault(); crearNuevoPaciente(new FormData(e.currentTarget)); }} className="mb-6 p-4 border rounded-lg space-y-4 bg-green-50">
-                    <h3 className="font-semibold">Crear Nuevo Paciente</h3>
+                  <form onSubmit={(e) => { e.preventDefault(); crearNuevoPaciente(new FormData(e.currentTarget)); }} className="mb-6 p-6 border border-border rounded-lg space-y-4 bg-success/10">
+                    <h3 className="font-semibold text-foreground">Crear Nuevo Paciente</h3>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <Label>Nombres</Label>

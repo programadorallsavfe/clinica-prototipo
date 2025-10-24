@@ -18,8 +18,8 @@ export default function Home() {
       }
     }
     
-    // Si no está autenticado, redirigir a login
-    router.push('/auth');
+    // Si no está autenticado, redirigir a landing page
+    router.push('/landing');
   }, [router]);
 
   return (

@@ -6,7 +6,7 @@ import { RecepcionistaSidebar } from '@/components/recepcionista-sidebar';
 import { ModeToggle } from '@/components/mode-toggle';
 import { isAuthenticated, getSession } from '@/lib/auth';
 import { usuariosStorage } from '@/lib/storage';
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { Menu } from 'lucide-react';
 
 export default function RecepcionistaLayout({
   children,
@@ -16,6 +16,7 @@ export default function RecepcionistaLayout({
   const router = useRouter();
   const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -47,24 +48,41 @@ export default function RecepcionistaLayout({
   }
 
   return (
-    <SidebarProvider>
-      <RecepcionistaSidebar recepcionistaNombre={userName} />
-      <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
+    <div className="flex h-screen bg-background">
+      <RecepcionistaSidebar 
+        recepcionistaNombre={userName} 
+        isCollapsed={isCollapsed}
+        onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+      />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4 bg-card">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-muted transition-colors"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
+          
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">Sistema de Clínica</span>
             <span>/</span>
             <span>Recepción</span>
           </div>
+          
           <div className="ml-auto">
             <ModeToggle />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          {children}
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto">
+          <div className="p-6">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }

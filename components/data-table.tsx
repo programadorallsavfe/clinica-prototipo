@@ -74,20 +74,20 @@ export function DataTable<T extends Record<string, unknown>>({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
+      <div className="rounded-md border border-border">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-muted/50">
             <tr>
               {columnas.map((columna) => (
                 <th
                   key={columna.key}
                   style={{ width: columna.width }}
-                  className="px-4 py-3 text-left text-sm font-medium text-gray-700"
+                  className="px-4 py-3 text-left text-sm font-medium text-muted-foreground"
                 >
                   {columna.sortable ? (
                     <button
                       onClick={() => handleOrdenar(columna.key)}
-                      className="flex items-center gap-2 hover:text-gray-900"
+                      className="flex items-center gap-2 hover:text-foreground transition-colors"
                     >
                       {columna.titulo}
                       <ArrowUpDown className="h-4 w-4" />
@@ -99,12 +99,12 @@ export function DataTable<T extends Record<string, unknown>>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-border">
             {datosPagina.length === 0 ? (
               <tr>
                 <td
                   colSpan={columnas.length}
-                  className="px-4 py-8 text-center text-gray-500"
+                  className="px-4 py-8 text-center text-muted-foreground"
                 >
                   No hay datos para mostrar
                 </td>
@@ -114,10 +114,10 @@ export function DataTable<T extends Record<string, unknown>>({
                 <tr
                   key={keyExtractor ? keyExtractor(item) : index}
                   onClick={() => onRowClick?.(item)}
-                  className={onRowClick ? 'cursor-pointer hover:bg-gray-50' : ''}
+                  className={onRowClick ? 'cursor-pointer hover:bg-muted/50 transition-colors' : ''}
                 >
                   {columnas.map((columna) => (
-                    <td key={columna.key} className="px-4 py-3 text-sm">
+                    <td key={columna.key} className="px-4 py-3 text-sm text-foreground">
                       {columna.render
                         ? columna.render(item)
                         : String(item[columna.key])}
@@ -133,7 +133,7 @@ export function DataTable<T extends Record<string, unknown>>({
       {/* Paginación */}
       {totalPaginas > 1 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-700">
+          <div className="text-sm text-muted-foreground">
             Mostrando {inicio + 1} - {Math.min(fin, data.length)} de {data.length} resultados
           </div>
 
