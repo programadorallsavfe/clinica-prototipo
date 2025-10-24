@@ -8,12 +8,12 @@ declare module 'react-big-calendar' {
     title: string;
     start: Date;
     end: Date;
-    resource?: any;
+    resource?: unknown;
     allDay?: boolean;
   }
 
   export interface CalendarProps<TEvent = Event, TResource = object> {
-    localizer: any;
+    localizer: unknown;
     events: TEvent[];
     startAccessor: string;
     endAccessor: string;
@@ -22,22 +22,22 @@ declare module 'react-big-calendar' {
     date?: Date;
     onNavigate?: (date: Date) => void;
     onSelectEvent?: (event: TEvent) => void;
-    onSelectSlot?: (slotInfo: any) => void;
+    onSelectSlot?: (slotInfo: unknown) => void;
     selectable?: boolean;
-    eventPropGetter?: (event: TEvent) => any;
+    eventPropGetter?: (event: TEvent) => unknown;
     components?: {
       event?: React.ComponentType<{ event: TEvent }>;
-      [key: string]: any;
+      [key: string]: unknown;
     };
     messages?: {
       [key: string]: string | ((total: number) => string);
     };
     step?: number;
     timeslots?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export class Calendar<TEvent = Event, TResource = object> extends Component<CalendarProps<TEvent, TResource>> {}
 
-  export function momentLocalizer(moment: any): any;
+  export function momentLocalizer(moment: unknown): unknown;
 }

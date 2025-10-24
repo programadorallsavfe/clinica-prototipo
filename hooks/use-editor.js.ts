@@ -16,7 +16,7 @@ interface UseEditorProps {
   initialData?: OutputData;
   readOnly?: boolean;
   placeholder?: string;
-  onChange?: (api: API, event: any) => void;
+  onChange?: (api: API, event: unknown) => void;
   onReady?: () => void;
 }
 
@@ -45,16 +45,16 @@ export const useEditor = ({
       readOnly,
       data: initialData || undefined,
       tools: {
-        header: Header,
+        header: Header as any,
         list: {
-          class: List,
+          class: List as any,
           inlineToolbar: true,
           config: {
             defaultStyle: 'unordered'
           }
         },
         table: {
-          class: Table,
+          class: Table as any,
           inlineToolbar: true,
           config: {
             rows: 2,
@@ -63,20 +63,20 @@ export const useEditor = ({
           }
         },
         checklist: {
-          class: Checklist,
+          class: Checklist as any,
           inlineToolbar: true,
         },
         quote: {
-          class: Quote,
+          class: Quote as any,
           inlineToolbar: true,
           config: {
             quotePlaceholder: 'Escriba una cita',
             captionPlaceholder: 'Autor de la cita',
           }
         },
-        delimiter: Delimiter,
+        delimiter: Delimiter as any,
         image: {
-          class: Image,
+          class: Image as any,
           config: {
             uploader: {
               async uploadByFile(file: File) {
@@ -100,7 +100,7 @@ export const useEditor = ({
           }
         },
         attaches: {
-          class: Attaches,
+          class: Attaches as any,
           config: {
             uploader: {
               async uploadByFile(file: File) {

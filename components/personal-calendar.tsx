@@ -302,7 +302,7 @@ export default function PersonalCalendar({ personal, horarios, asistencias, vaca
     console.log('Evento seleccionado:', event);
   };
 
-  const handleSelectSlot = (slotInfo: { start: Date; end: Date; slots: Date[] }) => {
+  const handleSelectSlot = (slotInfo: unknown) => {
     console.log('Slot seleccionado:', slotInfo);
   };
 

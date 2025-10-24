@@ -31,11 +31,11 @@ export const SimpleEditor = ({
         readOnly,
         data: initialData,
         tools: {
-          header: Header,
-          list: List,
-          table: Table,
-          quote: Quote,
-          delimiter: Delimiter
+          header: Header as any,
+          list: List as any,
+          table: Table as any,
+          quote: Quote as any,
+          delimiter: Delimiter as any
         },
         onChange: async () => {
           if (onSave && editorRef.current) {

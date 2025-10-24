@@ -139,7 +139,7 @@ export default function ReportesMedicoPage() {
 
   // Filtrar datos según los filtros seleccionados
   const datosFiltrados = useMemo(() => {
-    let datos = { ...reportesMock };
+    const datos = { ...reportesMock };
 
     // Aplicar filtros aquí según sea necesario
     // Por ahora retornamos todos los datos

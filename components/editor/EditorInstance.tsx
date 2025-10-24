@@ -38,30 +38,30 @@ export const EditorInstance = ({
       readOnly,
       data: data || undefined,
       tools: {
-        header: Header,
+        header: Header as any,
         list: {
-          class: List,
+          class: List as any,
           inlineToolbar: true,
           config: {
             defaultStyle: 'unordered'
           }
         },
-        table: Table,
+        table: Table as any,
         checklist: {
-          class: Checklist,
+          class: Checklist as any,
           inlineToolbar: true,
         },
         quote: {
-          class: Quote,
+          class: Quote as any,
           inlineToolbar: true,
           config: {
             quotePlaceholder: 'Escriba una cita',
             captionPlaceholder: 'Autor de la cita',
           }
         },
-        delimiter: Delimiter,
+        delimiter: Delimiter as any,
         image: {
-          class: Image,
+          class: Image as any,
           config: {
             uploader: {
               async uploadByFile(file: File) {
@@ -80,7 +80,7 @@ export const EditorInstance = ({
           }
         },
         attaches: {
-          class: Attaches,
+          class: Attaches as any,
           config: {
             uploader: {
               async uploadByFile(file: File) {
