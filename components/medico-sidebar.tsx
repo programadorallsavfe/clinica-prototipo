@@ -65,28 +65,7 @@ export function MedicoSidebar({ doctorNombre, isCollapsed = false, onToggleColla
         icon: FileSpreadsheet,
       },
     ],
-    navEspecialidades: [
-      {
-        title: "Cardiología",
-        onClick: () => router.push("/medico/cardiologia"),
-        icon: Heart,
-      },
-      {
-        title: "Medicina General",
-        onClick: () => router.push("/medico/medicina-general"),
-        icon: Stethoscope,
-      },
-      {
-        title: "Farmacología",
-        onClick: () => router.push("/medico/farmacologia"),
-        icon: Pill,
-      },
-      {
-        title: "Laboratorio",
-        onClick: () => router.push("/medico/laboratorio"),
-        icon: TestTube,
-      },
-    ],
+
     navReportes: [
       {
         title: "Mis Estadísticas",
@@ -212,47 +191,6 @@ export function MedicoSidebar({ doctorNombre, isCollapsed = false, onToggleColla
                       )}
                     </>
                   )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Especialidades */}
-        <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
-          {!isCollapsed && (
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              Especialidades
-            </h3>
-          )}
-          <div className="space-y-1">
-            {data.navEspecialidades.map((item) => {
-              // Determinar la ruta específica para cada elemento
-              let targetPath = "";
-              if (item.title === "Cardiología") {
-                targetPath = "/medico/cardiologia";
-              } else if (item.title === "Medicina General") {
-                targetPath = "/medico/medicina-general";
-              } else if (item.title === "Farmacología") {
-                targetPath = "/medico/farmacologia";
-              } else if (item.title === "Laboratorio") {
-                targetPath = "/medico/laboratorio";
-              }
-              
-              const isActive = pathname === targetPath;
-              return (
-                <button
-                  key={item.title}
-                  onClick={item.onClick}
-                  title={isCollapsed ? item.title : undefined}
-                  className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 group w-full text-left ${
-                    isActive
-                      ? "bg-primary text-primary-foreground" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  {!isCollapsed && <span className="font-medium">{item.title}</span>}
                 </button>
               );
             })}

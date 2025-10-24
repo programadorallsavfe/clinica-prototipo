@@ -51,7 +51,7 @@ const pacientesDiaMock = [
     email: 'maria.garcia@email.com',
     fechaNacimiento: '1985-03-15',
     edad: 39,
-    fechaCita: '2024-10-21',
+    fechaCita: '2024-12-21',
     horaCita: '09:00',
     especialidad: 'Ginecología',
     motivoConsulta: 'Control prenatal - 20 semanas',
@@ -74,7 +74,7 @@ const pacientesDiaMock = [
     email: 'ana.rodriguez@email.com',
     fechaNacimiento: '1990-07-22',
     edad: 34,
-    fechaCita: '2024-10-21',
+    fechaCita: '2024-12-21',
     horaCita: '09:30',
     especialidad: 'Ginecología',
     motivoConsulta: 'Dolor pélvico y flujo vaginal anormal',
@@ -97,7 +97,7 @@ const pacientesDiaMock = [
     email: 'carmen.lopez@email.com',
     fechaNacimiento: '1988-11-08',
     edad: 35,
-    fechaCita: '2024-10-21',
+    fechaCita: '2024-12-21',
     horaCita: '10:00',
     especialidad: 'Ginecología',
     motivoConsulta: 'PAP y colposcopia de seguimiento',
@@ -120,7 +120,7 @@ const pacientesDiaMock = [
     email: 'elena.fernandez@email.com',
     fechaNacimiento: '1992-05-14',
     edad: 32,
-    fechaCita: '2024-10-21',
+    fechaCita: '2024-12-21',
     horaCita: '10:30',
     especialidad: 'Ginecología',
     motivoConsulta: 'Control post-parto',
@@ -143,7 +143,7 @@ const pacientesDiaMock = [
     email: 'isabel.morales@email.com',
     fechaNacimiento: '1987-09-03',
     edad: 37,
-    fechaCita: '2024-10-21',
+    fechaCita: '2024-12-21',
     horaCita: '11:00',
     especialidad: 'Ginecología',
     motivoConsulta: 'Consulta de fertilidad',
@@ -166,7 +166,7 @@ const pacientesDiaMock = [
     email: 'patricia.ruiz@email.com',
     fechaNacimiento: '1995-12-18',
     edad: 28,
-    fechaCita: '2024-10-21',
+    fechaCita: '2024-12-21',
     horaCita: '11:30',
     especialidad: 'Ginecología',
     motivoConsulta: 'Ecografía obstétrica',
@@ -189,7 +189,7 @@ const pacientesDiaMock = [
     email: 'laura.hernandez@email.com',
     fechaNacimiento: '1993-01-25',
     edad: 31,
-    fechaCita: '2024-10-22',
+    fechaCita: '2024-12-22',
     horaCita: '09:00',
     especialidad: 'Ginecología',
     motivoConsulta: 'Consulta por irregularidad menstrual',
@@ -212,7 +212,7 @@ const pacientesDiaMock = [
     email: 'sofia.mendoza@email.com',
     fechaNacimiento: '1989-06-12',
     edad: 35,
-    fechaCita: '2024-10-22',
+    fechaCita: '2024-12-22',
     horaCita: '09:30',
     especialidad: 'Ginecología',
     motivoConsulta: 'Control de DIU',
@@ -229,7 +229,7 @@ const pacientesDiaMock = [
 
 export default function PacientesDiaPage() {
   const [pacientes, setPacientes] = useState(pacientesDiaMock);
-  const [filtroFecha, setFiltroFecha] = useState('hoy');
+  const [filtroFecha, setFiltroFecha] = useState('todos');
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroPrioridad, setFiltroPrioridad] = useState('todos');
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
@@ -249,6 +249,8 @@ export default function PacientesDiaPage() {
       cumpleFecha = paciente.fechaCita === mañana;
     } else if (filtroFecha === 'semana') {
       cumpleFecha = paciente.fechaCita >= hoy && paciente.fechaCita <= estaSemana;
+    } else if (filtroFecha === 'todos') {
+      cumpleFecha = true; // Mostrar todos los pacientes
     }
 
     const cumpleEstado = filtroEstado === 'todos' || paciente.estado === filtroEstado;
@@ -588,7 +590,7 @@ export default function PacientesDiaPage() {
               <Button 
                 variant="outline" 
                 onClick={() => {
-                  setFiltroFecha('hoy');
+                  setFiltroFecha('todos');
                   setFiltroEstado('todos');
                   setFiltroPrioridad('todos');
                   setFiltroBusqueda('');

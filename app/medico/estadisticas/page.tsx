@@ -9,7 +9,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, 
   PieChart, Pie, Cell, LineChart, Line, RadialBarChart, RadialBar, 
-  PolarGrid, PolarRadiusAxis, Label
+  PolarGrid, PolarRadiusAxis, Label, LabelList
 } from 'recharts';
 import { 
   TrendingUp, TrendingDown, Users, Calendar, Clock, DollarSign, 
@@ -275,18 +275,45 @@ export default function EstadisticasMedicasPage() {
             <CardDescription>Evolución mensual de citas y ingresos</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfigCitas}>
-              <BarChart data={citasPorMes}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <ChartTooltip>
-                  <ChartTooltipContent />
-                </ChartTooltip>
-                <Bar yAxisId="left" dataKey="citas" fill="var(--color-citas)" radius={4} />
-                <Bar yAxisId="right" dataKey="ingresos" fill="var(--color-ingresos)" radius={4} />
-              </BarChart>
+            <ChartContainer config={chartConfigCitas} className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={citasPorMes}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="mes" 
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    yAxisId="left" 
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    yAxisId="right" 
+                    orientation="right" 
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                  <Bar 
+                    yAxisId="left" 
+                    dataKey="citas" 
+                    fill="var(--chart-1)" 
+                    radius={[4, 4, 0, 0]}
+                    name="Citas"
+                  />
+                  <Bar 
+                    yAxisId="right" 
+                    dataKey="ingresos" 
+                    fill="var(--chart-2)" 
+                    radius={[4, 4, 0, 0]}
+                    name="Ingresos (S/)"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
@@ -302,55 +329,71 @@ export default function EstadisticasMedicasPage() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfigEspecialidades} className="mx-auto aspect-square max-h-[300px]">
-              <PieChart>
-                <ChartTooltip>
-                  <ChartTooltipContent />
-                </ChartTooltip>
-                <Pie
-                  data={distribucionEspecialidades}
-                  dataKey="citas"
-                  nameKey="especialidad"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  innerRadius={60}
-                  strokeWidth={5}
-                >
-                  {distribucionEspecialidades.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                  <Label
-                    content={({ viewBox }) => {
-                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                        return (
-                          <text
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                          >
-                            <tspan
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                  <Pie
+                    data={distribucionEspecialidades}
+                    dataKey="citas"
+                    nameKey="especialidad"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    innerRadius={60}
+                    strokeWidth={5}
+                  >
+                    {distribucionEspecialidades.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                          return (
+                            <text
                               x={viewBox.cx}
                               y={viewBox.cy}
-                              className="fill-foreground text-2xl font-bold"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
                             >
-                              {distribucionEspecialidades.reduce((acc, curr) => acc + curr.citas, 0)}
-                            </tspan>
-                            <tspan
-                              x={viewBox.cx}
-                              y={(viewBox.cy || 0) + 20}
-                              className="fill-muted-foreground text-sm"
-                            >
-                              Total Citas
-                            </tspan>
-                          </text>
-                        )
-                      }
-                    }}
-                  />
-                </Pie>
-              </PieChart>
+                              <tspan
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                className="fill-foreground text-2xl font-bold"
+                              >
+                                {distribucionEspecialidades.reduce((acc, curr) => acc + curr.citas, 0)}
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 20}
+                                className="fill-muted-foreground text-sm"
+                              >
+                                Total Citas
+                              </tspan>
+                            </text>
+                          )
+                        }
+                      }}
+                    />
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
             </ChartContainer>
+            <div className="mt-4 space-y-2">
+              {distribucionEspecialidades.map((item, index) => (
+                <div key={index} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-foreground">{item.especialidad}</span>
+                  </div>
+                  <span className="text-muted-foreground">{item.citas} citas ({item.porcentaje}%)</span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -367,17 +410,39 @@ export default function EstadisticasMedicasPage() {
             <CardDescription>Comparación con metas establecidas</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfigTiempo}>
-              <BarChart data={tiempoPromedioAtencion} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="especialidad" type="category" width={120} />
-                <ChartTooltip>
-                  <ChartTooltipContent />
-                </ChartTooltip>
-                <Bar dataKey="tiempo" fill="var(--color-tiempo)" radius={4} />
-                <Bar dataKey="meta" fill="var(--color-meta)" radius={4} />
-              </BarChart>
+            <ChartContainer config={chartConfigTiempo} className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={tiempoPromedioAtencion} layout="horizontal">
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    type="number" 
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    dataKey="especialidad" 
+                    type="category" 
+                    width={120}
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                  <Bar 
+                    dataKey="tiempo" 
+                    fill="var(--chart-1)" 
+                    radius={[0, 4, 4, 0]}
+                    name="Tiempo Real (min)"
+                  />
+                  <Bar 
+                    dataKey="meta" 
+                    fill="var(--chart-2)" 
+                    radius={[0, 4, 4, 0]}
+                    name="Meta (min)"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
@@ -392,22 +457,160 @@ export default function EstadisticasMedicasPage() {
             <CardDescription>Evolución de la satisfacción mensual</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfigSatisfaccion}>
-              <LineChart data={satisfaccionPacientes}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis domain={[3, 5]} />
-                <ChartTooltip>
-                  <ChartTooltipContent />
-                </ChartTooltip>
-                <Line 
-                  type="monotone" 
-                  dataKey="satisfaccion" 
-                  stroke="var(--color-satisfaccion)" 
-                  strokeWidth={3}
-                  dot={{ fill: "var(--color-satisfaccion)", strokeWidth: 2, r: 4 }}
-                />
-              </LineChart>
+            <ChartContainer config={chartConfigSatisfaccion} className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={satisfaccionPacientes}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="mes" 
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    domain={[3, 5]} 
+                    className="text-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                  <Line 
+                    type="monotone" 
+                    dataKey="satisfaccion" 
+                    stroke="var(--chart-1)" 
+                    strokeWidth={3}
+                    dot={{ fill: "var(--chart-1)", strokeWidth: 2, r: 4 }}
+                    name="Satisfacción (/5)"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Gráfico Radial de Rendimiento */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Indicador de Rendimiento General */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Rendimiento General
+            </CardTitle>
+            <CardDescription>Puntuación general de rendimiento médico</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{}} className="mx-auto aspect-square max-h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadialBarChart
+                  data={[{ value: 87, fill: 'var(--chart-1)' }]}
+                  startAngle={90}
+                  endAngle={-270}
+                  innerRadius="60%"
+                  outerRadius="90%"
+                  barSize={20}
+                >
+                  <PolarGrid />
+                  <PolarRadiusAxis 
+                    angle={90} 
+                    domain={[0, 100]} 
+                    tick={false}
+                    axisLine={false}
+                  />
+                  <RadialBar
+                    dataKey="value"
+                    cornerRadius={10}
+                    fill="var(--chart-1)"
+                  />
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        return (
+                          <text
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                          >
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              className="fill-foreground text-3xl font-bold"
+                            >
+                              87%
+                            </tspan>
+                            <tspan
+                              x={viewBox.cx}
+                              y={(viewBox.cy || 0) + 24}
+                              className="fill-muted-foreground text-sm"
+                            >
+                              Rendimiento
+                            </tspan>
+                          </text>
+                        )
+                      }
+                    }}
+                  />
+                </RadialBarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        {/* Gráfico de Barras con Etiquetas Personalizadas */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Citas por Especialidad
+            </CardTitle>
+            <CardDescription>Distribución horizontal con etiquetas</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfigEspecialidades} className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={distribucionEspecialidades}
+                  layout="vertical"
+                  margin={{ right: 16 }}
+                >
+                  <CartesianGrid horizontal={false} className="stroke-muted" />
+                  <YAxis
+                    dataKey="especialidad"
+                    type="category"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    tick={{ fontSize: 12 }}
+                    className="text-muted-foreground"
+                  />
+                  <XAxis dataKey="citas" type="number" hide />
+                  <ChartTooltip>
+                    <ChartTooltipContent />
+                  </ChartTooltip>
+                  <Bar
+                    dataKey="citas"
+                    fill="var(--chart-1)"
+                    radius={[0, 4, 4, 0]}
+                  >
+                    <LabelList
+                      dataKey="especialidad"
+                      position="insideLeft"
+                      offset={8}
+                      className="fill-foreground"
+                      fontSize={12}
+                    />
+                    <LabelList
+                      dataKey="citas"
+                      position="right"
+                      offset={8}
+                      className="fill-foreground"
+                      fontSize={12}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
