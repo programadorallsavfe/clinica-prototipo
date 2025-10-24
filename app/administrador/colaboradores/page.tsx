@@ -274,6 +274,14 @@ export default function ColaboradoresPage() {
     ));
   };
 
+  const handleProcesarPagoSimple = (comisionId: string) => {
+    // Wrapper para el componente ReportesColaboradoresCard que solo necesita el ID
+    const comision = comisiones.find(c => c.id === comisionId);
+    if (comision) {
+      handleProcesarPago(comisionId, 'transferencia', comision.montoComision);
+    }
+  };
+
   const handleVerificarPago = (pagoId: string) => {
     console.log('Verificar pago:', pagoId);
   };
@@ -613,7 +621,7 @@ export default function ColaboradoresPage() {
             reportes={reportes}
             onVerDetalleColaborador={handleVerDetalleColaborador}
             onCalcularComisiones={handleCalcularComisiones}
-            onProcesarPago={handleProcesarPago}
+            onProcesarPago={handleProcesarPagoSimple}
           />
         </TabsContent>
       </Tabs>
