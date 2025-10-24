@@ -46,10 +46,10 @@ const generateMockEvents = (startDate: Date, endDate: Date): Event[] => {
     const consultorios = ['Consultorio 1', 'Consultorio 2', 'Consultorio 3'];
     const estados = ['Programada', 'Confirmada', 'En Proceso', 'Completada'];
     
-    let currentDate = moment(startDate);
+    const startMoment = moment(startDate);
     const endMoment = moment(endDate);
     
-    while (currentDate.isSameOrBefore(endMoment, 'day')) {
+    for (let currentDate = startMoment.clone(); currentDate.isSameOrBefore(endMoment, 'day'); currentDate.add(1, 'day')) {
         // Generar entre 3-8 eventos por día
         const numEvents = Math.floor(Math.random() * 6) + 3;
         
@@ -87,8 +87,6 @@ const generateMockEvents = (startDate: Date, endDate: Date): Event[] => {
                 }
             });
         }
-        
-        currentDate.add(1, 'day');
     }
     
     return events;
