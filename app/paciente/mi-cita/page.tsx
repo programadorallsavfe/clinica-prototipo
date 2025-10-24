@@ -308,7 +308,7 @@ export default function MiCitaPage() {
           </Button>
           <Button size="sm">
             <CalendarDays className="h-4 w-4 mr-1" />
-            Nueva Cita
+            Solicitar Cita
           </Button>
         </div>
       </div>
