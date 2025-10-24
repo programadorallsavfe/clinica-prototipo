@@ -143,7 +143,7 @@ export default function ReporteDiagnosticos({ periodo = 'mes' }: ReporteDiagnost
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Select defaultValue={periodo}>
+              <Select value={periodo}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -265,7 +265,7 @@ export default function ReporteDiagnosticos({ periodo = 'mes' }: ReporteDiagnost
                   return (
                     <tr key={index} className="border-b hover:bg-muted/50">
                       <td className="p-3 font-medium">
-                        {periodo === 'dia' ? item.fecha : periodo === 'mes' ? item.mes : item.año}
+                        {periodo === 'dia' ? (item as any).fecha : periodo === 'mes' ? (item as any).mes : (item as any).año}
                       </td>
                       <td className="text-right p-3">
                         <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
