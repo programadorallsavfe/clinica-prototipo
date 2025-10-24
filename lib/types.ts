@@ -161,3 +161,101 @@ export interface AtencionMedica {
   fechaCreacion: string
   creadoPor?: string
 }
+
+// NUEVOS TIPOS PARA TAREAS DE SEGUIMIENTO
+export interface TareaSeguimiento {
+  id: string
+  pacienteId: string
+  citaId?: string
+  tipo: 'llamada_telefonica' | 'envio_correo' | 'envio_enlace_video' | 'envio_pdf' | 'recordatorio_cita' | 'seguimiento_tratamiento'
+  titulo: string
+  descripcion: string
+  fechaProgramada: string
+  horaProgramada: string
+  estado: 'pendiente' | 'en_progreso' | 'completada' | 'cancelada'
+  prioridad: 'baja' | 'media' | 'alta' | 'urgente'
+  servicioRelacionado?: string
+  responsable: string
+  fechaCreacion: string
+  fechaCompletada?: string
+  observaciones?: string
+  // Integración con Google Calendar
+  googleCalendarEventId?: string
+  sincronizadoConGoogle: boolean
+  // Alertas
+  alertaActiva: boolean
+  fechaAlerta?: string
+}
+
+// TIPOS PARA COLABORADORES Y COMISIONES
+export interface Colaborador {
+  id: string
+  nombre: string
+  apellidos: string
+  documento: string
+  telefono: string
+  email: string
+  tipo: 'medico' | 'referidor' | 'colaborador_externo'
+  especialidad?: string
+  porcentajeComision: number
+  montoFijoComision?: number
+  activo: boolean
+  fechaRegistro: string
+  fechaUltimaComision?: string
+  totalComisionesPagadas: number
+  totalComisionesPendientes: number
+}
+
+export interface Comision {
+  id: string
+  colaboradorId: string
+  pacienteId: string
+  citaId: string
+  servicioId: string
+  tipoServicio: string
+  montoServicio: number
+  porcentajeComision: number
+  montoComision: number
+  estado: 'pendiente' | 'calculada' | 'pagada' | 'cancelada'
+  fechaServicio: string
+  fechaCalculo: string
+  fechaPago?: string
+  observaciones?: string
+  // Integración con sistema de pagos
+  pagoId?: string
+  metodoPago?: 'transferencia' | 'efectivo' | 'cheque'
+}
+
+export interface ReporteComisiones {
+  colaboradorId: string
+  nombreColaborador: string
+  periodo: string
+  totalServicios: number
+  totalMontoServicios: number
+  totalComisiones: number
+  comisionesPagadas: number
+  comisionesPendientes: number
+  detalleComisiones: Comision[]
+}
+
+// TIPOS PARA INTEGRACIONES (SIMULACIÓN)
+export interface GoogleCalendarEvent {
+  id: string
+  titulo: string
+  descripcion: string
+  fechaInicio: string
+  fechaFin: string
+  ubicacion?: string
+  recordatorio?: number // minutos antes
+  estado: 'confirmado' | 'tentativo' | 'cancelado'
+}
+
+export interface SistemaPago {
+  id: string
+  tipo: 'yape' | 'plin' | 'transferencia' | 'efectivo'
+  monto: number
+  estado: 'pendiente' | 'procesando' | 'completado' | 'fallido'
+  fechaCreacion: string
+  fechaProcesamiento?: string
+  referencia?: string
+}

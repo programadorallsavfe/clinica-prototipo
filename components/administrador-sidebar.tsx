@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu, Calendar, ClipboardList, TestTube, DollarSign, UserCheck } from 'lucide-react';
+import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu, Calendar, ClipboardList, TestTube, DollarSign, UserCheck, Handshake, CheckSquare } from 'lucide-react';
 // Importaciones removidas - usando estructura HTML nativa
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -82,6 +82,18 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
         title: "Recursos Humanos",
         onClick: () => router.push("/administrador/recursos-humanos"),
         icon: UserCheck,
+      },
+      {
+        title: "Colaboradores",
+        onClick: () => router.push("/administrador/colaboradores"),
+        icon: Handshake,
+        badge: "4",
+      },
+      {
+        title: "Tareas de Seguimiento",
+        onClick: () => router.push("/administrador/tareas-seguimiento"),
+        icon: CheckSquare,
+        badge: "5",
       },
     ],
     socialMedia: [
@@ -260,6 +272,10 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
                 targetPath = "/administrador/documentos/fichas";
               } else if (item.title === "Recursos Humanos") {
                 targetPath = "/administrador/recursos-humanos";
+              } else if (item.title === "Colaboradores") {
+                targetPath = "/administrador/colaboradores";
+              } else if (item.title === "Tareas de Seguimiento") {
+                targetPath = "/administrador/tareas-seguimiento";
               }
               
               const isActive = pathname === targetPath;
@@ -275,7 +291,16 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
                   }`}
                 >
                   <item.icon className="w-5 h-5" />
-                  {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                  {!isCollapsed && (
+                    <>
+                      <span className="font-medium flex-1">{item.title}</span>
+                      {item.badge && (
+                        <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </>
+                  )}
                 </button>
               );
             })}
