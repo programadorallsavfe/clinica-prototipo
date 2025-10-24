@@ -13,7 +13,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { 
   Calendar as CalendarIcon, Clock, User, Stethoscope, 
   CheckCircle, AlertTriangle, Phone, Mail, MapPin,
-  HeartPulse, Activity, RefreshCw, Search, Filter
+  HeartPulse, Activity, RefreshCw, Search, Filter,
+  FileText, UserPlus, CreditCard
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -109,12 +110,27 @@ const horariosDisponibles = [
 ];
 
 export default function AgendarCitaPage() {
+  // Estados para selectores
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>();
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState<string>('');
   const [doctorSeleccionado, setDoctorSeleccionado] = useState<string>('');
   const [horaSeleccionada, setHoraSeleccionada] = useState<string>('');
+  const [tipoCita, setTipoCita] = useState<string>('consulta');
+  
+  // Estados para campos de texto
+  const [nombres, setNombres] = useState<string>('');
+  const [apellidos, setApellidos] = useState<string>('');
+  const [dni, setDni] = useState<string>('');
+  const [telefono, setTelefono] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [fechaNacimiento, setFechaNacimiento] = useState<string>('');
+  const [direccion, setDireccion] = useState<string>('');
   const [motivoConsulta, setMotivoConsulta] = useState<string>('');
   const [observaciones, setObservaciones] = useState<string>('');
+  const [alergias, setAlergias] = useState<string>('');
+  const [medicamentosActuales, setMedicamentosActuales] = useState<string>('');
+  const [historialMedico, setHistorialMedico] = useState<string>('');
+  
   const [showConfirmacion, setShowConfirmacion] = useState(false);
 
   // Filtrar doctores por especialidad
@@ -153,7 +169,7 @@ export default function AgendarCitaPage() {
   const horariosDisponiblesFiltrados = getHorariosDisponibles();
 
   const handleAgendarCita = () => {
-    if (!fechaSeleccionada || !especialidadSeleccionada || !doctorSeleccionado || !horaSeleccionada) {
+    if (!fechaSeleccionada || !especialidadSeleccionada || !doctorSeleccionado || !horaSeleccionada || !nombres.trim() || !apellidos.trim() || !dni.trim() || !telefono.trim() || !motivoConsulta.trim()) {
       alert('Por favor complete todos los campos obligatorios');
       return;
     }
@@ -169,210 +185,367 @@ export default function AgendarCitaPage() {
     setEspecialidadSeleccionada('');
     setDoctorSeleccionado('');
     setHoraSeleccionada('');
+    setTipoCita('consulta');
+    setNombres('');
+    setApellidos('');
+    setDni('');
+    setTelefono('');
+    setEmail('');
+    setFechaNacimiento('');
+    setDireccion('');
     setMotivoConsulta('');
     setObservaciones('');
+    setAlergias('');
+    setMedicamentosActuales('');
+    setHistorialMedico('');
   };
 
   return (
-    <div className="space-y-6 bg-background text-foreground min-h-screen">
+    <div className="container mx-auto p-6 space-y-6 bg-background text-foreground min-h-screen">
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold text-foreground">Agendar Cita Médica</h1>
         <p className="text-muted-foreground">
-          Seleccione la especialidad, doctor y horario que mejor se adapte a sus necesidades
+          Complete todos los campos para agendar su cita médica
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Formulario de Agendamiento */}
+        {/* Formulario Principal */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Paso 1: Selección de Especialidad */}
+          {/* Información Personal */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Stethoscope className="h-5 w-5" />
-                Paso 1: Seleccionar Especialidad
+                <UserPlus className="h-5 w-5" />
+                Información Personal
               </CardTitle>
-              <CardDescription>Elija la especialidad médica que necesita</CardDescription>
+              <CardDescription>
+                Complete sus datos personales
+              </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {especialidadesMock.map((especialidad) => (
-                  <div
-                    key={especialidad.id}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                      especialidadSeleccionada === especialidad.id
-                        ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                        : 'border-border hover:border-primary/50 hover:bg-accent/50'
-                    }`}
-                    onClick={() => {
-                      setEspecialidadSeleccionada(especialidad.id);
-                      setDoctorSeleccionado(''); // Reset doctor selection
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold">{especialidad.nombre}</h3>
-                      <Badge className={especialidad.color}>
-                        S/ {especialidad.precio}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {especialidad.descripcion}
-                    </p>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {especialidad.duracion} min
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                <div>
+                  <Label htmlFor="nombres" className="text-base font-semibold">Nombres *</Label>
+                  <Input
+                    id="nombres"
+                    placeholder="Ingrese sus nombres"
+                    value={nombres}
+                    onChange={(e) => setNombres(e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="apellidos" className="text-base font-semibold">Apellidos *</Label>
+                  <Input
+                    id="apellidos"
+                    placeholder="Ingrese sus apellidos"
+                    value={apellidos}
+                    onChange={(e) => setApellidos(e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="dni" className="text-base font-semibold">DNI *</Label>
+                  <Input
+                    id="dni"
+                    placeholder="Ingrese su DNI"
+                    value={dni}
+                    onChange={(e) => setDni(e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="telefono" className="text-base font-semibold">Teléfono *</Label>
+                  <Input
+                    id="telefono"
+                    placeholder="Ingrese su teléfono"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="email" className="text-base font-semibold">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Ingrese su email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="fechaNacimiento" className="text-base font-semibold">Fecha de Nacimiento</Label>
+                  <Input
+                    id="fechaNacimiento"
+                    type="date"
+                    value={fechaNacimiento}
+                    onChange={(e) => setFechaNacimiento(e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="direccion" className="text-base font-semibold">Dirección</Label>
+                <Input
+                  id="direccion"
+                  placeholder="Ingrese su dirección"
+                  value={direccion}
+                  onChange={(e) => setDireccion(e.target.value)}
+                  className="mt-2"
+                />
               </div>
             </CardContent>
           </Card>
 
-          {/* Paso 2: Selección de Doctor */}
-          {especialidadSeleccionada && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  Paso 2: Seleccionar Doctor
-                </CardTitle>
-                <CardDescription>Elija el doctor de su preferencia</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {doctoresFiltrados.map((doctor) => (
-                    <div
-                      key={doctor.id}
-                      className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                        doctorSeleccionado === doctor.id
-                          ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                          : 'border-border hover:border-primary/50 hover:bg-accent/50'
-                      }`}
-                      onClick={() => setDoctorSeleccionado(doctor.id)}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">{doctor.nombre}</h3>
+          {/* Información Médica */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Stethoscope className="h-5 w-5" />
+                Información Médica
+              </CardTitle>
+              <CardDescription>
+                Complete la información médica relevante
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="alergias" className="text-base font-semibold">Alergias</Label>
+                <Input
+                  id="alergias"
+                  placeholder="Ingrese sus alergias (si las tiene)"
+                  value={alergias}
+                  onChange={(e) => setAlergias(e.target.value)}
+                  className="mt-2"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="medicamentos" className="text-base font-semibold">Medicamentos Actuales</Label>
+                <Input
+                  id="medicamentos"
+                  placeholder="Ingrese medicamentos que está tomando"
+                  value={medicamentosActuales}
+                  onChange={(e) => setMedicamentosActuales(e.target.value)}
+                  className="mt-2"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="historial" className="text-base font-semibold">Historial Médico</Label>
+                <Textarea
+                  id="historial"
+                  placeholder="Describa su historial médico relevante..."
+                  value={historialMedico}
+                  onChange={(e) => setHistorialMedico(e.target.value)}
+                  className="mt-2 min-h-[80px]"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Selección de Cita */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5" />
+                Selección de Cita
+              </CardTitle>
+              <CardDescription>
+                Seleccione la especialidad, doctor y horario
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Especialidad */}
+              <div>
+                <Label className="text-base font-semibold">Especialidad *</Label>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Seleccione la especialidad médica que necesita
+                </p>
+                <Select value={especialidadSeleccionada} onValueChange={(value) => {
+                  setEspecialidadSeleccionada(value);
+                  setDoctorSeleccionado(''); // Reset doctor selection
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccione una especialidad" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {especialidadesMock.map((esp) => (
+                      <SelectItem key={esp.id} value={esp.id}>
+                        <div className="flex items-center justify-between w-full">
+                          <div>
+                            <span className="font-medium">{esp.nombre}</span>
+                            <p className="text-xs text-muted-foreground">{esp.descripcion}</p>
+                          </div>
+                          <span className="text-primary font-semibold ml-2">S/ {esp.precio}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {especialidadActual && (
+                  <div className="mt-2 p-3 bg-accent/50 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">{especialidadActual.nombre}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Duración: {especialidadActual.duracion} minutos
+                        </p>
+                      </div>
+                      <Badge className="bg-primary/10 text-primary">
+                        S/ {especialidadActual.precio}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Doctor */}
+              <div>
+                <Label className="text-base font-semibold">Doctor *</Label>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Elija el profesional médico
+                </p>
+                <Select 
+                  value={doctorSeleccionado} 
+                  onValueChange={setDoctorSeleccionado}
+                >
+                  <SelectTrigger disabled={!especialidadSeleccionada}>
+                    <SelectValue placeholder="Seleccione un doctor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {doctoresFiltrados.map((doctor) => (
+                      <SelectItem key={doctor.id} value={doctor.id}>
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <HeartPulse className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium">{doctor.calificacion}</span>
+                          <User className="h-4 w-4" />
+                          <div>
+                            <span className="font-medium">{doctor.nombre}</span>
+                            <p className="text-xs text-muted-foreground">
+                              {doctor.especialidad} • {doctor.experiencia} • ⭐ {doctor.calificacion}
+                            </p>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{doctor.especialidad}</span>
-                        <span>•</span>
-                        <span>{doctor.experiencia}</span>
-                      </div>
-                      <div className="mt-2">
-                        <p className="text-xs text-muted-foreground mb-1">Horarios disponibles:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {Object.entries(doctor.horarios).map(([dia, horarios]) => (
-                            <Badge key={dia} variant="outline" className="text-xs border-border text-foreground">
-                              {dia}: {horarios.join(', ')}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {doctorActual && (
+                  <div className="mt-2 p-3 bg-accent/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <User className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">{doctorActual.nombre}</span>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Paso 3: Selección de Fecha y Hora */}
-          {doctorSeleccionado && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CalendarIcon className="h-5 w-5" />
-                  Paso 3: Seleccionar Fecha y Hora
-                </CardTitle>
-                <CardDescription>Elija la fecha y hora de su cita</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Calendario */}
-                  <div>
-                    <Label className="text-sm font-medium mb-2 block">Seleccionar Fecha</Label>
-                    <Calendar
-                      value={fechaSeleccionada}
-                      onChange={(date) => setFechaSeleccionada(date || undefined)}
-                      disabled={(date) => date < new Date() || date > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
-                      className="rounded-md border border-border bg-card text-card-foreground"
-                    />
+                    <div className="flex flex-wrap gap-1">
+                      {Object.entries(doctorActual.horarios).map(([dia, horarios]) => (
+                        <Badge key={dia} variant="outline" className="text-xs">
+                          {dia}: {horarios.join(', ')}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
+                )}
+              </div>
 
-                  {/* Horarios Disponibles */}
-                  <div>
-                    <Label className="text-sm font-medium mb-2 block">Horarios Disponibles</Label>
-                    {fechaSeleccionada ? (
-                      <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
-                        {horariosDisponiblesFiltrados.map((horario) => (
-                          <Button
-                            key={horario}
-                            variant={horaSeleccionada === horario ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setHoraSeleccionada(horario)}
-                            className={`text-xs ${
-                              horaSeleccionada === horario 
-                                ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
-                                : 'border-border hover:bg-accent hover:text-accent-foreground'
-                            }`}
-                          >
+              {/* Fecha y Hora */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-base font-semibold">Fecha *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-2"
+                        disabled={!doctorSeleccionado}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {fechaSeleccionada ? format(fechaSeleccionada, "dd/MM/yyyy") : "Seleccione fecha"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        value={fechaSeleccionada}
+                        onChange={(date) => setFechaSeleccionada(date || undefined)}
+                        disabled={(date) => date < new Date() || date > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                
+                <div>
+                  <Label className="text-base font-semibold">Hora *</Label>
+                  <Select 
+                    value={horaSeleccionada} 
+                    onValueChange={setHoraSeleccionada}
+                  >
+                    <SelectTrigger className="mt-2" disabled={!fechaSeleccionada}>
+                      <SelectValue placeholder="Seleccione hora" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {horariosDisponiblesFiltrados.map((horario) => (
+                        <SelectItem key={horario} value={horario}>
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
                             {horario}
-                          </Button>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        Seleccione una fecha para ver los horarios disponibles
-                      </p>
-                    )}
-                  </div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </div>
 
-          {/* Paso 4: Información Adicional */}
-          {horaSeleccionada && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
-                  Paso 4: Información Adicional
-                </CardTitle>
-                <CardDescription>Proporcione información adicional sobre su consulta</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="motivo">Motivo de Consulta *</Label>
-                  <Textarea
-                    id="motivo"
-                    placeholder="Describa brevemente el motivo de su consulta..."
-                    value={motivoConsulta}
-                    onChange={(e) => setMotivoConsulta(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="observaciones">Observaciones Adicionales</Label>
-                  <Textarea
-                    id="observaciones"
-                    placeholder="Cualquier información adicional que considere importante..."
-                    value={observaciones}
-                    onChange={(e) => setObservaciones(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
+              {/* Tipo de Cita */}
+              <div>
+                <Label className="text-base font-semibold">Tipo de Cita</Label>
+                <Select value={tipoCita} onValueChange={setTipoCita}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="consulta">Consulta General</SelectItem>
+                    <SelectItem value="control">Control de Seguimiento</SelectItem>
+                    <SelectItem value="emergencia">Emergencia</SelectItem>
+                    <SelectItem value="seguimiento">Seguimiento</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Motivo de Consulta */}
+              <div>
+                <Label htmlFor="motivo" className="text-base font-semibold">Motivo de Consulta *</Label>
+                <Textarea
+                  id="motivo"
+                  placeholder="Describa brevemente el motivo de su consulta..."
+                  value={motivoConsulta}
+                  onChange={(e) => setMotivoConsulta(e.target.value)}
+                  className="mt-2 min-h-[100px]"
+                />
+              </div>
+
+              {/* Observaciones */}
+              <div>
+                <Label htmlFor="observaciones" className="text-base font-semibold">Observaciones Adicionales</Label>
+                <Textarea
+                  id="observaciones"
+                  placeholder="Cualquier información adicional que considere importante..."
+                  value={observaciones}
+                  onChange={(e) => setObservaciones(e.target.value)}
+                  className="mt-2 min-h-[80px]"
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Panel de Resumen */}
@@ -380,9 +553,19 @@ export default function AgendarCitaPage() {
           {/* Resumen de la Cita */}
           <Card>
             <CardHeader>
-              <CardTitle>Resumen de la Cita</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" />
+                Resumen de la Cita
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {nombres && apellidos && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Paciente:</span>
+                  <span className="font-medium">{nombres} {apellidos}</span>
+                </div>
+              )}
+
               {especialidadActual && (
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Especialidad:</span>
@@ -412,6 +595,13 @@ export default function AgendarCitaPage() {
                   <span className="font-medium">{horaSeleccionada}</span>
                 </div>
               )}
+
+              {tipoCita && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Tipo:</span>
+                  <span className="font-medium capitalize">{tipoCita}</span>
+                </div>
+              )}
               
               {especialidadActual && (
                 <div className="flex items-center justify-between">
@@ -434,7 +624,10 @@ export default function AgendarCitaPage() {
           {/* Información de Contacto */}
           <Card>
             <CardHeader>
-              <CardTitle>Información de Contacto</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Phone className="h-5 w-5" />
+                Información de Contacto
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
@@ -453,16 +646,15 @@ export default function AgendarCitaPage() {
           </Card>
 
           {/* Botón de Agendamiento */}
-          {fechaSeleccionada && especialidadSeleccionada && doctorSeleccionado && horaSeleccionada && (
-            <Button 
-              onClick={handleAgendarCita}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-              size="lg"
-            >
-              <CheckCircle className="h-5 w-5 mr-2" />
-              Agendar Cita
-            </Button>
-          )}
+          <Button 
+            onClick={handleAgendarCita}
+            disabled={!fechaSeleccionada || !especialidadSeleccionada || !doctorSeleccionado || !horaSeleccionada || !nombres.trim() || !apellidos.trim() || !dni.trim() || !telefono.trim() || !motivoConsulta.trim()}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            size="lg"
+          >
+            <CheckCircle className="h-5 w-5 mr-2" />
+            Agendar Cita
+          </Button>
         </div>
       </div>
 
@@ -482,6 +674,18 @@ export default function AgendarCitaPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Paciente:</span>
+                  <span className="text-sm font-medium">{nombres} {apellidos}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">DNI:</span>
+                  <span className="text-sm font-medium">{dni}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Teléfono:</span>
+                  <span className="text-sm font-medium">{telefono}</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Especialidad:</span>
                   <span className="text-sm font-medium">{especialidadActual?.nombre}</span>
                 </div>
@@ -498,6 +702,10 @@ export default function AgendarCitaPage() {
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Hora:</span>
                   <span className="text-sm font-medium">{horaSeleccionada}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Tipo:</span>
+                  <span className="text-sm font-medium capitalize">{tipoCita}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Total:</span>
