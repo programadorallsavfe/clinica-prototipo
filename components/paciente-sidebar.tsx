@@ -44,7 +44,7 @@ export function PacienteSidebar({ pacienteNombre, isCollapsed = false, onToggleC
     navCitas: [
       {
         title: "Mis Citas",
-        onClick: () => router.push("/paciente/citas"),
+        onClick: () => router.push("/paciente/mi-cita"),
         icon: Calendar,
         badge: "3",
       },
@@ -55,14 +55,14 @@ export function PacienteSidebar({ pacienteNombre, isCollapsed = false, onToggleC
       },
       {
         title: "Historia Clínica",
-        onClick: () => router.push("/paciente/historia"),
+        onClick: () => router.push("/paciente/mi-historial"),
         icon: FileText,
       },
     ],
     navServicios: [
       {
         title: "Mis Órdenes",
-        onClick: () => router.push("/paciente/ordenes"),
+        onClick: () => router.push("/paciente/mis-ordenes"),
         icon: ShoppingBag,
         badge: "2",
       },
@@ -82,24 +82,7 @@ export function PacienteSidebar({ pacienteNombre, isCollapsed = false, onToggleC
         icon: CreditCard,
       },
     ],
-    navPerfil: [
-      {
-        title: "Mi Perfil",
-        onClick: () => router.push("/paciente/perfil"),
-        icon: User,
-      },
-      {
-        title: "Configuración",
-        onClick: () => router.push("/paciente/configuracion"),
-        icon: Settings,
-      },
-      {
-        title: "Notificaciones",
-        onClick: () => router.push("/paciente/notificaciones"),
-        icon: Bell,
-        badge: "5",
-      },
-    ],
+    
     socialMedia: [
       {
         title: "Facebook",
@@ -181,11 +164,11 @@ export function PacienteSidebar({ pacienteNombre, isCollapsed = false, onToggleC
               // Determinar la ruta específica para cada elemento
               let targetPath = "";
               if (item.title === "Mis Citas") {
-                targetPath = "/paciente/citas";
+                targetPath = "/paciente/mi-cita";
               } else if (item.title === "Agendar Cita") {
                 targetPath = "/paciente/agendar";
               } else if (item.title === "Historia Clínica") {
-                targetPath = "/paciente/historia";
+                targetPath = "/paciente/mi-historial";
               }
               
               const isActive = pathname === targetPath;
@@ -267,53 +250,7 @@ export function PacienteSidebar({ pacienteNombre, isCollapsed = false, onToggleC
           </div>
         </div>
 
-        {/* Perfil y Configuración */}
-        <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
-          {!isCollapsed && (
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              Perfil y Configuración
-            </h3>
-          )}
-          <div className="space-y-1">
-            {data.navPerfil.map((item) => {
-              // Determinar la ruta específica para cada elemento
-              let targetPath = "";
-              if (item.title === "Mi Perfil") {
-                targetPath = "/paciente/perfil";
-              } else if (item.title === "Configuración") {
-                targetPath = "/paciente/configuracion";
-              } else if (item.title === "Notificaciones") {
-                targetPath = "/paciente/notificaciones";
-              }
-              
-              const isActive = pathname === targetPath;
-              return (
-                <button
-                  key={item.title}
-                  onClick={item.onClick}
-                  title={isCollapsed ? item.title : undefined}
-                  className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} ${isCollapsed ? 'px-2 py-3' : 'px-3 py-2.5'} rounded-lg text-sm transition-all duration-200 group w-full text-left ${
-                    isActive
-                      ? "bg-primary text-primary-foreground" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  {!isCollapsed && (
-                    <>
-                      <span className="font-medium flex-1">{item.title}</span>
-                      {item.badge && (
-                        <Badge variant="secondary" className="text-xs px-2 py-0.5">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        
 
         {/* Redes Sociales */}
         <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
