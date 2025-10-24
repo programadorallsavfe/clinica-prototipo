@@ -16,6 +16,23 @@ import {
   Activity, AlertTriangle, CheckCircle, XCircle, Settings
 } from 'lucide-react';
 
+// Tipo para las plantillas de documentos
+interface Plantilla {
+  id: string;
+  nombre: string;
+  tipo: 'receta' | 'indicaciones' | 'historia' | 'orden' | 'certificado' | 'control' | 'referencia';
+  categoria: string;
+  descripcion: string;
+  contenido: string;
+  fechaCreacion: string;
+  fechaModificacion: string;
+  creadoPor: string;
+  modificadoPor: string;
+  estado: 'activa' | 'inactiva';
+  usoFrecuente: boolean;
+  tags: string[];
+}
+
 // Mock data para plantillas de documentos
 const plantillasMock = [
   {
@@ -345,7 +362,7 @@ export default function PlantillasPage() {
   const [filtroCategoria, setFiltroCategoria] = useState('todos');
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
-  const [plantillaSeleccionada, setPlantillaSeleccionada] = useState<any>(null);
+  const [plantillaSeleccionada, setPlantillaSeleccionada] = useState<Plantilla | null>(null);
   const [showDetallePlantilla, setShowDetallePlantilla] = useState(false);
   const [showNuevaPlantilla, setShowNuevaPlantilla] = useState(false);
 
@@ -408,11 +425,11 @@ export default function PlantillasPage() {
     return colores[tipo] || 'bg-gray-100 text-gray-800';
   };
 
-  const columnas: Columna<any>[] = [
+  const columnas: Columna<Plantilla>[] = [
     {
       key: 'nombre',
       titulo: 'Nombre',
-      render: (plantilla: any) => (
+      render: (plantilla: Plantilla) => (
         <div className="flex items-center gap-2">
           {getIconoTipo(plantilla.tipo)}
           <div>
@@ -425,7 +442,7 @@ export default function PlantillasPage() {
     {
       key: 'tipo',
       titulo: 'Tipo',
-      render: (plantilla: any) => (
+      render: (plantilla: Plantilla) => (
         <Badge className={getColorTipo(plantilla.tipo)}>
           {plantilla.tipo}
         </Badge>
@@ -434,7 +451,7 @@ export default function PlantillasPage() {
     {
       key: 'descripcion',
       titulo: 'Descripción',
-      render: (plantilla: any) => (
+      render: (plantilla: Plantilla) => (
         <div className="max-w-xs">
           <p className="text-sm truncate">{plantilla.descripcion}</p>
         </div>
@@ -443,7 +460,7 @@ export default function PlantillasPage() {
     {
       key: 'usoFrecuente',
       titulo: 'Uso Frecuente',
-      render: (plantilla: any) => (
+      render: (plantilla: Plantilla) => (
         <div className="flex items-center gap-1">
           {plantilla.usoFrecuente ? (
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -457,7 +474,7 @@ export default function PlantillasPage() {
     {
       key: 'estado',
       titulo: 'Estado',
-      render: (plantilla: any) => (
+      render: (plantilla: Plantilla) => (
         <Badge className={plantilla.estado === 'activa' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
           {plantilla.estado}
         </Badge>
@@ -466,7 +483,7 @@ export default function PlantillasPage() {
     {
       key: 'fechaModificacion',
       titulo: 'Última Modificación',
-      render: (plantilla: any) => (
+      render: (plantilla: Plantilla) => (
         <div className="text-sm">
           <div>{new Date(plantilla.fechaModificacion).toLocaleDateString('es-PE')}</div>
           <div className="text-xs text-muted-foreground">por {plantilla.modificadoPor}</div>
@@ -476,7 +493,7 @@ export default function PlantillasPage() {
     {
       key: 'acciones',
       titulo: 'Acciones',
-      render: (plantilla: any) => (
+      render: (plantilla: Plantilla) => (
         <div className="flex gap-1">
           <Button
             size="sm"
