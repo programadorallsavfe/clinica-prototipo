@@ -26,6 +26,34 @@ interface ReporteGestantesProps {
   periodo: 'dia' | 'mes' | 'año';
 }
 
+// Tipos para los datos de gestantes
+interface GestanteBase {
+  gestantesNuevas: number;
+  controlPrenatal: number;
+  ecografiaGenetica: number;
+  ecografiaMorfologica: number;
+  altoRiesgo: number;
+  bajoRiesgo: number;
+  grupo18_25: number;
+  grupo26_35: number;
+  grupo36_45: number;
+  grupo46: number;
+}
+
+interface GestanteDia extends GestanteBase {
+  fecha: string;
+}
+
+interface GestanteMes extends GestanteBase {
+  mes: string;
+}
+
+interface GestanteAño extends GestanteBase {
+  año: string;
+}
+
+type GestanteItem = GestanteDia | GestanteMes | GestanteAño;
+
 export default function ReporteGestantes({ periodo = 'mes' }: ReporteGestantesProps) {
   
   // Mock data para reportes de gestantes
@@ -260,6 +288,20 @@ export default function ReporteGestantes({ periodo = 'mes' }: ReporteGestantesPr
   };
 
   const dataActual = gestantesData[periodo];
+
+  // Función helper para obtener el valor de fecha/mes/año de manera type-safe
+  const getPeriodoValue = (item: GestanteItem, periodo: 'dia' | 'mes' | 'año'): string => {
+    switch (periodo) {
+      case 'dia':
+        return (item as GestanteDia).fecha;
+      case 'mes':
+        return (item as GestanteMes).mes;
+      case 'año':
+        return (item as GestanteAño).año;
+      default:
+        return '';
+    }
+  };
 
   const getTotalGestantes = () => {
     return dataActual.reduce((sum, item) => sum + item.gestantesNuevas, 0);
@@ -537,7 +579,7 @@ export default function ReporteGestantes({ periodo = 'mes' }: ReporteGestantesPr
                 {dataActual.map((item, index) => (
                   <tr key={index} className="border-b hover:bg-muted/50">
                     <td className="p-3 font-medium">
-                      {periodo === 'dia' ? item.fecha : periodo === 'mes' ? item.mes : item.año}
+                      {getPeriodoValue(item, periodo)}
                     </td>
                     <td className="text-right p-3">
                       <Badge variant="default" className="bg-pink-600 text-white">
