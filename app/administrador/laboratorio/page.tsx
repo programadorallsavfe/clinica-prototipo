@@ -27,6 +27,7 @@ import {
   TrendingUp
 } from "lucide-react";
 import { AddLaboratorioMedicoModal } from "@/components/modals/add-laboratorio-medico-modal";
+import LaboratorioMarginCalculator from "@/components/laboratorio-margin-calculator";
 // Interfaces para el módulo de laboratorio
 interface Laboratorio {
   id: string;
@@ -456,17 +457,21 @@ export default function LaboratorioPage() {
 
         {/* Tabs de Navegación */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="laboratorios" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               <span className="hidden sm:inline">Laboratorios</span>
+            </TabsTrigger>
+            <TabsTrigger value="margenes" className="flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              <span className="hidden sm:inline">Márgenes</span>
             </TabsTrigger>
             <TabsTrigger value="habilitados" className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Habilitados</span>
             </TabsTrigger>
             <TabsTrigger value="prestaciones" className="flex items-center gap-2">
-              
+              <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">Prestaciones</span>
             </TabsTrigger>
             <TabsTrigger value="solicitudes" className="flex items-center gap-2">
@@ -608,6 +613,93 @@ export default function LaboratorioPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Tab: Calculadora de Márgenes */}
+          <TabsContent value="margenes" className="mt-6">
+            <div className="space-y-6">
+              {/* Mensaje Informativo */}
+              <div className="p-4 bg-info/10 border border-info/20 rounded-lg">
+                <div className="flex items-center gap-2 text-info">
+                  <Calculator className="h-4 w-4" />
+                  <p className="text-sm font-medium">
+                    Configure los márgenes de ganancia para cada laboratorio. Los cálculos se actualizan en tiempo real.
+                  </p>
+                </div>
+              </div>
+
+              {/* Calculadoras de Márgenes */}
+              <div className="space-y-6">
+                {laboratorios.map((laboratorio) => (
+                  <LaboratorioMarginCalculator
+                    key={laboratorio.id}
+                    laboratorio={{
+                      id: laboratorio.id,
+                      nombre: laboratorio.nombre,
+                      pacientesAtendidos: laboratorio.pacientesAtendidos,
+                      costoPorAtencion: laboratorio.costoPorPaciente,
+                      margenGananciaLaboratorio: laboratorio.porcentajePagoLaboratorio,
+                      montoTotalRecaudado: laboratorio.pacientesAtendidos * laboratorio.costoPorPaciente,
+                      montoAPagarLaboratorio: laboratorio.montoPorPagar,
+                      gananciaClinica: laboratorio.gananciaClinica,
+                      estado: laboratorio.estado === 'habilitado' ? 'activo' : 'inactivo'
+                    }}
+                    onUpdate={(updatedData) => {
+                      setLaboratorios(prev => prev.map(lab => 
+                        lab.id === updatedData.id 
+                          ? {
+                              ...lab,
+                              pacientesAtendidos: updatedData.pacientesAtendidos,
+                              costoPorPaciente: updatedData.costoPorAtencion,
+                              porcentajePagoLaboratorio: updatedData.margenGananciaLaboratorio,
+                              montoPorPagar: updatedData.montoAPagarLaboratorio,
+                              gananciaClinica: updatedData.gananciaClinica
+                            }
+                          : lab
+                      ));
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Resumen General de Márgenes */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" style={{ color: 'var(--primary)' }} />
+                    Resumen General de Márgenes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'var(--accent)' }}>
+                      <p className="text-sm text-muted-foreground">Margen Promedio</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {(laboratorios.reduce((sum, lab) => sum + lab.porcentajePagoLaboratorio, 0) / laboratorios.length).toFixed(1)}%
+                      </p>
+                    </div>
+                    <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'var(--accent)' }}>
+                      <p className="text-sm text-muted-foreground">Total a Pagar</p>
+                      <p className="text-2xl font-bold" style={{ color: 'var(--warning)' }}>
+                        S/ {laboratorios.reduce((sum, lab) => sum + lab.montoPorPagar, 0).toLocaleString('es-ES', { 
+                          minimumFractionDigits: 0, 
+                          maximumFractionDigits: 0 
+                        })}
+                      </p>
+                    </div>
+                    <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'var(--accent)' }}>
+                      <p className="text-sm text-muted-foreground">Ganancia Total</p>
+                      <p className="text-2xl font-bold" style={{ color: 'var(--success)' }}>
+                        S/ {laboratorios.reduce((sum, lab) => sum + lab.gananciaClinica, 0).toLocaleString('es-ES', { 
+                          minimumFractionDigits: 0, 
+                          maximumFractionDigits: 0 
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Tab: Laboratorios Habilitados */}
