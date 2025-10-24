@@ -17,6 +17,70 @@ import {
   Thermometer, Weight, Ruler, TrendingUp, TrendingDown
 } from 'lucide-react';
 
+// Tipos para la historia clínica
+interface Paciente {
+  id: string;
+  nombres: string;
+  apellidos: string;
+  documento: string;
+  fechaNacimiento: string;
+  telefono: string;
+  email: string;
+  direccion: string;
+  genero: string;
+  estadoCivil: string;
+  ocupacion: string;
+}
+
+interface HistoriaClinica {
+  id: string;
+  pacienteId: string;
+  fechaAtencion: string;
+  horaInicio: string;
+  horaFin: string;
+  especialidad: string;
+  medico: string;
+  motivoConsulta: string;
+  sintomas: string;
+  diagnostico: string;
+  tratamiento: string;
+  observaciones?: string;
+  signosVitales?: {
+    presionArterial: string;
+    frecuenciaCardiaca: number;
+    temperatura: number;
+    peso: number;
+    talla: number;
+    imc?: number;
+  };
+  medicamentos?: Array<{
+    nombre: string;
+    dosis: string;
+    frecuencia: string;
+    duracion: string;
+  }>;
+  examenes?: Array<{
+    nombre: string;
+    resultado: string;
+    fecha: string;
+  }>;
+  examenFisico?: {
+    cabeza: string;
+    cuello: string;
+    torax: string;
+    abdomen: string;
+    extremidades: string;
+    neurologico: string;
+  };
+  indicaciones?: string;
+  proximaCita?: string;
+  examenesSolicitados?: Array<{
+    nombre: string;
+    fecha: string;
+    observaciones?: string;
+  }>;
+}
+
 // Mock data para historia clínica
 const pacientesMock = [
   {
@@ -168,7 +232,7 @@ export default function HistoriaClinicaPage() {
   const [historias] = useState(historiasClinicasMock);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState<string>('');
   const [filtroBusqueda, setFiltroBusqueda] = useState<string>('');
-  const [historiaSeleccionada, setHistoriaSeleccionada] = useState<any>(null);
+  const [historiaSeleccionada, setHistoriaSeleccionada] = useState<HistoriaClinica | null>(null);
   const [showDetalleHistoria, setShowDetalleHistoria] = useState(false);
 
   // Filtrar historias por paciente seleccionado
@@ -203,13 +267,13 @@ export default function HistoriaClinicaPage() {
     }, 0) / historias.filter(h => h.pacienteId === pacienteSeleccionado).length
   } : null;
 
-  const columnas: Columna<any>[] = [
+  const columnas: Columna<HistoriaClinica>[] = [
     {
       key: 'fechaAtencion',
       titulo: 'Fecha',
       sortable: true,
       width: '120px',
-      render: (historia: any) => (
+      render: (historia: HistoriaClinica) => (
         <div className="text-sm">
           <div className="font-medium">
             {new Date(historia.fechaAtencion).toLocaleDateString('es-PE')}
@@ -236,7 +300,7 @@ export default function HistoriaClinicaPage() {
     {
       key: 'especialidad',
       titulo: 'Especialidad',
-      render: (historia: any) => (
+      render: (historia: HistoriaClinica) => (
         <Badge variant="outline" className="bg-blue-50 text-blue-700">
           <Stethoscope className="h-3 w-3 mr-1" />
           {historia.especialidad}
@@ -246,7 +310,7 @@ export default function HistoriaClinicaPage() {
     {
       key: 'motivoConsulta',
       titulo: 'Motivo',
-      render: (historia: any) => (
+      render: (historia: HistoriaClinica) => (
         <div className="max-w-xs">
           <p className="text-sm font-medium truncate">{historia.motivoConsulta}</p>
           <p className="text-xs text-muted-foreground truncate">{historia.sintomas}</p>
@@ -256,7 +320,7 @@ export default function HistoriaClinicaPage() {
     {
       key: 'diagnostico',
       titulo: 'Diagnóstico',
-      render: (historia: any) => (
+      render: (historia: HistoriaClinica) => (
         <div className="max-w-xs">
           <p className="text-sm font-medium truncate">{historia.diagnostico}</p>
         </div>
@@ -265,7 +329,7 @@ export default function HistoriaClinicaPage() {
     {
       key: 'medico',
       titulo: 'Médico',
-      render: (historia: any) => (
+      render: (historia: HistoriaClinica) => (
         <div className="text-sm">
           <div className="font-medium">{historia.medico}</div>
         </div>
@@ -274,7 +338,7 @@ export default function HistoriaClinicaPage() {
     {
       key: 'acciones',
       titulo: 'Acciones',
-      render: (historia: any) => (
+      render: (historia: HistoriaClinica) => (
         <div className="flex gap-1">
           <Button
             size="sm"
@@ -501,42 +565,42 @@ export default function HistoriaClinicaPage() {
                       <HeartPulse className="h-5 w-5 text-red-600" />
                       <div>
                         <Label className="text-sm font-medium">Presión Arterial</Label>
-                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.examenFisico.presionArterial}</p>
+                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.signosVitales?.presionArterial || 'N/A'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 p-3 bg-accent/50 rounded-lg">
                       <Activity className="h-5 w-5 text-blue-600" />
                       <div>
                         <Label className="text-sm font-medium">Frecuencia Cardíaca</Label>
-                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.examenFisico.frecuenciaCardiaca} lpm</p>
+                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.signosVitales?.frecuenciaCardiaca || 'N/A'} lpm</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 p-3 bg-accent/50 rounded-lg">
                       <Thermometer className="h-5 w-5 text-orange-600" />
                       <div>
                         <Label className="text-sm font-medium">Temperatura</Label>
-                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.examenFisico.temperatura}</p>
+                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.signosVitales?.temperatura || 'N/A'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 p-3 bg-accent/50 rounded-lg">
                       <Weight className="h-5 w-5 text-green-600" />
                       <div>
                         <Label className="text-sm font-medium">Peso</Label>
-                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.examenFisico.peso}</p>
+                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.signosVitales?.peso || 'N/A'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 p-3 bg-accent/50 rounded-lg">
                       <Ruler className="h-5 w-5 text-purple-600" />
                       <div>
                         <Label className="text-sm font-medium">Talla</Label>
-                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.examenFisico.talla}</p>
+                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.signosVitales?.talla || 'N/A'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 p-3 bg-accent/50 rounded-lg">
                       <TrendingUp className="h-5 w-5 text-indigo-600" />
                       <div>
                         <Label className="text-sm font-medium">IMC</Label>
-                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.examenFisico.imc}</p>
+                        <p className="text-sm text-muted-foreground">{historiaSeleccionada.signosVitales?.imc || 'N/A'}</p>
                       </div>
                     </div>
                   </div>
@@ -560,11 +624,13 @@ export default function HistoriaClinicaPage() {
                   </div>
                   <div>
                     <Label className="text-sm font-medium">Indicaciones</Label>
-                    <p className="text-sm text-muted-foreground p-3 bg-accent/50 rounded-lg">{historiaSeleccionada.indicaciones}</p>
+                    <p className="text-sm text-muted-foreground p-3 bg-accent/50 rounded-lg">{historiaSeleccionada.indicaciones || 'N/A'}</p>
                   </div>
                   <div>
                     <Label className="text-sm font-medium">Próxima Cita</Label>
-                    <p className="text-sm text-muted-foreground p-3 bg-accent/50 rounded-lg">{new Date(historiaSeleccionada.proximaCita).toLocaleDateString('es-PE')}</p>
+                    <p className="text-sm text-muted-foreground p-3 bg-accent/50 rounded-lg">
+                      {historiaSeleccionada.proximaCita ? new Date(historiaSeleccionada.proximaCita).toLocaleDateString('es-PE') : 'N/A'}
+                    </p>
                   </div>
                 </TabsContent>
 
@@ -572,10 +638,10 @@ export default function HistoriaClinicaPage() {
                   <div>
                     <Label className="text-sm font-medium">Exámenes Solicitados</Label>
                     <div className="space-y-2 mt-2">
-                      {historiaSeleccionada.examenesSolicitados.map((examen: string, index: number) => (
+                      {historiaSeleccionada.examenesSolicitados?.map((examen, index: number) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-accent/50 rounded-lg">
                           <FlaskConical className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm">{examen}</span>
+                          <span className="text-sm">{examen.nombre}</span>
                         </div>
                       ))}
                     </div>
