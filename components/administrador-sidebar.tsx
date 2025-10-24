@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu, Calendar, ClipboardList, TestTube, DollarSign, UserCheck, Handshake, CheckSquare } from 'lucide-react';
+import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart3, FileText, Settings, LogOut, Activity, Menu, Calendar, ClipboardList, TestTube, DollarSign, UserCheck, Handshake, CheckSquare, ShoppingBagIcon, ShoppingBag, User } from 'lucide-react';
 // Importaciones removidas - usando estructura HTML nativa
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +38,13 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
         icon: UserCog,
         badge: "12",
       },
+
+      {
+        title: "Personal",
+        onClick: () => router.push("/administrador/personal"),
+        icon: User,
+        badge: "10",
+      },
       {
         title: "Especialidades",
         onClick: () => router.push("/administrador/especialidades"),
@@ -60,6 +67,11 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
         title: "Laboratorio",
         onClick: () => router.push("/administrador/laboratorio"),
         icon: TestTube,
+      },
+      {
+        title: "Proveedores",
+        onClick: () => router.push("/administrador/proveedores"),
+        icon: ShoppingBag,
       },
       {
         title: "Caja",
