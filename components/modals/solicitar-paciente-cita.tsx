@@ -47,7 +47,7 @@ interface HorarioDisponible {
   disponible: boolean;
 }
 
-interface DatosCita {
+export interface DatosCita {
   especialidad: string;
   doctor: string;
   fecha: Date;

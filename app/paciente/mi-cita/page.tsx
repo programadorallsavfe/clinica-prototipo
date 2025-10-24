@@ -24,7 +24,7 @@ import {
   Search
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import SolicitarCitaModal from '@/components/modals/solicitar-paciente-cita';
+import SolicitarCitaModal, { DatosCita } from '@/components/modals/solicitar-paciente-cita';
 
 // Tipos para las citas del paciente
 interface CitaPaciente {
@@ -193,7 +193,7 @@ export default function MiCitaPage() {
   };
 
   // Función para manejar la solicitud de cita
-  const handleSolicitarCita = (datosCita: any) => {
+  const handleSolicitarCita = (datosCita: DatosCita) => {
     console.log('Solicitud de cita:', datosCita);
     // Aquí se podría enviar la solicitud al backend
     // Por ahora solo mostramos un mensaje de confirmación
