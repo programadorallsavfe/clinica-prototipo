@@ -7,6 +7,7 @@ import { Shield, LayoutDashboard, Users, UserCog, Stethoscope, Package, BarChart
 // Importaciones removidas - usando estructura HTML nativa
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { title } from 'process';
 
 interface AdministradorSidebarProps {
   adminNombre: string;
@@ -82,6 +83,18 @@ export function AdministradorSidebar({ adminNombre, isCollapsed, onToggleCollaps
         title: "Reportes",
         onClick: () => router.push("/administrador/reportes"),
         icon: BarChart3,
+      },
+      {title: "Triaje",
+        onClick: () => router.push("/administrador/triaje"),
+        icon: Stethoscope,
+      },
+      {title: "Citas",
+        onClick: () => router.push("/administrador/citas"),
+        icon: Calendar,
+      },
+      {title: "Historial Médico",
+        onClick: () => router.push("/administrador/historial-medico"),
+        icon: FileText,
       },
     ],
     navAdministracion: [
