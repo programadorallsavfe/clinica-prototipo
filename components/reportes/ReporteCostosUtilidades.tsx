@@ -466,7 +466,7 @@ export default function ReporteCostosUtilidades({ periodo = 'mes' }: ReporteCost
                   return (
                     <tr key={index} className="border-b hover:bg-muted/50">
                       <td className="p-3 font-medium">
-                        {periodo === 'dia' ? (item as any).fecha : periodo === 'mes' ? (item as any).mes : (item as any).año}
+                        {periodo === 'dia' ? (item as { fecha: string }).fecha : periodo === 'mes' ? (item as { mes: string }).mes : (item as { año: string }).año}
                       </td>
                       <td className="text-right p-3">
                         <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
