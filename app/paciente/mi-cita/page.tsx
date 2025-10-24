@@ -24,9 +24,18 @@ import {
   Search
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import SolicitarCitaModal, { DatosCita } from '@/components/modals/solicitar-paciente-cita';
+import SolicitarCitaModal from '@/components/modals/solicitar-paciente-cita';
 
 // Tipos para las citas del paciente
+interface DatosCita {
+  especialidad: string;
+  doctor: string;
+  fecha: Date;
+  hora: string;
+  tipoCita: string;
+  motivoConsulta: string;
+  observaciones?: string;
+}
 interface CitaPaciente {
   id: string;
   fecha: string;
