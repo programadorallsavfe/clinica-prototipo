@@ -45,15 +45,15 @@ export default function PacienteLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 hidden md:block shadow-lg">
-        <PacienteSidebar pacienteNombre={pacienteNombre} />
-      </aside>
+      <PacienteSidebar pacienteNombre={pacienteNombre} />
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
-        {children}
+        <div className="p-6">
+          {children}
+        </div>
       </main>
     </div>
   );
