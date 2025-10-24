@@ -652,7 +652,7 @@ export default function AgendasPage() {
                             onClick={(e) => handleContextMenu(e, cita)}
                             className="font-bold text-foreground underline hover:text-primary transition-colors duration-200 cursor-pointer text-left"
                           >
-                            {cita.paciente.nombre}
+                            ¨{cita.paciente.nombre} {cita.paciente.apellidos}¨
                           </button>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -1,0 +1,298 @@
+/* Estilos personalizados para el calendario médico usando variables CSS del tema */
+
+/* Contenedor principal del calendario */
+.rbc-calendar {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* Header del calendario */
+.rbc-header {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+/* Botones de navegación */
+.rbc-btn-group {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.rbc-btn-group button {
+  background: transparent;
+  color: var(--foreground);
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-right: 1px solid var(--border);
+}
+
+.rbc-btn-group button:last-child {
+  border-right: none;
+}
+
+.rbc-btn-group button:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.rbc-btn-group button.rbc-active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Botón "Hoy" */
+.rbc-toolbar button {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.rbc-toolbar button:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  border-color: var(--primary);
+}
+
+/* Título del calendario */
+.rbc-toolbar-label {
+  color: var(--foreground);
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+/* Grid del calendario */
+.rbc-month-view,
+.rbc-time-view {
+  background: var(--card);
+}
+
+/* Celdas del calendario */
+.rbc-date-cell {
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.rbc-off-range-bg {
+  background: var(--muted);
+}
+
+.rbc-today {
+  background: var(--accent);
+}
+
+/* Líneas de tiempo */
+.rbc-time-slot {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+
+.rbc-time-header-content {
+  border-left: 1px solid var(--border);
+}
+
+.rbc-time-content {
+  border-left: 1px solid var(--border);
+}
+
+/* Eventos del calendario */
+.rbc-event {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.rbc-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Eventos de diferentes tipos */
+.rbc-event.consulta {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.rbc-event.revision {
+  background: var(--success);
+  color: var(--success-foreground);
+}
+
+.rbc-event.descanso {
+  background: var(--muted-foreground);
+  color: var(--muted);
+}
+
+/* Líneas de separación */
+.rbc-time-view .rbc-header {
+  border-bottom: 1px solid var(--border);
+}
+
+.rbc-time-view .rbc-time-gutter {
+  background: var(--secondary);
+  border-right: 1px solid var(--border);
+}
+
+.rbc-time-view .rbc-time-content {
+  border-top: 1px solid var(--border);
+}
+
+/* Scrollbar personalizado */
+.rbc-time-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rbc-time-content::-webkit-scrollbar-track {
+  background: var(--muted);
+  border-radius: var(--radius-sm);
+}
+
+.rbc-time-content::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: var(--radius-sm);
+}
+
+.rbc-time-content::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* Vista de agenda */
+.rbc-agenda-view {
+  background: var(--card);
+}
+
+.rbc-agenda-view table {
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+.rbc-agenda-view .rbc-agenda-date-cell,
+.rbc-agenda-view .rbc-agenda-time-cell {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border-bottom: 1px solid var(--border);
+  padding: 12px;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 12px;
+}
+
+/* Vista de mes */
+.rbc-month-view .rbc-date-cell {
+  padding: 8px;
+}
+
+.rbc-month-view .rbc-date-cell > a {
+  color: var(--foreground);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.rbc-month-view .rbc-date-cell > a:hover {
+  color: var(--primary);
+}
+
+/* Indicador de "más eventos" */
+.rbc-show-more {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.rbc-show-more:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rbc-header {
+    padding: 8px 4px;
+    font-size: 0.75rem;
+  }
+  
+  .rbc-btn-group button {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .rbc-toolbar button {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .rbc-event {
+    font-size: 0.625rem;
+    padding: 1px 4px;
+  }
+}
+
+/* Modo oscuro específico */
+.dark .rbc-calendar {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.dark .rbc-event {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark .rbc-event:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Animaciones suaves */
+.rbc-calendar * {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Estados de selección */
+.rbc-slot-selection {
+  background: var(--primary);
+  opacity: 0.1;
+}
+
+.rbc-selected {
+  background: var(--accent);
+}
+
+/* Mejoras de accesibilidad */
+.rbc-event:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.rbc-btn-group button:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
