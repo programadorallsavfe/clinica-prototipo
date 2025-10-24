@@ -47,10 +47,20 @@ interface HorarioDisponible {
   disponible: boolean;
 }
 
+interface DatosCita {
+  especialidad: string;
+  doctor: string;
+  fecha: Date;
+  hora: string;
+  tipoCita: string;
+  motivoConsulta: string;
+  observaciones?: string;
+}
+
 interface SolicitarCitaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSolicitarCita: (datosCita: any) => void;
+  onSolicitarCita: (datosCita: DatosCita) => void;
 }
 
 // Mock data
@@ -160,16 +170,14 @@ export default function SolicitarCitaModal({ isOpen, onClose, onSolicitarCita }:
   const proximosDias = obtenerProximosDias();
 
   const handleSolicitarCita = () => {
-    const datosCita = {
-      especialidad: especialidad?.nombre,
-      doctor: doctoresFiltrados.find(d => d.id === doctorSeleccionado)?.nombre,
-      fecha: fechaSeleccionada,
+    const datosCita: DatosCita = {
+      especialidad: especialidad?.nombre || '',
+      doctor: doctoresFiltrados.find(d => d.id === doctorSeleccionado)?.nombre || '',
+      fecha: new Date(fechaSeleccionada),
       hora: horaSeleccionada,
-      motivo,
-      observaciones,
-      tipo: tipoCita,
-      precio: especialidad?.precio,
-      duracion: especialidad?.duracion
+      tipoCita: tipoCita,
+      motivoConsulta: motivo,
+      observaciones: observaciones
     };
 
     onSolicitarCita(datosCita);
