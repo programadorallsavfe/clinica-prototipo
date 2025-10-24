@@ -138,7 +138,7 @@ export default function DoctorScheduleCalendar({ doctorId, doctorName }: DoctorS
         // Aquí podrías abrir un modal con detalles del evento
     };
 
-    const handleSelectSlot = (slotInfo: any) => {
+    const handleSelectSlot = (slotInfo: { start: Date; end: Date; slots: Date[] }) => {
         console.log('Slot seleccionado:', slotInfo);
         // Aquí podrías abrir un modal para crear una nueva cita
     };
