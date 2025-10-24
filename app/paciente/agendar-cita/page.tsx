@@ -149,12 +149,15 @@ export default function AgendarCitaPage() {
     const diaSemana = fechaSeleccionada.toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
     const horariosDoctor = doctorActual.horarios[diaSemana as keyof typeof doctorActual.horarios] || [];
     
-    if (horariosDisponibles.length === 0) return [];
+    if (horariosDoctor.length === 0) {
+      // Si el doctor no trabaja ese día, mostrar horarios genéricos
+      return horariosDisponibles.slice(0, 8); // Mostrar primeros 8 horarios
+    }
     
     // Simular horarios ocupados (en una implementación real vendría de la API)
     const horariosOcupados = ['09:00', '10:30', '15:00'];
     
-    return horariosDisponibles.filter(horario => {
+    const horariosDisponiblesDelDia = horariosDisponibles.filter(horario => {
       const estaEnHorarioDoctor = horariosDoctor.some(horarioDoctor => {
         const [inicio, fin] = horarioDoctor.split('-');
         return horario >= inicio && horario < fin;
@@ -164,6 +167,18 @@ export default function AgendarCitaPage() {
       
       return estaEnHorarioDoctor && noEstaOcupado;
     });
+
+    // Si no hay horarios disponibles para ese día, mostrar todos los horarios del doctor
+    if (horariosDisponiblesDelDia.length === 0) {
+      return horariosDisponibles.filter(horario => {
+        return horariosDoctor.some(horarioDoctor => {
+          const [inicio, fin] = horarioDoctor.split('-');
+          return horario >= inicio && horario < fin;
+        });
+      });
+    }
+
+    return horariosDisponiblesDelDia;
   };
 
   const horariosDisponiblesFiltrados = getHorariosDisponibles();
@@ -484,24 +499,40 @@ export default function AgendarCitaPage() {
                 
                 <div>
                   <Label className="text-base font-semibold">Hora *</Label>
-                  <Select 
-                    value={horaSeleccionada} 
-                    onValueChange={setHoraSeleccionada}
-                  >
-                    <SelectTrigger className="mt-2" disabled={!fechaSeleccionada}>
-                      <SelectValue placeholder="Seleccione hora" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {horariosDisponiblesFiltrados.map((horario) => (
-                        <SelectItem key={horario} value={horario}>
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4" />
-                            {horario}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {fechaSeleccionada ? (
+                    horariosDisponiblesFiltrados.length > 0 ? (
+                      <Select 
+                        value={horaSeleccionada} 
+                        onValueChange={setHoraSeleccionada}
+                      >
+                        <SelectTrigger className="mt-2">
+                          <SelectValue placeholder="Seleccione hora" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {horariosDisponiblesFiltrados.map((horario) => (
+                            <SelectItem key={horario} value={horario}>
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4" />
+                                {horario}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p className="text-sm text-yellow-800">
+                          No hay horarios disponibles para esta fecha. Por favor seleccione otra fecha.
+                        </p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="mt-2 p-3 bg-muted rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        Seleccione una fecha para ver los horarios disponibles
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
