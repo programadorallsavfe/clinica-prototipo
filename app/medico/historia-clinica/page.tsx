@@ -287,7 +287,7 @@ export default function HistoriaClinicaPage() {
     {
       key: 'paciente',
       titulo: 'Paciente',
-      render: (historia: any) => {
+      render: (historia: HistoriaClinica) => {
         const paciente = pacientes.find(p => p.id === historia.pacienteId);
         return (
           <div>

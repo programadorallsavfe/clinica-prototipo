@@ -14,6 +14,31 @@ import {
   XCircle, Activity, RefreshCw, Plus, Bell, Timer, TrendingUp
 } from 'lucide-react';
 
+// Tipo para los pacientes del día
+interface PacienteDia {
+  id: string;
+  pacienteId: string;
+  nombres: string;
+  apellidos: string;
+  documento: string;
+  telefono: string;
+  email: string;
+  fechaNacimiento: string;
+  edad: number;
+  fechaCita: string;
+  horaCita: string;
+  especialidad: string;
+  motivoConsulta: string;
+  estado: 'programada' | 'en_curso' | 'atendida' | 'cancelada' | 'no_asiste';
+  prioridad: 'baja' | 'normal' | 'alta' | 'urgente';
+  observaciones?: string;
+  medico: string;
+  telefonoEmergencia?: string;
+  alergias?: string;
+  medicamentosActuales?: string;
+  antecedentes?: string;
+}
+
 // Mock data para pacientes del día
 const pacientesDiaMock = [
   {
@@ -208,7 +233,7 @@ export default function PacientesDiaPage() {
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroPrioridad, setFiltroPrioridad] = useState('todos');
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
-  const [pacienteSeleccionado, setPacienteSeleccionado] = useState<any>(null);
+  const [pacienteSeleccionado, setPacienteSeleccionado] = useState<PacienteDia | null>(null);
   const [showDetallePaciente, setShowDetallePaciente] = useState(false);
 
   // Filtrar pacientes
@@ -249,9 +274,9 @@ export default function PacientesDiaPage() {
     total: pacientesFiltrados.length,
     programadas: pacientesFiltrados.filter(p => p.estado === 'programada').length,
     enCurso: pacientesFiltrados.filter(p => p.estado === 'en_curso').length,
-    canceladas: pacientesFiltrados.filter((p: any) => p.estado === 'cancelada').length,
-    altaPrioridad: pacientesFiltrados.filter((p: any) => p.prioridad === 'alta').length,
-    normalPrioridad: pacientesFiltrados.filter((p: any) => p.prioridad === 'normal').length,
+    canceladas: pacientesFiltrados.filter(p => p.estado === 'cancelada').length,
+    altaPrioridad: pacientesFiltrados.filter(p => p.prioridad === 'alta').length,
+    normalPrioridad: pacientesFiltrados.filter(p => p.prioridad === 'normal').length,
     hoy: pacientes.filter(p => p.fechaCita === new Date().toISOString().split('T')[0]).length,
     proximos: pacientes.filter(p => p.fechaCita > new Date().toISOString().split('T')[0]).length
   };
@@ -262,13 +287,13 @@ export default function PacientesDiaPage() {
     ));
   };
 
-  const columnas: Columna<any>[] = [
+  const columnas: Columna<PacienteDia>[] = [
     {
       key: 'horaCita',
       titulo: 'Hora',
       sortable: true,
       width: '80px',
-      render: (paciente: any) => (
+      render: (paciente: PacienteDia) => (
         <div className="text-sm">
           <div className="font-medium">{paciente.horaCita}</div>
           <div className="text-xs text-muted-foreground">
@@ -283,7 +308,7 @@ export default function PacientesDiaPage() {
     {
       key: 'paciente',
       titulo: 'Paciente',
-      render: (paciente: any) => (
+      render: (paciente: PacienteDia) => (
         <div>
           <div className="font-medium">{paciente.nombres} {paciente.apellidos}</div>
           <div className="text-xs text-muted-foreground">{paciente.documento} • {paciente.edad} años</div>
@@ -293,7 +318,7 @@ export default function PacientesDiaPage() {
     {
       key: 'especialidad',
       titulo: 'Especialidad',
-      render: (paciente: any) => (
+      render: (paciente: PacienteDia) => (
         <Badge variant="outline" className="bg-blue-50 text-blue-700">
           <Stethoscope className="h-3 w-3 mr-1" />
           {paciente.especialidad}
@@ -303,7 +328,7 @@ export default function PacientesDiaPage() {
     {
       key: 'motivoConsulta',
       titulo: 'Motivo',
-      render: (paciente: any) => (
+      render: (paciente: PacienteDia) => (
         <div className="max-w-xs">
           <p className="text-sm font-medium truncate">{paciente.motivoConsulta}</p>
           {paciente.observaciones && (
@@ -347,7 +372,7 @@ export default function PacientesDiaPage() {
     {
       key: 'acciones',
       titulo: 'Acciones',
-      render: (paciente: any) => (
+      render: (paciente: PacienteDia) => (
         <div className="flex gap-1">
           <Button
             size="sm"

@@ -218,7 +218,7 @@ export default function AgendaMedicaPage() {
     {
       key: 'estado',
       titulo: 'Estado',
-      render: (cita: any) => {
+      render: (cita: CitaMedica) => {
         const colores: Record<string, string> = {
           programada: 'bg-blue-100 text-blue-800',
           en_curso: 'bg-orange-100 text-orange-800',
