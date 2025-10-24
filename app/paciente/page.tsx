@@ -29,7 +29,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 
 import { Pie, PieChart, Cell, ResponsiveContainer as PieResponsiveContainer } from 'recharts';
 import { RadialBar, RadialBarChart, PolarGrid, PolarRadiusAxis } from 'recharts';
 import { getSession } from '@/lib/auth';
-import { pacientesStorage, citasStorage, doctoresStorage, especialidadesStorage, ordenesStorage, registrosClinicosStorage } from '@/lib/storage';
+import { pacientesStorage, citasStorage, doctoresStorage, especialidadesStorage, ordenesStorage, registrosClinicosStorage, Paciente } from '@/lib/storage';
 
 // Mock data para estadísticas del paciente
 const estadisticasMock = {
@@ -62,7 +62,7 @@ const estadisticasMock = {
 };
 
 export default function PacientePage() {
-  const [paciente, setPaciente] = useState<any>(null);
+  const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [periodo, setPeriodo] = useState('6meses');
   const [estadisticas, setEstadisticas] = useState(estadisticasMock);
 
@@ -74,7 +74,7 @@ export default function PacientePage() {
   }, []);
 
   const cargarDatosPaciente = (usuarioId: string) => {
-    const pac = pacientesStorage.findOne((p: { usuarioId: string }) => p.usuarioId === usuarioId);
+    const pac = pacientesStorage.findOne((p: Paciente) => p.usuarioId === usuarioId);
     if (pac) {
       setPaciente(pac);
     }
