@@ -24,6 +24,7 @@ import {
   Search
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import SolicitarCitaModal from '@/components/modals/solicitar-paciente-cita';
 
 // Tipos para las citas del paciente
 interface CitaPaciente {
@@ -48,6 +49,7 @@ export default function MiCitaPage() {
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroEspecialidad, setFiltroEspecialidad] = useState('todos');
   const [busqueda, setBusqueda] = useState('');
+  const [showSolicitarCita, setShowSolicitarCita] = useState(false);
 
   // Mock data para citas del paciente
   const citasMock: CitaPaciente[] = [
@@ -190,6 +192,14 @@ export default function MiCitaPage() {
     });
   };
 
+  // Función para manejar la solicitud de cita
+  const handleSolicitarCita = (datosCita: any) => {
+    console.log('Solicitud de cita:', datosCita);
+    // Aquí se podría enviar la solicitud al backend
+    // Por ahora solo mostramos un mensaje de confirmación
+    alert('Solicitud de cita enviada correctamente. Te contactaremos pronto para confirmar.');
+  };
+
   // Componente para mostrar una cita
   const CitaCard = ({ cita }: { cita: CitaPaciente }) => (
     <Card className="hover:shadow-md transition-shadow">
@@ -306,7 +316,7 @@ export default function MiCitaPage() {
             <RefreshCw className="h-4 w-4 mr-1" />
             Actualizar
           </Button>
-          <Button size="sm">
+          <Button size="sm" onClick={() => setShowSolicitarCita(true)}>
             <CalendarDays className="h-4 w-4 mr-1" />
             Solicitar Cita
           </Button>
@@ -517,6 +527,13 @@ export default function MiCitaPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Modal para solicitar cita */}
+      <SolicitarCitaModal
+        isOpen={showSolicitarCita}
+        onClose={() => setShowSolicitarCita(false)}
+        onSolicitarCita={handleSolicitarCita}
+      />
     </div>
   );
 }
