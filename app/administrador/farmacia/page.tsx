@@ -855,6 +855,209 @@ export default function FarmaciaPage() {
                         </Card>
                     </TabsContent>
 
+                    {/* Tab: Productos */}
+                    <TabsContent value="productos" className="space-y-6">
+                        {/* Filtros para productos */}
+                        <Card className="border-primary/20">
+                            <CardContent className="p-4">
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <div className="flex-1">
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                            <Input
+                                                placeholder="Buscar productos por nombre, marca, código..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="pl-10 border-primary/30 focus:border-primary"
+                                            />
+                                        </div>
+                                    </div>
+                                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                                        <SelectTrigger className="w-full sm:w-48 border-primary/30">
+                                            <SelectValue placeholder="Tipo de Producto" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="todos">Todos los tipos</SelectItem>
+                                            {tiposProducto.map(tipo => (
+                                                <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+                                        <Filter className="h-4 w-4 mr-2" />
+                                        Filtros
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Grid de productos */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {productosFiltrados.map((producto) => {
+                                const stockStatus = getStockStatus(producto.stock, producto.stockSeguridad);
+                                const utilidad = getUtilidad(producto.precioVenta, producto.precioPromedio);
+                                const diasVencimiento = getDaysUntilExpiration(producto.fechaExpiracion);
+                                
+                                return (
+                                    <Card key={producto.id} className="border-primary/10">
+                                        <CardHeader className="pb-3">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1">
+                                                    <CardTitle className="text-sm font-semibold text-foreground line-clamp-2 leading-tight">
+                                                        {producto.nombre}
+                                                    </CardTitle>
+                                                    <div className="flex items-center gap-2 mt-2">
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {producto.tipoProducto}
+                                                        </Badge>
+                                                        <Badge 
+                                                            variant={stockStatus.color} 
+                                                            className="text-xs"
+                                                        >
+                                                            {stockStatus.status}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleEdit(producto)}
+                                                        className="text-primary hover:bg-primary/10 h-8 w-8 p-0"
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="sm" 
+                                                        className="text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </CardHeader>
+                                        
+                                        <CardContent className="space-y-4">
+                                            {/* Información del producto */}
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Marca:</span>
+                                                    <span className="text-sm font-medium">{producto.marca}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Reg. Sanitario:</span>
+                                                    <span className="text-xs font-mono">{producto.registroSanitario}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Código Interno:</span>
+                                                    <span className="text-xs font-mono text-primary">{producto.codigoInterno}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Concentración:</span>
+                                                    <span className="text-sm">{producto.concentracion} {producto.unidadMedida}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Stock y precios */}
+                                            <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Stock Actual:</span>
+                                                    <span className={`text-sm font-bold ${stockStatus.color === 'destructive' ? 'text-destructive' : 'text-primary'}`}>
+                                                        {producto.stock}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Stock Seguridad:</span>
+                                                    <span className="text-sm">{producto.stockSeguridad}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Precio Promedio:</span>
+                                                    <span className="text-sm font-medium text-success">S/ {producto.precioPromedio.toFixed(2)}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Precio Venta:</span>
+                                                    <span className="text-sm font-bold text-primary">S/ {producto.precioVenta.toFixed(2)}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Utilidad:</span>
+                                                    <span className="text-sm font-medium text-success">+{utilidad}%</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Información de lote y expiración */}
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Lote:</span>
+                                                    <span className="text-xs font-mono">{producto.lote}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Expiración:</span>
+                                                    <span className={`text-xs font-medium ${
+                                                        diasVencimiento < 0 
+                                                            ? 'text-destructive' 
+                                                            : diasVencimiento < 30 
+                                                            ? 'text-warning'
+                                                            : 'text-foreground'
+                                                    }`}>
+                                                        {new Date(producto.fechaExpiracion).toLocaleDateString('es-ES', { 
+                                                            day: 'numeric', 
+                                                            month: 'short', 
+                                                            year: 'numeric' 
+                                                        })}
+                                                    </span>
+                                                </div>
+                                                {diasVencimiento < 30 && (
+                                                    <div className="text-xs text-center">
+                                                        <span className={`px-2 py-1 rounded-full ${
+                                                            diasVencimiento < 0 
+                                                                ? 'bg-destructive/20 text-destructive' 
+                                                                : 'bg-warning/20 text-warning'
+                                                        }`}>
+                                                            {diasVencimiento < 0 ? 'Vencido' : `${diasVencimiento} días restantes`}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Presentación comercial */}
+                                            <div className="pt-2 border-t border-border">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Presentación:</span>
+                                                    <span className="text-xs">{producto.presentacionComercial}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted-foreground">Bodega:</span>
+                                                    <span className="text-xs">{producto.bodega}</span>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
+                        </div>
+
+                        {/* Mensaje cuando no hay productos */}
+                        {productosFiltrados.length === 0 && (
+                            <Card className="border-primary/10">
+                                <CardContent className="text-center py-12">
+                                    <Package className="h-12 w-12 mx-auto mb-4 opacity-50 text-primary" />
+                                    <h3 className="text-lg font-medium mb-2">No se encontraron productos</h3>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                        Intenta ajustar los filtros de búsqueda o agregar nuevos productos
+                                    </p>
+                                    <Button 
+                                        className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                                        onClick={() => setIsAddModalOpen(true)}
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Agregar Producto
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </TabsContent>
+
                     {/* Tab: Movimientos */}
                     <TabsContent value="movimientos" className="space-y-6">
                         <Card className="border-primary/10">
@@ -1024,6 +1227,153 @@ export default function FarmaciaPage() {
                                 </div>
                             </CardContent>
                         </Card>
+                    </TabsContent>
+
+                    {/* Tab: Configuración */}
+                    <TabsContent value="configuracion" className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Configuración de Bodegas */}
+                            <Card className="border-primary/10">
+                                <CardHeader className="bg-primary/5">
+                                    <CardTitle className="flex items-center gap-2 text-primary">
+                                        <Warehouse className="h-5 w-5" />
+                                        Gestión de Bodegas
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="bodega-principal">Bodega Principal</Label>
+                                        <Input 
+                                            id="bodega-principal" 
+                                            defaultValue="Bodega central" 
+                                            className="border-primary/30"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="bodega-auxiliar">Bodega Auxiliar</Label>
+                                        <Input 
+                                            id="bodega-auxiliar" 
+                                            defaultValue="Bodega auxiliar" 
+                                            className="border-primary/30"
+                                        />
+                                    </div>
+                                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                                        <Save className="h-4 w-4 mr-2" />
+                                        Guardar Configuración
+                                    </Button>
+                                </CardContent>
+                            </Card>
+
+                            {/* Configuración de Alertas */}
+                            <Card className="border-primary/10">
+                                <CardHeader className="bg-primary/5">
+                                    <CardTitle className="flex items-center gap-2 text-primary">
+                                        <AlertTriangle className="h-5 w-5" />
+                                        Alertas de Stock
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="dias-vencimiento">Días antes de vencimiento</Label>
+                                        <Input 
+                                            id="dias-vencimiento" 
+                                            type="number" 
+                                            defaultValue="30" 
+                                            className="border-primary/30"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="porcentaje-stock">Porcentaje stock bajo</Label>
+                                        <Input 
+                                            id="porcentaje-stock" 
+                                            type="number" 
+                                            defaultValue="20" 
+                                            className="border-primary/30"
+                                        />
+                                    </div>
+                                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                                        <Save className="h-4 w-4 mr-2" />
+                                        Guardar Configuración
+                                    </Button>
+                                </CardContent>
+                            </Card>
+
+                            {/* Configuración de Precios */}
+                            <Card className="border-primary/10">
+                                <CardHeader className="bg-primary/5">
+                                    <CardTitle className="flex items-center gap-2 text-primary">
+                                        <DollarSign className="h-5 w-5" />
+                                        Configuración de Precios
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="margen-utilidad">Margen de utilidad (%)</Label>
+                                        <Input 
+                                            id="margen-utilidad" 
+                                            type="number" 
+                                            defaultValue="30" 
+                                            className="border-primary/30"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="descuento-maximo">Descuento máximo (%)</Label>
+                                        <Input 
+                                            id="descuento-maximo" 
+                                            type="number" 
+                                            defaultValue="10" 
+                                            className="border-primary/30"
+                                        />
+                                    </div>
+                                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                                        <Save className="h-4 w-4 mr-2" />
+                                        Guardar Configuración
+                                    </Button>
+                                </CardContent>
+                            </Card>
+
+                            {/* Configuración de Reportes */}
+                            <Card className="border-primary/10">
+                                <CardHeader className="bg-primary/5">
+                                    <CardTitle className="flex items-center gap-2 text-primary">
+                                        <FileText className="h-5 w-5" />
+                                        Configuración de Reportes
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="formato-reporte">Formato de reporte</Label>
+                                        <Select>
+                                            <SelectTrigger className="border-primary/30">
+                                                <SelectValue placeholder="PDF" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="pdf">PDF</SelectItem>
+                                                <SelectItem value="excel">Excel</SelectItem>
+                                                <SelectItem value="csv">CSV</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="frecuencia-reporte">Frecuencia de reportes</Label>
+                                        <Select>
+                                            <SelectTrigger className="border-primary/30">
+                                                <SelectValue placeholder="Mensual" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="diario">Diario</SelectItem>
+                                                <SelectItem value="semanal">Semanal</SelectItem>
+                                                <SelectItem value="mensual">Mensual</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                                        <Save className="h-4 w-4 mr-2" />
+                                        Guardar Configuración
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </TabsContent>
 
                     {/* Tab: Reportes */}
