@@ -26,6 +26,32 @@ interface ReporteServiciosProps {
   periodo: 'dia' | 'mes' | 'año';
 }
 
+// Tipos para los datos de servicios
+interface ServicioBase {
+  consultaObstetrica: number;
+  consultaGinecologica: number;
+  ecografiaObstetrica: number;
+  ecografiaTransvaginal: number;
+  perfilPrenatal: number;
+  pap: number;
+  colposcopia: number;
+  otros: number;
+}
+
+interface ServicioDia extends ServicioBase {
+  fecha: string;
+}
+
+interface ServicioMes extends ServicioBase {
+  mes: string;
+}
+
+interface ServicioAño extends ServicioBase {
+  año: string;
+}
+
+type ServicioItem = ServicioDia | ServicioMes | ServicioAño;
+
 export default function ReporteServicios({ periodo = 'mes' }: ReporteServiciosProps) {
   
   // Mock data para reportes de servicios
@@ -227,6 +253,20 @@ export default function ReporteServicios({ periodo = 'mes' }: ReporteServiciosPr
 
   const dataActual = serviciosData[periodo];
 
+  // Función helper para obtener el valor de fecha/mes/año de manera type-safe
+  const getPeriodoValue = (item: ServicioItem, periodo: 'dia' | 'mes' | 'año'): string => {
+    switch (periodo) {
+      case 'dia':
+        return (item as ServicioDia).fecha;
+      case 'mes':
+        return (item as ServicioMes).mes;
+      case 'año':
+        return (item as ServicioAño).año;
+      default:
+        return '';
+    }
+  };
+
   const servicios = [
     { 
       nombre: 'consultaObstetrica', 
@@ -357,7 +397,7 @@ export default function ReporteServicios({ periodo = 'mes' }: ReporteServiciosPr
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Select defaultValue={periodo}>
+              <Select value={periodo}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -487,7 +527,7 @@ export default function ReporteServicios({ periodo = 'mes' }: ReporteServiciosPr
                   return (
                     <tr key={index} className="border-b hover:bg-muted/50">
                       <td className="p-3 font-medium">
-                        {periodo === 'dia' ? item.fecha : periodo === 'mes' ? item.mes : item.año}
+                        {getPeriodoValue(item, periodo)}
                       </td>
                       <td className="text-right p-3">
                         <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
