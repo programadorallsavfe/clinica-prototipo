@@ -27,7 +27,6 @@ import {
 } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { Pie, PieChart, Cell, ResponsiveContainer as PieResponsiveContainer } from 'recharts';
-import { RadialBar, RadialBarChart, PolarGrid, PolarRadiusAxis } from 'recharts';
 import { getSession } from '@/lib/auth';
 import { pacientesStorage, citasStorage, doctoresStorage, especialidadesStorage, ordenesStorage, registrosClinicosStorage, Paciente } from '@/lib/storage';
 
@@ -357,54 +356,110 @@ export default function PacientePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-center h-[300px]">
-              <ChartContainer config={{}} className="h-[250px] w-[250px]">
-                <RadialBarChart
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="60%"
-                  outerRadius="90%"
-                  barSize={20}
-                  data={[{ value: estadisticas.saludGeneral.puntuacion, fill: 'var(--chart-1)' }]}
-                  startAngle={90}
-                  endAngle={-270}
+            <div className="space-y-6">
+              {/* Puntuación Principal */}
+              <div className="text-center">
+                <div className="relative inline-block">
+                  <div className="w-32 h-32 rounded-full border-8 border-muted flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-foreground">
+                        {estadisticas.saludGeneral.puntuacion}
+                      </p>
+                      <p className="text-sm text-muted-foreground">/100</p>
+                    </div>
+                  </div>
+                  {/* Barra de progreso circular */}
+                  <div 
+                    className="absolute inset-0 rounded-full border-8 border-transparent"
+                    style={{
+                      borderTopColor: estadisticas.saludGeneral.puntuacion >= 80 
+                        ? 'var(--chart-1)' 
+                        : estadisticas.saludGeneral.puntuacion >= 60 
+                        ? 'var(--chart-2)' 
+                        : 'var(--chart-3)',
+                      transform: `rotate(${(estadisticas.saludGeneral.puntuacion / 100) * 360 - 90}deg)`,
+                      transition: 'transform 0.5s ease-in-out'
+                    }}
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">Puntuación de Salud</p>
+                <Badge 
+                  className={`mt-2 ${
+                    estadisticas.saludGeneral.puntuacion >= 80 
+                      ? 'bg-green-100 text-green-800 border-green-200' 
+                      : estadisticas.saludGeneral.puntuacion >= 60 
+                      ? 'bg-yellow-100 text-yellow-800 border-yellow-200' 
+                      : 'bg-red-100 text-red-800 border-red-200'
+                  }`}
                 >
-                  <PolarGrid />
-                  <PolarRadiusAxis 
-                    angle={90} 
-                    domain={[0, 100]} 
-                    tick={false}
-                    axisLine={false}
-                  />
-                  <RadialBar
-                    dataKey="value"
-                    cornerRadius={10}
-                    fill="var(--chart-1)"
-                  />
-                </RadialBarChart>
-              </ChartContainer>
-            </div>
-            <div className="text-center mt-4">
-              <p className="text-3xl font-bold text-foreground">
-                {estadisticas.saludGeneral.puntuacion}/100
-              </p>
-              <p className="text-sm text-muted-foreground">Puntuación de Salud</p>
-              <Badge 
-                className={`mt-2 ${
-                  estadisticas.saludGeneral.puntuacion >= 80 
-                    ? 'bg-green-100 text-green-800' 
+                  {estadisticas.saludGeneral.puntuacion >= 80 
+                    ? 'Excelente' 
                     : estadisticas.saludGeneral.puntuacion >= 60 
-                    ? 'bg-yellow-100 text-yellow-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}
-              >
-                {estadisticas.saludGeneral.puntuacion >= 80 
-                  ? 'Excelente' 
-                  : estadisticas.saludGeneral.puntuacion >= 60 
-                  ? 'Buena' 
-                  : 'Necesita Atención'
-                }
-              </Badge>
+                    ? 'Buena' 
+                    : 'Necesita Atención'
+                  }
+                </Badge>
+              </div>
+
+              {/* Barra de Progreso Lineal */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Progreso de Salud</span>
+                  <span className="font-medium">{estadisticas.saludGeneral.puntuacion}%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-3">
+                  <div 
+                    className={`h-3 rounded-full transition-all duration-500 ${
+                      estadisticas.saludGeneral.puntuacion >= 80 
+                        ? 'bg-green-500' 
+                        : estadisticas.saludGeneral.puntuacion >= 60 
+                        ? 'bg-yellow-500' 
+                        : 'bg-red-500'
+                    }`}
+                    style={{ width: `${estadisticas.saludGeneral.puntuacion}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Indicadores de Salud */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 bg-accent/50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div className={`w-2 h-2 rounded-full ${
+                      estadisticas.saludGeneral.puntuacion >= 80 ? 'bg-green-500' : 'bg-muted'
+                    }`} />
+                    <span className="text-xs font-medium">Presión Arterial</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Normal</p>
+                </div>
+                <div className="text-center p-3 bg-accent/50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div className={`w-2 h-2 rounded-full ${
+                      estadisticas.saludGeneral.puntuacion >= 70 ? 'bg-green-500' : 'bg-muted'
+                    }`} />
+                    <span className="text-xs font-medium">Peso</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Estable</p>
+                </div>
+                <div className="text-center p-3 bg-accent/50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div className={`w-2 h-2 rounded-full ${
+                      estadisticas.saludGeneral.puntuacion >= 60 ? 'bg-green-500' : 'bg-muted'
+                    }`} />
+                    <span className="text-xs font-medium">Ejercicio</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Regular</p>
+                </div>
+                <div className="text-center p-3 bg-accent/50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <div className={`w-2 h-2 rounded-full ${
+                      estadisticas.saludGeneral.puntuacion >= 80 ? 'bg-green-500' : 'bg-muted'
+                    }`} />
+                    <span className="text-xs font-medium">Sueño</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Bueno</p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
