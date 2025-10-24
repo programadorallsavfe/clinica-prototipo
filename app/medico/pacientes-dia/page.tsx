@@ -340,7 +340,7 @@ export default function PacientesDiaPage() {
     {
       key: 'prioridad',
       titulo: 'Prioridad',
-      render: (paciente: any) => {
+      render: (paciente: PacienteDia) => {
         const colores: Record<string, string> = {
           alta: 'bg-red-100 text-red-800',
           normal: 'bg-green-100 text-green-800',
@@ -360,7 +360,7 @@ export default function PacientesDiaPage() {
     {
       key: 'estado',
       titulo: 'Estado',
-      render: (paciente: any) => {
+      render: (paciente: PacienteDia) => {
         const colores: Record<string, string> = {
           programada: 'bg-blue-100 text-blue-800',
           en_curso: 'bg-orange-100 text-orange-800',
