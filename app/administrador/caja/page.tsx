@@ -35,6 +35,15 @@ import {
   Target
 } from 'lucide-react';
 
+// Importar componentes de reportes
+import RecaudacionDiaria from "@/components/reportes/RecaudacionDiaria";
+import RecaudacionSemanal from "@/components/reportes/RecaudacionSemanal";
+import RecaudacionMensual from "@/components/reportes/RecaudacionMensual";
+import ProductividadMedicos from "@/components/reportes/ProductividadMedicos";
+import ServiciosRentables from "@/components/reportes/ServiciosRentables";
+import ComisionesProfesional from "@/components/reportes/ComisionesProfesional";
+import ComisionesColaboradores from "@/components/reportes/ComisionesColaboradores";
+
 // Interfaces
 interface Servicio {
   id: string;
@@ -86,6 +95,59 @@ interface Recaudacion {
   utilidad: number;
   pacientes: number;
   servicios: number;
+}
+
+interface ConsumoPaciente {
+  id: string;
+  pacienteId: string;
+  pacienteNombre: string;
+  servicioId: string;
+  servicioNombre: string;
+  cantidad: number;
+  precioUnitario: number;
+  total: number;
+  fecha: string;
+  profesionalId?: string;
+  profesionalNombre?: string;
+  estado: 'pendiente' | 'pagado' | 'cancelado';
+}
+
+interface Boleta {
+  id: string;
+  numero: string;
+  fecha: string;
+  pacienteId: string;
+  pacienteNombre: string;
+  pacienteDni: string;
+  items: {
+    servicio: string;
+    cantidad: number;
+    precio: number;
+    total: number;
+  }[];
+  subtotal: number;
+  igv: number;
+  total: number;
+  estado: 'emitida' | 'anulada';
+}
+
+interface Factura {
+  id: string;
+  numero: string;
+  fecha: string;
+  clienteId: string;
+  clienteNombre: string;
+  clienteRuc: string;
+  items: {
+    servicio: string;
+    cantidad: number;
+    precio: number;
+    total: number;
+  }[];
+  subtotal: number;
+  igv: number;
+  total: number;
+  estado: 'emitida' | 'anulada';
 }
 
 // Datos mock
@@ -280,18 +342,131 @@ const recaudacionMock: Recaudacion[] = [
   }
 ];
 
+const consumoPacientesMock: ConsumoPaciente[] = [
+  {
+    id: '1',
+    pacienteId: 'P001',
+    pacienteNombre: 'María Rodríguez',
+    servicioId: '1',
+    servicioNombre: 'Consulta Obstétrica',
+    cantidad: 1,
+    precioUnitario: 80.00,
+    total: 80.00,
+    fecha: '2024-10-20',
+    profesionalId: 'DR001',
+    profesionalNombre: 'Dr. Carlos Pérez',
+    estado: 'pagado'
+  },
+  {
+    id: '2',
+    pacienteId: 'P002',
+    pacienteNombre: 'Ana García',
+    servicioId: '3',
+    servicioNombre: 'Ecografía Obstétrica',
+    cantidad: 1,
+    precioUnitario: 120.00,
+    total: 120.00,
+    fecha: '2024-10-20',
+    profesionalId: 'DR001',
+    profesionalNombre: 'Dr. Carlos Pérez',
+    estado: 'pagado'
+  },
+  {
+    id: '3',
+    pacienteId: 'P003',
+    pacienteNombre: 'Carmen López',
+    servicioId: '5',
+    servicioNombre: 'Paracetamol 500mg',
+    cantidad: 3,
+    precioUnitario: 2.50,
+    total: 7.50,
+    fecha: '2024-10-20',
+    estado: 'pagado'
+  }
+];
+
+const boletasMock: Boleta[] = [
+  {
+    id: '1',
+    numero: 'B001-00000001',
+    fecha: '2024-10-20',
+    pacienteId: 'P001',
+    pacienteNombre: 'María Rodríguez',
+    pacienteDni: '12345678',
+    items: [
+      {
+        servicio: 'Consulta Obstétrica',
+        cantidad: 1,
+        precio: 80.00,
+        total: 80.00
+      }
+    ],
+    subtotal: 80.00,
+    igv: 14.40,
+    total: 94.40,
+    estado: 'emitida'
+  },
+  {
+    id: '2',
+    numero: 'B001-00000002',
+    fecha: '2024-10-20',
+    pacienteId: 'P002',
+    pacienteNombre: 'Ana García',
+    pacienteDni: '87654321',
+    items: [
+      {
+        servicio: 'Ecografía Obstétrica',
+        cantidad: 1,
+        precio: 120.00,
+        total: 120.00
+      }
+    ],
+    subtotal: 120.00,
+    igv: 21.60,
+    total: 141.60,
+    estado: 'emitida'
+  }
+];
+
+const facturasMock: Factura[] = [
+  {
+    id: '1',
+    numero: 'F001-00000001',
+    fecha: '2024-10-20',
+    clienteId: 'C001',
+    clienteNombre: 'Clínica San José S.A.C.',
+    clienteRuc: '20123456789',
+    items: [
+      {
+        servicio: 'Servicios Médicos - Octubre',
+        cantidad: 1,
+        precio: 5000.00,
+        total: 5000.00
+      }
+    ],
+    subtotal: 5000.00,
+    igv: 900.00,
+    total: 5900.00,
+    estado: 'emitida'
+  }
+];
+
 export default function CajaPage() {
   const [servicios, setServicios] = useState<Servicio[]>(serviciosMock);
   const [conceptosIngreso, setConceptosIngreso] = useState<ConceptoIngreso[]>(conceptosIngresoMock);
   const [conceptosEgreso, setConceptosEgreso] = useState<ConceptoEgreso[]>(conceptosEgresoMock);
   const [proveedores, setProveedores] = useState<Proveedor[]>(proveedoresMock);
   const [recaudacion, setRecaudacion] = useState<Recaudacion[]>(recaudacionMock);
+  const [consumoPacientes, setConsumoPacientes] = useState<ConsumoPaciente[]>(consumoPacientesMock);
+  const [boletas, setBoletas] = useState<Boleta[]>(boletasMock);
+  const [facturas, setFacturas] = useState<Factura[]>(facturasMock);
   
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategoria, setFilterCategoria] = useState('todos');
   const [filterTipo, setFilterTipo] = useState('todos');
   const [filterPeriodo, setFilterPeriodo] = useState('hoy');
+  const [reporteSeleccionado, setReporteSeleccionado] = useState('diaria');
 
   // Estadísticas generales
   const totalIngresos = conceptosIngreso.reduce((sum, ingreso) => sum + ingreso.monto, 0);
@@ -428,12 +603,15 @@ export default function CajaPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="servicios">Servicios</TabsTrigger>
           <TabsTrigger value="ingresos">Ingresos</TabsTrigger>
           <TabsTrigger value="egresos">Egresos</TabsTrigger>
           <TabsTrigger value="proveedores">Proveedores</TabsTrigger>
+          <TabsTrigger value="consumo">Consumo</TabsTrigger>
+          <TabsTrigger value="boletas">Boletas</TabsTrigger>
+          <TabsTrigger value="facturas">Facturas</TabsTrigger>
           <TabsTrigger value="reportes">Reportes</TabsTrigger>
         </TabsList>
 
@@ -826,70 +1004,318 @@ export default function CajaPage() {
           </Card>
         </TabsContent>
 
+        {/* Tab: Consumo de Pacientes */}
+        <TabsContent value="consumo" className="mt-6">
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <CardTitle>Registro de Consumo de Pacientes</CardTitle>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nuevo Consumo
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Paciente</TableHead>
+                      <TableHead>Servicio</TableHead>
+                      <TableHead>Cantidad</TableHead>
+                      <TableHead>Precio Unit.</TableHead>
+                      <TableHead>Total</TableHead>
+                      <TableHead>Profesional</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead className="text-center">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {consumoPacientes.map((consumo) => (
+                      <TableRow key={consumo.id} className="hover:bg-muted/50">
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{consumo.pacienteNombre}</p>
+                            <p className="text-sm text-muted-foreground">ID: {consumo.pacienteId}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{consumo.servicioNombre}</TableCell>
+                        <TableCell>{consumo.cantidad}</TableCell>
+                        <TableCell>S/ {consumo.precioUnitario.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <span className="font-medium text-green-600">
+                            S/ {consumo.total.toFixed(2)}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {consumo.profesionalNombre || '-'}
+                        </TableCell>
+                        <TableCell>{new Date(consumo.fecha).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          {consumo.estado === 'pagado' ? (
+                            <Badge variant="default" className="bg-success text-success-foreground">
+                              <CheckCircle className="h-3 w-3 mr-1" />Pagado
+                            </Badge>
+                          ) : consumo.estado === 'pendiente' ? (
+                            <Badge variant="secondary">
+                              <Clock className="h-3 w-3 mr-1" />Pendiente
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive">
+                              <AlertCircle className="h-3 w-3 mr-1" />Cancelado
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button variant="ghost" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tab: Boletas */}
+        <TabsContent value="boletas" className="mt-6">
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <CardTitle>Emisión de Boletas</CardTitle>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nueva Boleta
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Número</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Paciente</TableHead>
+                      <TableHead>DNI</TableHead>
+                      <TableHead>Subtotal</TableHead>
+                      <TableHead>IGV</TableHead>
+                      <TableHead>Total</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead className="text-center">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {boletas.map((boleta) => (
+                      <TableRow key={boleta.id} className="hover:bg-muted/50">
+                        <TableCell className="font-mono">{boleta.numero}</TableCell>
+                        <TableCell>{new Date(boleta.fecha).toLocaleDateString()}</TableCell>
+                        <TableCell>{boleta.pacienteNombre}</TableCell>
+                        <TableCell>{boleta.pacienteDni}</TableCell>
+                        <TableCell>S/ {boleta.subtotal.toFixed(2)}</TableCell>
+                        <TableCell>S/ {boleta.igv.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <span className="font-medium text-green-600">
+                            S/ {boleta.total.toFixed(2)}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {boleta.estado === 'emitida' ? (
+                            <Badge variant="default" className="bg-success text-success-foreground">
+                              <CheckCircle className="h-3 w-3 mr-1" />Emitida
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive">
+                              <AlertCircle className="h-3 w-3 mr-1" />Anulada
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button variant="ghost" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tab: Facturas */}
+        <TabsContent value="facturas" className="mt-6">
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <CardTitle>Emisión de Facturas</CardTitle>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nueva Factura
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Número</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Cliente</TableHead>
+                      <TableHead>RUC</TableHead>
+                      <TableHead>Subtotal</TableHead>
+                      <TableHead>IGV</TableHead>
+                      <TableHead>Total</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead className="text-center">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {facturas.map((factura) => (
+                      <TableRow key={factura.id} className="hover:bg-muted/50">
+                        <TableCell className="font-mono">{factura.numero}</TableCell>
+                        <TableCell>{new Date(factura.fecha).toLocaleDateString()}</TableCell>
+                        <TableCell>{factura.clienteNombre}</TableCell>
+                        <TableCell>{factura.clienteRuc}</TableCell>
+                        <TableCell>S/ {factura.subtotal.toFixed(2)}</TableCell>
+                        <TableCell>S/ {factura.igv.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <span className="font-medium text-green-600">
+                            S/ {factura.total.toFixed(2)}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {factura.estado === 'emitida' ? (
+                            <Badge variant="default" className="bg-success text-success-foreground">
+                              <CheckCircle className="h-3 w-3 mr-1" />Emitida
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive">
+                              <AlertCircle className="h-3 w-3 mr-1" />Anulada
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button variant="ghost" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Tab: Reportes */}
         <TabsContent value="reportes" className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            {/* Selector de reportes */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Reportes Financieros
-                </CardTitle>
+                <CardTitle>Seleccionar Reporte</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Receipt className="h-4 w-4 mr-2" />
-                    Recaudación Diaria
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Button 
+                    variant={reporteSeleccionado === 'diaria' ? 'default' : 'outline'} 
+                    className="h-auto p-4 flex-col items-start"
+                    onClick={() => setReporteSeleccionado('diaria')}
+                  >
+                    <Receipt className="h-5 w-5 mb-2" />
+                    <span className="font-medium">Recaudación Diaria</span>
+                    <span className="text-xs text-muted-foreground">Reporte del día actual</span>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Recaudación Semanal
+                  <Button 
+                    variant={reporteSeleccionado === 'semanal' ? 'default' : 'outline'} 
+                    className="h-auto p-4 flex-col items-start"
+                    onClick={() => setReporteSeleccionado('semanal')}
+                  >
+                    <Calendar className="h-5 w-5 mb-2" />
+                    <span className="font-medium">Recaudación Semanal</span>
+                    <span className="text-xs text-muted-foreground">Reporte de la semana</span>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Recaudación Mensual
+                  <Button 
+                    variant={reporteSeleccionado === 'mensual' ? 'default' : 'outline'} 
+                    className="h-auto p-4 flex-col items-start"
+                    onClick={() => setReporteSeleccionado('mensual')}
+                  >
+                    <BarChart3 className="h-5 w-5 mb-2" />
+                    <span className="font-medium">Recaudación Mensual</span>
+                    <span className="text-xs text-muted-foreground">Reporte del mes</span>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Recaudación Trimestral
+                  <Button 
+                    variant={reporteSeleccionado === 'productividad' ? 'default' : 'outline'} 
+                    className="h-auto p-4 flex-col items-start"
+                    onClick={() => setReporteSeleccionado('productividad')}
+                  >
+                    <Users className="h-5 w-5 mb-2" />
+                    <span className="font-medium">Productividad Médicos</span>
+                    <span className="text-xs text-muted-foreground">Rendimiento del personal</span>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Target className="h-4 w-4 mr-2" />
-                    Recaudación Anual
+                  <Button 
+                    variant={reporteSeleccionado === 'rentables' ? 'default' : 'outline'} 
+                    className="h-auto p-4 flex-col items-start"
+                    onClick={() => setReporteSeleccionado('rentables')}
+                  >
+                    <Activity className="h-5 w-5 mb-2" />
+                    <span className="font-medium">Servicios Rentables</span>
+                    <span className="text-xs text-muted-foreground">Análisis de rentabilidad</span>
+                  </Button>
+                  <Button 
+                    variant={reporteSeleccionado === 'comisiones-prof' ? 'default' : 'outline'} 
+                    className="h-auto p-4 flex-col items-start"
+                    onClick={() => setReporteSeleccionado('comisiones-prof')}
+                  >
+                    <CreditCard className="h-5 w-5 mb-2" />
+                    <span className="font-medium">Comisiones Profesionales</span>
+                    <span className="text-xs text-muted-foreground">Pagos a médicos</span>
+                  </Button>
+                  <Button 
+                    variant={reporteSeleccionado === 'comisiones-colab' ? 'default' : 'outline'} 
+                    className="h-auto p-4 flex-col items-start"
+                    onClick={() => setReporteSeleccionado('comisiones-colab')}
+                  >
+                    <Banknote className="h-5 w-5 mb-2" />
+                    <span className="font-medium">Comisiones Colaboradores</span>
+                    <span className="text-xs text-muted-foreground">Pagos a referidores</span>
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Reportes de Productividad
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Users className="h-4 w-4 mr-2" />
-                    Productividad Médicos
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Activity className="h-4 w-4 mr-2" />
-                    Servicios Más Rentables
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Comisiones por Profesional
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Banknote className="h-4 w-4 mr-2" />
-                    Comisiones de Colaboradores
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Contenido del reporte seleccionado */}
+            {reporteSeleccionado === 'diaria' && <RecaudacionDiaria />}
+            {reporteSeleccionado === 'semanal' && <RecaudacionSemanal />}
+            {reporteSeleccionado === 'mensual' && <RecaudacionMensual />}
+            {reporteSeleccionado === 'productividad' && <ProductividadMedicos />}
+            {reporteSeleccionado === 'rentables' && <ServiciosRentables />}
+            {reporteSeleccionado === 'comisiones-prof' && <ComisionesProfesional />}
+            {reporteSeleccionado === 'comisiones-colab' && <ComisionesColaboradores />}
           </div>
         </TabsContent>
       </Tabs>

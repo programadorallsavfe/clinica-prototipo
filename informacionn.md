@@ -1,12 +1,14 @@
-7. MODULO DE FARMACIA:
- Listado de medicamentos nacionales con precio de compra y
-precio de venta al público.
- Listado personalizado de medicamentos e indicaciones.
- Stock de medicamentos.
- Kardex de medicamentos: entradas y salidas según fechas.
- Alerta de stock mínimo.
- Reporte de medicamentos más vendidos.
- Reporte de medicamentos menos vendidos.
- Reporte de utilidad por venta de medicamentos
- Reporte de comisión (monto fijo o porcentaje), para médicos por
-medicamento vendido.
+8. MODULO CAJA - CONTADURIA:
+ Registro de servicios y precios
+ Registro de conceptos de ingresos
+ Registro concepto de egresos
+ Registro de proveedores
+ Registro de consumo de pacientes
+ Emisión de boletas
+ Emisión de facturas.
+ Reporte de recaudación diaria, semanal, mensual, trimestral,
+anual. en total
+ Reporte de productividad médicos.
+ Reporte de servicios más rentables.
+ Reporte de recaudación y comisiones diarias por profesional.
+ Reporte comisiones de colaboradores
