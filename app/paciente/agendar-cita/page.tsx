@@ -25,7 +25,7 @@ const especialidadesMock = [
     descripcion: 'Especialidad médica de la mujer',
     precio: 120,
     duracion: 30,
-    color: 'bg-pink-100 text-pink-800'
+    color: 'bg-accent text-accent-foreground'
   },
   {
     id: '2',
@@ -33,7 +33,7 @@ const especialidadesMock = [
     descripcion: 'Atención del embarazo y parto',
     precio: 150,
     duracion: 40,
-    color: 'bg-blue-100 text-blue-800'
+    color: 'bg-primary/10 text-primary'
   },
   {
     id: '3',
@@ -41,7 +41,7 @@ const especialidadesMock = [
     descripcion: 'Consulta médica general',
     precio: 80,
     duracion: 25,
-    color: 'bg-green-100 text-green-800'
+    color: 'bg-secondary text-secondary-foreground'
   },
   {
     id: '4',
@@ -49,7 +49,7 @@ const especialidadesMock = [
     descripcion: 'Atención médica infantil',
     precio: 100,
     duracion: 30,
-    color: 'bg-yellow-100 text-yellow-800'
+    color: 'bg-muted text-muted-foreground'
   }
 ];
 
@@ -174,7 +174,7 @@ export default function AgendarCitaPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-background text-foreground min-h-screen">
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold text-foreground">Agendar Cita Médica</h1>
@@ -202,8 +202,8 @@ export default function AgendarCitaPage() {
                     key={especialidad.id}
                     className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
                       especialidadSeleccionada === especialidad.id
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
+                        ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                        : 'border-border hover:border-primary/50 hover:bg-accent/50'
                     }`}
                     onClick={() => {
                       setEspecialidadSeleccionada(especialidad.id);
@@ -248,8 +248,8 @@ export default function AgendarCitaPage() {
                       key={doctor.id}
                       className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
                         doctorSeleccionado === doctor.id
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:border-primary/50'
+                          ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                          : 'border-border hover:border-primary/50 hover:bg-accent/50'
                       }`}
                       onClick={() => setDoctorSeleccionado(doctor.id)}
                     >
@@ -257,7 +257,7 @@ export default function AgendarCitaPage() {
                         <h3 className="font-semibold">{doctor.nombre}</h3>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
-                            <HeartPulse className="h-4 w-4 text-yellow-500" />
+                            <HeartPulse className="h-4 w-4 text-primary" />
                             <span className="text-sm font-medium">{doctor.calificacion}</span>
                           </div>
                         </div>
@@ -271,7 +271,7 @@ export default function AgendarCitaPage() {
                         <p className="text-xs text-muted-foreground mb-1">Horarios disponibles:</p>
                         <div className="flex flex-wrap gap-1">
                           {Object.entries(doctor.horarios).map(([dia, horarios]) => (
-                            <Badge key={dia} variant="outline" className="text-xs">
+                            <Badge key={dia} variant="outline" className="text-xs border-border text-foreground">
                               {dia}: {horarios.join(', ')}
                             </Badge>
                           ))}
@@ -303,7 +303,7 @@ export default function AgendarCitaPage() {
                       value={fechaSeleccionada}
                       onChange={(date) => setFechaSeleccionada(date || undefined)}
                       disabled={(date) => date < new Date() || date > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
-                      className="rounded-md border"
+                      className="rounded-md border border-border bg-card text-card-foreground"
                     />
                   </div>
 
@@ -318,7 +318,11 @@ export default function AgendarCitaPage() {
                             variant={horaSeleccionada === horario ? "default" : "outline"}
                             size="sm"
                             onClick={() => setHoraSeleccionada(horario)}
-                            className="text-xs"
+                            className={`text-xs ${
+                              horaSeleccionada === horario 
+                                ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                                : 'border-border hover:bg-accent hover:text-accent-foreground'
+                            }`}
                           >
                             {horario}
                           </Button>
@@ -435,15 +439,15 @@ export default function AgendarCitaPage() {
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">(01) 234-5678</span>
+                <span className="text-sm text-foreground">(01) 234-5678</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">citas@clinicafeminis.com</span>
+                <span className="text-sm text-foreground">citas@clinicafeminis.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Av. Principal 123, Lima</span>
+                <span className="text-sm text-foreground">Av. Principal 123, Lima</span>
               </div>
             </CardContent>
           </Card>
@@ -452,7 +456,7 @@ export default function AgendarCitaPage() {
           {fechaSeleccionada && especialidadSeleccionada && doctorSeleccionado && horaSeleccionada && (
             <Button 
               onClick={handleAgendarCita}
-              className="w-full"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
               size="lg"
             >
               <CheckCircle className="h-5 w-5 mr-2" />
@@ -464,11 +468,11 @@ export default function AgendarCitaPage() {
 
       {/* Modal de Confirmación */}
       {showConfirmacion && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+                <CheckCircle className="h-5 w-5 text-primary" />
                 Confirmar Cita
               </CardTitle>
               <CardDescription>
@@ -506,7 +510,7 @@ export default function AgendarCitaPage() {
               {motivoConsulta && (
                 <div>
                   <span className="text-sm text-muted-foreground">Motivo:</span>
-                  <p className="text-sm mt-1 p-2 bg-accent/50 rounded">
+                  <p className="text-sm mt-1 p-2 bg-accent/50 rounded text-foreground">
                     {motivoConsulta}
                   </p>
                 </div>
@@ -516,13 +520,13 @@ export default function AgendarCitaPage() {
                 <Button 
                   variant="outline" 
                   onClick={() => setShowConfirmacion(false)}
-                  className="flex-1"
+                  className="flex-1 border-border hover:bg-accent hover:text-accent-foreground"
                 >
                   Cancelar
                 </Button>
                 <Button 
                   onClick={confirmarCita}
-                  className="flex-1"
+                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   Confirmar Cita
                 </Button>
