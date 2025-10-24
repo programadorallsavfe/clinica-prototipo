@@ -32,7 +32,8 @@ import {
     Save,
     X,
     ChevronUp,
-    ChevronDown
+    ChevronDown,
+    Users
 } from "lucide-react";
 import { AddFarmaciaModal } from "@/components/modals/add-farmacia-modal";
 
@@ -97,6 +98,30 @@ interface VentaProducto {
     recetaId?: string;
 }
 
+interface IndicacionMedicamento {
+    id: string;
+    medicamentoId: string;
+    indicacion: string;
+    dosis: string;
+    frecuencia: string;
+    duracion: string;
+    observaciones?: string;
+    fechaCreacion: string;
+}
+
+interface ComisionMedico {
+    id: string;
+    medicoId: string;
+    medicoNombre: string;
+    productoId: string;
+    productoNombre: string;
+    tipoComision: 'fijo' | 'porcentaje';
+    montoComision: number;
+    porcentajeComision?: number;
+    fechaCreacion: string;
+    activo: boolean;
+}
+
 export default function FarmaciaPage() {
     const [activeTab, setActiveTab] = useState("inventario");
     const [searchTerm, setSearchTerm] = useState("");
@@ -105,6 +130,19 @@ export default function FarmaciaPage() {
     const [editingProducto, setEditingProducto] = useState<Partial<Producto>>({});
     const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    // Estados para modal de indicaciones
+    const [showNuevaIndicacion, setShowNuevaIndicacion] = useState(false);
+    const [showEditarIndicacion, setShowEditarIndicacion] = useState(false);
+    const [indicacionSeleccionada, setIndicacionSeleccionada] = useState<IndicacionMedicamento | null>(null);
+    const [nuevaIndicacion, setNuevaIndicacion] = useState({
+        medicamentoId: '',
+        indicacion: '',
+        dosis: '',
+        frecuencia: '',
+        duracion: '',
+        observaciones: ''
+    });
 
     // Mock data - En producción vendría de una API
     const [productos, setProductos] = useState<Producto[]>([
@@ -445,6 +483,164 @@ export default function FarmaciaPage() {
         }
     ]);
 
+    // Mock data para ventas de productos
+    const [ventasProductos, setVentasProductos] = useState<VentaProducto[]>([
+        {
+            id: '1',
+            productoId: '2',
+            cantidad: 5,
+            precioUnitario: 2.50,
+            descuento: 0,
+            total: 12.50,
+            fecha: '2024-10-15',
+            pacienteId: 'P001',
+            medicoId: 'M001',
+            recetaId: 'R001'
+        },
+        {
+            id: '2',
+            productoId: '5',
+            cantidad: 2,
+            precioUnitario: 35.00,
+            descuento: 5,
+            total: 65.00,
+            fecha: '2024-10-16',
+            pacienteId: 'P002',
+            medicoId: 'M001',
+            recetaId: 'R002'
+        },
+        {
+            id: '3',
+            productoId: '8',
+            cantidad: 10,
+            precioUnitario: 2.00,
+            descuento: 0,
+            total: 20.00,
+            fecha: '2024-10-17',
+            pacienteId: 'P003',
+            medicoId: 'M002',
+            recetaId: 'R003'
+        },
+        {
+            id: '4',
+            productoId: '14',
+            cantidad: 3,
+            precioUnitario: 1.50,
+            descuento: 0,
+            total: 4.50,
+            fecha: '2024-10-18',
+            pacienteId: 'P004',
+            medicoId: 'M001',
+            recetaId: 'R004'
+        },
+        {
+            id: '5',
+            productoId: '2',
+            cantidad: 8,
+            precioUnitario: 2.50,
+            descuento: 2,
+            total: 18.00,
+            fecha: '2024-10-19',
+            pacienteId: 'P005',
+            medicoId: 'M002',
+            recetaId: 'R005'
+        }
+    ]);
+
+    // Mock data para indicaciones de medicamentos
+    const [indicacionesMedicamentos, setIndicacionesMedicamentos] = useState<IndicacionMedicamento[]>([
+        {
+            id: '1',
+            medicamentoId: '2',
+            indicacion: 'Tratamiento de infecciones del tracto urinario',
+            dosis: '200mg',
+            frecuencia: 'Cada 8 horas',
+            duracion: '7 días',
+            observaciones: 'Tomar con abundante agua',
+            fechaCreacion: '2024-01-15'
+        },
+        {
+            id: '2',
+            medicamentoId: '5',
+            indicacion: 'Suplemento vitamínico para anemia',
+            dosis: '5ml',
+            frecuencia: 'Una vez al día',
+            duracion: '30 días',
+            observaciones: 'Tomar con las comidas',
+            fechaCreacion: '2024-01-15'
+        },
+        {
+            id: '3',
+            medicamentoId: '8',
+            indicacion: 'Tratamiento de infecciones bacterianas',
+            dosis: '500mg',
+            frecuencia: 'Cada 8 horas',
+            duracion: '10 días',
+            observaciones: 'No consumir alcohol durante el tratamiento',
+            fechaCreacion: '2024-01-15'
+        },
+        {
+            id: '4',
+            medicamentoId: '14',
+            indicacion: 'Control de diabetes tipo 2',
+            dosis: '850mg',
+            frecuencia: 'Dos veces al día',
+            duracion: 'Tratamiento crónico',
+            observaciones: 'Tomar con las comidas principales',
+            fechaCreacion: '2024-01-15'
+        }
+    ]);
+
+    // Mock data para comisiones de médicos
+    const [comisionesMedicos, setComisionesMedicos] = useState<ComisionMedico[]>([
+        {
+            id: '1',
+            medicoId: 'M001',
+            medicoNombre: 'Dr. Carlos Sánchez',
+            productoId: '2',
+            productoNombre: 'UROTAN-D-FORTE 200MG X 100TAB',
+            tipoComision: 'porcentaje',
+            montoComision: 0.50,
+            porcentajeComision: 20,
+            fechaCreacion: '2024-01-15',
+            activo: true
+        },
+        {
+            id: '2',
+            medicoId: 'M001',
+            medicoNombre: 'Dr. Carlos Sánchez',
+            productoId: '5',
+            productoNombre: 'HEMOCYTON B (COMPLEJO B) JARABE',
+            tipoComision: 'fijo',
+            montoComision: 5.00,
+            fechaCreacion: '2024-01-15',
+            activo: true
+        },
+        {
+            id: '3',
+            medicoId: 'M002',
+            medicoNombre: 'Dra. María González',
+            productoId: '8',
+            productoNombre: 'METRONIDAZOL 500MG TAB',
+            tipoComision: 'porcentaje',
+            montoComision: 0.40,
+            porcentajeComision: 20,
+            fechaCreacion: '2024-01-15',
+            activo: true
+        },
+        {
+            id: '4',
+            medicoId: 'M002',
+            medicoNombre: 'Dra. María González',
+            productoId: '14',
+            productoNombre: 'METFORMINA 850MG CAJA X 100 TABLETAS RECUBIERTAS',
+            tipoComision: 'fijo',
+            montoComision: 2.00,
+            fechaCreacion: '2024-01-15',
+            activo: true
+        }
+    ]);
+
     const tiposProducto = [
         'Insumo',
         'Medicamento',
@@ -546,12 +742,171 @@ export default function FarmaciaPage() {
         setProductos(prev => [...prev, producto]);
     };
 
+    // Funciones para reportes
+    const getProductosMasVendidos = () => {
+        const ventasPorProducto = ventasProductos.reduce((acc, venta) => {
+            const producto = productos.find(p => p.id === venta.productoId);
+            if (producto) {
+                if (!acc[producto.id]) {
+                    acc[producto.id] = {
+                        producto,
+                        cantidadTotal: 0,
+                        ingresosTotal: 0
+                    };
+                }
+                acc[producto.id].cantidadTotal += venta.cantidad;
+                acc[producto.id].ingresosTotal += venta.total;
+            }
+            return acc;
+        }, {} as Record<string, { producto: Producto; cantidadTotal: number; ingresosTotal: number }>);
+
+        return Object.values(ventasPorProducto)
+            .sort((a, b) => b.cantidadTotal - a.cantidadTotal)
+            .slice(0, 10);
+    };
+
+    const getProductosMenosVendidos = () => {
+        const ventasPorProducto = ventasProductos.reduce((acc, venta) => {
+            const producto = productos.find(p => p.id === venta.productoId);
+            if (producto) {
+                if (!acc[producto.id]) {
+                    acc[producto.id] = {
+                        producto,
+                        cantidadTotal: 0,
+                        ingresosTotal: 0
+                    };
+                }
+                acc[producto.id].cantidadTotal += venta.cantidad;
+                acc[producto.id].ingresosTotal += venta.total;
+            }
+            return acc;
+        }, {} as Record<string, { producto: Producto; cantidadTotal: number; ingresosTotal: number }>);
+
+        return Object.values(ventasPorProducto)
+            .sort((a, b) => a.cantidadTotal - b.cantidadTotal)
+            .slice(0, 10);
+    };
+
+    const getUtilidadPorVenta = () => {
+        return ventasProductos.map(venta => {
+            const producto = productos.find(p => p.id === venta.productoId);
+            if (producto) {
+                const costoTotal = venta.cantidad * producto.precioPromedio;
+                const utilidad = venta.total - costoTotal;
+                const porcentajeUtilidad = (utilidad / costoTotal) * 100;
+                
+                return {
+                    venta,
+                    producto,
+                    costoTotal,
+                    utilidad,
+                    porcentajeUtilidad
+                };
+            }
+            return null;
+        }).filter(Boolean);
+    };
+
+    const getComisionesPorMedico = () => {
+        const comisionesPorMedico = comisionesMedicos.reduce((acc, comision) => {
+            if (!acc[comision.medicoId]) {
+                acc[comision.medicoId] = {
+                    medico: comision.medicoNombre,
+                    comisiones: [],
+                    totalComisiones: 0
+                };
+            }
+            acc[comision.medicoId].comisiones.push(comision);
+            acc[comision.medicoId].totalComisiones += comision.montoComision;
+            return acc;
+        }, {} as Record<string, { medico: string; comisiones: ComisionMedico[]; totalComisiones: number }>);
+
+        return Object.values(comisionesPorMedico);
+    };
+
+    // Funciones para manejar indicaciones
+    const handleNuevaIndicacion = () => {
+        if (!nuevaIndicacion.medicamentoId || !nuevaIndicacion.indicacion || !nuevaIndicacion.dosis || !nuevaIndicacion.frecuencia || !nuevaIndicacion.duracion) {
+            return;
+        }
+
+        const indicacion: IndicacionMedicamento = {
+            id: Date.now().toString(),
+            medicamentoId: nuevaIndicacion.medicamentoId,
+            indicacion: nuevaIndicacion.indicacion,
+            dosis: nuevaIndicacion.dosis,
+            frecuencia: nuevaIndicacion.frecuencia,
+            duracion: nuevaIndicacion.duracion,
+            observaciones: nuevaIndicacion.observaciones,
+            fechaCreacion: new Date().toISOString().split('T')[0]
+        };
+
+        setIndicacionesMedicamentos(prev => [...prev, indicacion]);
+        setNuevaIndicacion({
+            medicamentoId: '',
+            indicacion: '',
+            dosis: '',
+            frecuencia: '',
+            duracion: '',
+            observaciones: ''
+        });
+        setShowNuevaIndicacion(false);
+    };
+
+    const handleEditarIndicacion = (indicacion: IndicacionMedicamento) => {
+        setIndicacionSeleccionada(indicacion);
+        setNuevaIndicacion({
+            medicamentoId: indicacion.medicamentoId,
+            indicacion: indicacion.indicacion,
+            dosis: indicacion.dosis,
+            frecuencia: indicacion.frecuencia,
+            duracion: indicacion.duracion,
+            observaciones: indicacion.observaciones || ''
+        });
+        setShowEditarIndicacion(true);
+    };
+
+    const handleActualizarIndicacion = () => {
+        if (!indicacionSeleccionada || !nuevaIndicacion.medicamentoId || !nuevaIndicacion.indicacion || !nuevaIndicacion.dosis || !nuevaIndicacion.frecuencia || !nuevaIndicacion.duracion) {
+            return;
+        }
+
+        setIndicacionesMedicamentos(prev => prev.map(ind => 
+            ind.id === indicacionSeleccionada.id 
+                ? {
+                    ...ind,
+                    medicamentoId: nuevaIndicacion.medicamentoId,
+                    indicacion: nuevaIndicacion.indicacion,
+                    dosis: nuevaIndicacion.dosis,
+                    frecuencia: nuevaIndicacion.frecuencia,
+                    duracion: nuevaIndicacion.duracion,
+                    observaciones: nuevaIndicacion.observaciones
+                }
+                : ind
+        ));
+
+        setNuevaIndicacion({
+            medicamentoId: '',
+            indicacion: '',
+            dosis: '',
+            frecuencia: '',
+            duracion: '',
+            observaciones: ''
+        });
+        setIndicacionSeleccionada(null);
+        setShowEditarIndicacion(false);
+    };
+
+    const handleEliminarIndicacion = (id: string) => {
+        setIndicacionesMedicamentos(prev => prev.filter(ind => ind.id !== id));
+    };
+
     return (
         <div className="min-h-screen bg-background">
             {/* Header */}
             <div className="border-b border-border bg-card">
                 <div className="container mx-auto px-4 sm:px-6 py-4">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                             <h1 className="text-2xl font-bold text-foreground">Farmacia</h1>
                             <p className="text-sm text-muted-foreground">
@@ -628,11 +983,9 @@ export default function FarmaciaPage() {
                     </Card>
                 </div>
 
-                
-
                 {/* Tabs principales */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-7">
                         <TabsTrigger value="inventario" className="flex items-center gap-2">
                             <Warehouse className="h-4 w-4" />
                             Inventario
@@ -641,6 +994,10 @@ export default function FarmaciaPage() {
                             <Package className="h-4 w-4" />
                             Productos
                         </TabsTrigger>
+                        <TabsTrigger value="indicaciones" className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" />
+                            Indicaciones
+                        </TabsTrigger>
                         <TabsTrigger value="movimientos" className="flex items-center gap-2">
                             <BarChart3 className="h-4 w-4" />
                             Movimientos
@@ -648,6 +1005,10 @@ export default function FarmaciaPage() {
                         <TabsTrigger value="stock-seguridad" className="flex items-center gap-2">
                             <AlertTriangle className="h-4 w-4" />
                             Stock de seguridad
+                        </TabsTrigger>
+                        <TabsTrigger value="reportes" className="flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4" />
+                            Reportes
                         </TabsTrigger>
                         <TabsTrigger value="configuracion" className="flex items-center gap-2">
                             <FileText className="h-4 w-4" />
@@ -899,7 +1260,7 @@ export default function FarmaciaPage() {
                                 const diasVencimiento = getDaysUntilExpiration(producto.fechaExpiracion);
                                 
                                 return (
-                                    <Card key={producto.id} className="border-primary/10">
+                                    <Card key={producto.id} className="border-primary/10 hover:shadow-md transition-shadow">
                                         <CardHeader className="pb-3">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
@@ -1056,6 +1417,118 @@ export default function FarmaciaPage() {
                                 </CardContent>
                             </Card>
                         )}
+                    </TabsContent>
+
+                    {/* Tab: Indicaciones */}
+                    <TabsContent value="indicaciones" className="space-y-6">
+                        {/* Filtros para indicaciones */}
+                        <Card className="border-primary/20">
+                            <CardContent className="p-4">
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <div className="flex-1">
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                            <Input
+                                                placeholder="Buscar indicaciones..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="pl-10 border-primary/30 focus:border-primary"
+                                            />
+                                        </div>
+                                    </div>
+                                    <Button 
+                                        onClick={() => setShowNuevaIndicacion(true)}
+                                        className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Nueva Indicación
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Tabla de indicaciones */}
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="text-primary">Indicaciones de Medicamentos</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-primary/20">
+                                                <TableHead className="text-primary font-semibold">Medicamento</TableHead>
+                                                <TableHead className="text-primary font-semibold">Indicación</TableHead>
+                                                <TableHead className="text-primary font-semibold">Dosis</TableHead>
+                                                <TableHead className="text-primary font-semibold">Frecuencia</TableHead>
+                                                <TableHead className="text-primary font-semibold">Duración</TableHead>
+                                                <TableHead className="text-primary font-semibold">Observaciones</TableHead>
+                                                <TableHead className="text-primary font-semibold">Acciones</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {indicacionesMedicamentos
+                                                .filter(indicacion => {
+                                                    const medicamento = productos.find(p => p.id === indicacion.medicamentoId);
+                                                    return !searchTerm || 
+                                                           indicacion.indicacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                           medicamento?.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+                                                })
+                                                .map((indicacion) => {
+                                                    const medicamento = productos.find(p => p.id === indicacion.medicamentoId);
+                                                    return (
+                                                        <TableRow key={indicacion.id} className="hover:bg-primary/5">
+                                                            <TableCell>
+                                                                <div>
+                                                                    <div className="font-medium">{medicamento?.nombre || 'N/A'}</div>
+                                                                    <div className="text-sm text-muted-foreground">
+                                                                        {medicamento?.marca} - {medicamento?.concentracion} {medicamento?.unidadMedida}
+                                                                    </div>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <span className="text-sm">{indicacion.indicacion}</span>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <span className="text-sm font-medium">{indicacion.dosis}</span>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <span className="text-sm">{indicacion.frecuencia}</span>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <span className="text-sm">{indicacion.duracion}</span>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <span className="text-sm text-muted-foreground">{indicacion.observaciones || '-'}</span>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="flex items-center gap-1">
+                                                                    <Button 
+                                                                        variant="ghost" 
+                                                                        size="sm" 
+                                                                        className="text-primary hover:bg-primary/10"
+                                                                        onClick={() => handleEditarIndicacion(indicacion)}
+                                                                    >
+                                                                        <Edit className="h-4 w-4" />
+                                                                    </Button>
+                                                                    <Button 
+                                                                        variant="ghost" 
+                                                                        size="sm" 
+                                                                        className="text-destructive hover:bg-destructive/10"
+                                                                        onClick={() => handleEliminarIndicacion(indicacion.id)}
+                                                                    >
+                                                                        <Trash2 className="h-4 w-4" />
+                                                                    </Button>
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </TabsContent>
 
                     {/* Tab: Movimientos */}
@@ -1378,71 +1851,298 @@ export default function FarmaciaPage() {
 
                     {/* Tab: Reportes */}
                     <TabsContent value="reportes" className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Card className="border-primary/10">
-                                <CardHeader className="bg-primary/5">
-                                    <CardTitle className="flex items-center gap-2 text-primary">
-                                        <TrendingUp className="h-5 w-5 text-success" />
-                                        Productos Más Vendidos
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50 text-success" />
-                                        <p className="font-medium">Reporte en desarrollo</p>
-                                        <p className="text-sm">Análisis de productos con mayor demanda</p>
+                        {/* Estadísticas de Reportes */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <Card className="border-l-4 border-l-success">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">Total Ventas</p>
+                                            <p className="text-2xl font-bold text-success">
+                                                {ventasProductos.length}
+                                            </p>
+                                        </div>
+                                        <ShoppingCart className="h-8 w-8 text-success" />
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-primary/10">
-                                <CardHeader className="bg-primary/5">
-                                    <CardTitle className="flex items-center gap-2 text-primary">
-                                        <TrendingDown className="h-5 w-5 text-destructive" />
-                                        Productos Menos Vendidos
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50 text-destructive" />
-                                        <p className="font-medium">Reporte en desarrollo</p>
-                                        <p className="text-sm">Identificación de productos con baja rotación</p>
+                            <Card className="border-l-4 border-l-primary">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">Ingresos Totales</p>
+                                            <p className="text-2xl font-bold text-primary">
+                                                S/ {ventasProductos.reduce((sum, v) => sum + v.total, 0).toFixed(2)}
+                                            </p>
+                                        </div>
+                                        <DollarSign className="h-8 w-8 text-primary" />
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-primary/10">
-                                <CardHeader className="bg-primary/5">
-                                    <CardTitle className="flex items-center gap-2 text-primary">
-                                        <DollarSign className="h-5 w-5 text-info" />
-                                        Utilidad por Venta
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50 text-info" />
-                                        <p className="font-medium">Reporte en desarrollo</p>
-                                        <p className="text-sm">Análisis de rentabilidad por producto</p>
+                            <Card className="border-l-4 border-l-info">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">Utilidad Total</p>
+                                            <p className="text-2xl font-bold text-info">
+                                                S/ {getUtilidadPorVenta().reduce((sum, u) => sum + (u?.utilidad || 0), 0).toFixed(2)}
+                                            </p>
+                                        </div>
+                                        <TrendingUp className="h-8 w-8 text-info" />
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-primary/10">
-                                <CardHeader className="bg-primary/5">
-                                    <CardTitle className="flex items-center gap-2 text-primary">
-                                        <Package className="h-5 w-5 text-warning" />
-                                        Comisiones por Producto
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50 text-warning" />
-                                        <p className="font-medium">Reporte en desarrollo</p>
-                                        <p className="text-sm">Control de comisiones e incentivos</p>
+                            <Card className="border-l-4 border-l-warning">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">Comisiones</p>
+                                            <p className="text-2xl font-bold text-warning">
+                                                S/ {comisionesMedicos.reduce((sum, c) => sum + c.montoComision, 0).toFixed(2)}
+                                            </p>
+                                        </div>
+                                        <Users className="h-8 w-8 text-warning" />
                                     </div>
                                 </CardContent>
                             </Card>
                         </div>
+
+                        {/* Reporte de Productos Más Vendidos */}
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="flex items-center gap-2 text-primary">
+                                    <TrendingUp className="h-5 w-5 text-success" />
+                                    Productos Más Vendidos
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-primary/20">
+                                                <TableHead className="text-primary font-semibold">#</TableHead>
+                                                <TableHead className="text-primary font-semibold">Producto</TableHead>
+                                                <TableHead className="text-primary font-semibold">Cantidad Vendida</TableHead>
+                                                <TableHead className="text-primary font-semibold">Ingresos</TableHead>
+                                                <TableHead className="text-primary font-semibold">Utilidad</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {getProductosMasVendidos().map((item, index) => (
+                                                <TableRow key={item.producto.id} className="hover:bg-primary/5">
+                                                    <TableCell>
+                                                        <Badge variant="default" className="bg-success text-success-foreground">
+                                                            #{index + 1}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div>
+                                                            <div className="font-medium">{item.producto.nombre}</div>
+                                                            <div className="text-sm text-muted-foreground">
+                                                                {item.producto.marca} - {item.producto.concentracion} {item.producto.unidadMedida}
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="font-bold text-primary">{item.cantidadTotal}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="font-medium text-success">S/ {item.ingresosTotal.toFixed(2)}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="font-medium text-info">
+                                                            S/ {(item.ingresosTotal - (item.cantidadTotal * item.producto.precioPromedio)).toFixed(2)}
+                                                        </span>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Reporte de Productos Menos Vendidos */}
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="flex items-center gap-2 text-primary">
+                                    <TrendingDown className="h-5 w-5 text-destructive" />
+                                    Productos Menos Vendidos
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-primary/20">
+                                                <TableHead className="text-primary font-semibold">#</TableHead>
+                                                <TableHead className="text-primary font-semibold">Producto</TableHead>
+                                                <TableHead className="text-primary font-semibold">Cantidad Vendida</TableHead>
+                                                <TableHead className="text-primary font-semibold">Ingresos</TableHead>
+                                                <TableHead className="text-primary font-semibold">Stock Actual</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {getProductosMenosVendidos().map((item, index) => (
+                                                <TableRow key={item.producto.id} className="hover:bg-primary/5">
+                                                    <TableCell>
+                                                        <Badge variant="destructive">
+                                                            #{index + 1}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div>
+                                                            <div className="font-medium">{item.producto.nombre}</div>
+                                                            <div className="text-sm text-muted-foreground">
+                                                                {item.producto.marca} - {item.producto.concentracion} {item.producto.unidadMedida}
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="font-bold text-destructive">{item.cantidadTotal}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="font-medium text-success">S/ {item.ingresosTotal.toFixed(2)}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className={`font-medium ${item.producto.stock <= item.producto.stockSeguridad ? 'text-destructive' : 'text-primary'}`}>
+                                                            {item.producto.stock}
+                                                        </span>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Reporte de Utilidad por Venta */}
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="flex items-center gap-2 text-primary">
+                                    <DollarSign className="h-5 w-5 text-info" />
+                                    Utilidad por Venta de Medicamentos
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-primary/20">
+                                                <TableHead className="text-primary font-semibold">Fecha</TableHead>
+                                                <TableHead className="text-primary font-semibold">Producto</TableHead>
+                                                <TableHead className="text-primary font-semibold">Cantidad</TableHead>
+                                                <TableHead className="text-primary font-semibold">Precio Venta</TableHead>
+                                                <TableHead className="text-primary font-semibold">Costo</TableHead>
+                                                <TableHead className="text-primary font-semibold">Utilidad</TableHead>
+                                                <TableHead className="text-primary font-semibold">% Utilidad</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {getUtilidadPorVenta().map((item) => (
+                                                <TableRow key={item?.venta?.id || 'unknown'} className="hover:bg-primary/5">
+                                                    <TableCell>
+                                                        <span className="text-sm">{item?.venta?.fecha ? new Date(item.venta.fecha).toLocaleDateString() : '-'}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div>
+                                                            <div className="font-medium">{item?.producto?.nombre || 'N/A'}</div>
+                                                            <div className="text-sm text-muted-foreground">
+                                                                {item?.producto?.marca || 'N/A'}
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="font-medium">{item?.venta?.cantidad || 0}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="font-medium text-success">S/ {(item?.venta?.total || 0).toFixed(2)}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="font-medium text-muted-foreground">S/ {(item?.costoTotal || 0).toFixed(2)}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className={`font-bold ${(item?.utilidad || 0) >= 0 ? 'text-success' : 'text-destructive'}`}>
+                                                            S/ {(item?.utilidad || 0).toFixed(2)}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className={`font-medium ${(item?.porcentajeUtilidad || 0) >= 0 ? 'text-success' : 'text-destructive'}`}>
+                                                            {(item?.porcentajeUtilidad || 0).toFixed(1)}%
+                                                        </span>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Reporte de Comisiones por Médico */}
+                        <Card className="border-primary/10">
+                            <CardHeader className="bg-primary/5">
+                                <CardTitle className="flex items-center gap-2 text-primary">
+                                    <Users className="h-5 w-5 text-warning" />
+                                    Comisiones por Médico
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {getComisionesPorMedico().map((medico) => (
+                                        <div key={medico.medico} className="p-4 rounded-lg border bg-card">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h3 className="font-semibold text-lg">{medico.medico}</h3>
+                                                <Badge variant="default" className="bg-warning text-warning-foreground">
+                                                    Total: S/ {medico.totalComisiones.toFixed(2)}
+                                                </Badge>
+                                            </div>
+                                            <div className="overflow-x-auto">
+                                                <Table>
+                                                    <TableHeader>
+                                                        <TableRow>
+                                                            <TableHead>Producto</TableHead>
+                                                            <TableHead>Tipo Comisión</TableHead>
+                                                            <TableHead>Monto/Porcentaje</TableHead>
+                                                            <TableHead>Monto Comisión</TableHead>
+                                                        </TableRow>
+                                                    </TableHeader>
+                                                    <TableBody>
+                                                        {medico.comisiones.map((comision) => (
+                                                            <TableRow key={comision.id}>
+                                                                <TableCell>
+                                                                    <div>
+                                                                        <div className="font-medium">{comision.productoNombre}</div>
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Badge variant={comision.tipoComision === 'fijo' ? 'default' : 'secondary'}>
+                                                                        {comision.tipoComision === 'fijo' ? 'Monto Fijo' : 'Porcentaje'}
+                                                                    </Badge>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {comision.tipoComision === 'fijo' 
+                                                                        ? `S/ ${comision.montoComision.toFixed(2)}`
+                                                                        : `${comision.porcentajeComision}%`
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <span className="font-bold text-warning">S/ {comision.montoComision.toFixed(2)}</span>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </TabsContent>
                 </Tabs>
             </div>
@@ -1453,6 +2153,216 @@ export default function FarmaciaPage() {
                 onClose={() => setIsAddModalOpen(false)}
                 onSave={handleAddProduct}
             />
+
+            {/* Modal para nueva indicación */}
+            {showNuevaIndicacion && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-background border border-border rounded-lg p-6 w-full max-w-2xl mx-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-semibold text-foreground">Nueva Indicación</h2>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowNuevaIndicacion(false)}
+                                className="text-muted-foreground hover:text-foreground"
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="medicamento">Medicamento</Label>
+                                <Select value={nuevaIndicacion.medicamentoId} onValueChange={(value) => setNuevaIndicacion(prev => ({ ...prev, medicamentoId: value }))}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleccionar medicamento" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {productos.map((producto) => (
+                                            <SelectItem key={producto.id} value={producto.id}>
+                                                {producto.nombre} - {producto.marca}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div>
+                                <Label htmlFor="indicacion">Indicación</Label>
+                                <Input
+                                    id="indicacion"
+                                    value={nuevaIndicacion.indicacion}
+                                    onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, indicacion: e.target.value }))}
+                                    placeholder="Ej: Hipertensión arterial"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="dosis">Dosis</Label>
+                                    <Input
+                                        id="dosis"
+                                        value={nuevaIndicacion.dosis}
+                                        onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, dosis: e.target.value }))}
+                                        placeholder="Ej: 5mg"
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="frecuencia">Frecuencia</Label>
+                                    <Input
+                                        id="frecuencia"
+                                        value={nuevaIndicacion.frecuencia}
+                                        onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, frecuencia: e.target.value }))}
+                                        placeholder="Ej: 1 vez al día"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label htmlFor="duracion">Duración</Label>
+                                <Input
+                                    id="duracion"
+                                    value={nuevaIndicacion.duracion}
+                                    onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, duracion: e.target.value }))}
+                                    placeholder="Ej: 30 días"
+                                />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="observaciones">Observaciones</Label>
+                                <Textarea
+                                    id="observaciones"
+                                    value={nuevaIndicacion.observaciones}
+                                    onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, observaciones: e.target.value }))}
+                                    placeholder="Observaciones adicionales..."
+                                    rows={3}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-2 mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowNuevaIndicacion(false)}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                onClick={handleNuevaIndicacion}
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                            >
+                                <Save className="h-4 w-4 mr-2" />
+                                Guardar
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para editar indicación */}
+            {showEditarIndicacion && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-background border border-border rounded-lg p-6 w-full max-w-2xl mx-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-semibold text-foreground">Editar Indicación</h2>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowEditarIndicacion(false)}
+                                className="text-muted-foreground hover:text-foreground"
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="medicamento-edit">Medicamento</Label>
+                                <Select value={nuevaIndicacion.medicamentoId} onValueChange={(value) => setNuevaIndicacion(prev => ({ ...prev, medicamentoId: value }))}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seleccionar medicamento" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {productos.map((producto) => (
+                                            <SelectItem key={producto.id} value={producto.id}>
+                                                {producto.nombre} - {producto.marca}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div>
+                                <Label htmlFor="indicacion-edit">Indicación</Label>
+                                <Input
+                                    id="indicacion-edit"
+                                    value={nuevaIndicacion.indicacion}
+                                    onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, indicacion: e.target.value }))}
+                                    placeholder="Ej: Hipertensión arterial"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="dosis-edit">Dosis</Label>
+                                    <Input
+                                        id="dosis-edit"
+                                        value={nuevaIndicacion.dosis}
+                                        onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, dosis: e.target.value }))}
+                                        placeholder="Ej: 5mg"
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="frecuencia-edit">Frecuencia</Label>
+                                    <Input
+                                        id="frecuencia-edit"
+                                        value={nuevaIndicacion.frecuencia}
+                                        onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, frecuencia: e.target.value }))}
+                                        placeholder="Ej: 1 vez al día"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label htmlFor="duracion-edit">Duración</Label>
+                                <Input
+                                    id="duracion-edit"
+                                    value={nuevaIndicacion.duracion}
+                                    onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, duracion: e.target.value }))}
+                                    placeholder="Ej: 30 días"
+                                />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="observaciones-edit">Observaciones</Label>
+                                <Textarea
+                                    id="observaciones-edit"
+                                    value={nuevaIndicacion.observaciones}
+                                    onChange={(e) => setNuevaIndicacion(prev => ({ ...prev, observaciones: e.target.value }))}
+                                    placeholder="Observaciones adicionales..."
+                                    rows={3}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-2 mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowEditarIndicacion(false)}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                onClick={handleActualizarIndicacion}
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                            >
+                                <Save className="h-4 w-4 mr-2" />
+                                Actualizar
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
