@@ -274,9 +274,10 @@ export default function ReporteCostosUtilidades({ periodo = 'mes' }: ReporteCost
 
   const getServicioMasRentable = () => {
     const utilidades = servicios.reduce((acc, servicio) => {
-      acc[servicio.nombre] = dataActual.reduce((sum, item) => 
-        sum + (item[servicio.nombre as keyof typeof item] as any).utilidad, 0
-      );
+      acc[servicio.nombre] = dataActual.reduce((sum, item) => {
+        const servicioData = item[servicio.nombre as keyof typeof item] as { utilidad: number };
+        return sum + (servicioData?.utilidad || 0);
+      }, 0);
       return acc;
     }, {} as Record<string, number>);
     
@@ -287,11 +288,11 @@ export default function ReporteCostosUtilidades({ periodo = 'mes' }: ReporteCost
 
   const getTendencia = (campo: string) => {
     if (dataActual.length < 2) return 'stable';
-    const ultimo = dataActual[dataActual.length - 1][campo as keyof typeof dataActual[0]] as any;
-    const anterior = dataActual[dataActual.length - 2][campo as keyof typeof dataActual[0]] as any;
+    const ultimo = dataActual[dataActual.length - 1][campo as keyof typeof dataActual[0]] as { utilidad: number };
+    const anterior = dataActual[dataActual.length - 2][campo as keyof typeof dataActual[0]] as { utilidad: number };
     
-    if (ultimo.utilidad > anterior.utilidad) return 'up';
-    if (ultimo.utilidad < anterior.utilidad) return 'down';
+    if (ultimo?.utilidad > anterior?.utilidad) return 'up';
+    if (ultimo?.utilidad < anterior?.utilidad) return 'down';
     return 'stable';
   };
 
@@ -311,7 +312,7 @@ export default function ReporteCostosUtilidades({ periodo = 'mes' }: ReporteCost
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Select defaultValue={periodo}>
+              <Select value={periodo}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -366,23 +367,23 @@ export default function ReporteCostosUtilidades({ periodo = 'mes' }: ReporteCost
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {servicios.map((servicio) => {
           const total = dataActual.reduce((sum, item) => {
-            const data = item[servicio.nombre as keyof typeof item] as any;
-            return sum + data.cantidad;
+            const data = item[servicio.nombre as keyof typeof item] as { cantidad: number };
+            return sum + (data?.cantidad || 0);
           }, 0);
           
           const totalCostos = dataActual.reduce((sum, item) => {
-            const data = item[servicio.nombre as keyof typeof item] as any;
-            return sum + data.costo;
+            const data = item[servicio.nombre as keyof typeof item] as { costo: number };
+            return sum + (data?.costo || 0);
           }, 0);
           
           const totalIngresos = dataActual.reduce((sum, item) => {
-            const data = item[servicio.nombre as keyof typeof item] as any;
-            return sum + data.precio;
+            const data = item[servicio.nombre as keyof typeof item] as { precio: number };
+            return sum + (data?.precio || 0);
           }, 0);
           
           const totalUtilidad = dataActual.reduce((sum, item) => {
-            const data = item[servicio.nombre as keyof typeof item] as any;
-            return sum + data.utilidad;
+            const data = item[servicio.nombre as keyof typeof item] as { utilidad: number };
+            return sum + (data?.utilidad || 0);
           }, 0);
           
           const margenUtilidad = totalIngresos > 0 ? ((totalUtilidad / totalIngresos) * 100).toFixed(1) : '0';
@@ -465,7 +466,7 @@ export default function ReporteCostosUtilidades({ periodo = 'mes' }: ReporteCost
                   return (
                     <tr key={index} className="border-b hover:bg-muted/50">
                       <td className="p-3 font-medium">
-                        {periodo === 'dia' ? item.fecha : periodo === 'mes' ? item.mes : item.año}
+                        {periodo === 'dia' ? (item as any).fecha : periodo === 'mes' ? (item as any).mes : (item as any).año}
                       </td>
                       <td className="text-right p-3">
                         <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">

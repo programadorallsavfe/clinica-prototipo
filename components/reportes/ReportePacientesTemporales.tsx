@@ -332,9 +332,9 @@ export default function ReportePacientesTemporales({
               <tbody>
                 {dataActual.map((item, index) => {
                   const getFecha = () => {
-                    if (periodo === 'dia') return (item as any).fecha;
-                    if (periodo === 'mes') return (item as any).mes;
-                    return (item as any).año;
+                    if (periodo === 'dia') return (item as DatosSexo).fecha;
+                    if (periodo === 'mes') return (item as DatosSexo).mes;
+                    return (item as DatosSexo).año;
                   };
 
                   const getTotal = () => {
