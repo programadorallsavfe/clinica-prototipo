@@ -50,7 +50,7 @@ export function PacienteSidebar({ pacienteNombre, isCollapsed = false, onToggleC
       },
       {
         title: "Agendar Cita",
-        onClick: () => router.push("/paciente/agendar"),
+        onClick: () => router.push("/paciente/agendar-cita"),
         icon: Clock,
       },
       {
@@ -66,21 +66,7 @@ export function PacienteSidebar({ pacienteNombre, isCollapsed = false, onToggleC
         icon: ShoppingBag,
         badge: "2",
       },
-      {
-        title: "Farmacia",
-        onClick: () => router.push("/paciente/farmacia"),
-        icon: Pill,
-      },
-      {
-        title: "Laboratorio",
-        onClick: () => router.push("/paciente/laboratorio"),
-        icon: TestTube,
-      },
-      {
-        title: "Pagos",
-        onClick: () => router.push("/paciente/pagos"),
-        icon: CreditCard,
-      },
+     
     ],
     
     socialMedia: [
