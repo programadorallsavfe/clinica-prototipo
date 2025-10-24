@@ -123,10 +123,335 @@ const laboratoriosMock: Laboratorio[] = [
   }
 ];
 
-// Datos mock para prestaciones basados en la imagen
+// Datos mock para prestaciones basados en laboratorio.md
 const prestacionesMock: PrestacionLaboratorio[] = [
+  // PERFIL PRE NATAL
   {
-    id: '1',
+    id: 'perfil-prenatal',
+    nombre: 'PERFIL PRE NATAL',
+    laboratorioId: '1',
+    costo: 450.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24-48 horas',
+    requerimientos: ['Ayuno 8 horas', 'Muestra de sangre', 'Muestra de orina']
+  },
+  // PERFIL PREOPERATORIO
+  {
+    id: 'perfil-preoperatorio',
+    nombre: 'PERFIL PREOPERATORIO',
+    laboratorioId: '1',
+    costo: 380.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24-48 horas',
+    requerimientos: ['Ayuno 8 horas', 'Muestra de sangre']
+  },
+  // PERFIL PREECLAMPSIA SEVERA
+  {
+    id: 'perfil-preeclampsia',
+    nombre: 'PERFIL PREECLAMPSIA SEVERA',
+    laboratorioId: '1',
+    costo: 520.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24-48 horas',
+    requerimientos: ['Muestra de sangre', 'Recolección orina 24h']
+  },
+  // PERFIL INFERTILIDAD
+  {
+    id: 'perfil-infertilidad',
+    nombre: 'PERFIL INFERTILIDAD',
+    laboratorioId: '1',
+    costo: 1200.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '3-5 días',
+    requerimientos: ['Muestra de semen', 'Histeroscopia']
+  },
+  // PERFIL OVARICO
+  {
+    id: 'perfil-ovarico',
+    nombre: 'PERFIL OVARICO',
+    laboratorioId: '1',
+    costo: 280.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24-48 horas',
+    requerimientos: ['Muestra de sangre', 'Día 3 del ciclo']
+  },
+  // PERFIL MENOPAUSIA MUJER
+  {
+    id: 'perfil-menopausia-mujer',
+    nombre: 'PERFIL MENOPAUSIA MUJER',
+    laboratorioId: '1',
+    costo: 650.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '2-3 días',
+    requerimientos: ['Muestra de sangre', 'Ecografía ginecológica', 'PAP']
+  },
+  // PERFIL MENOPAUSIA VARON
+  {
+    id: 'perfil-menopausia-varon',
+    nombre: 'PERFIL MENOPAUSIA VARON',
+    laboratorioId: '1',
+    costo: 580.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '2-3 días',
+    requerimientos: ['Muestra de sangre', 'Ecografía próstata']
+  },
+  // PERFIL TIROIDEO
+  {
+    id: 'perfil-tiroideo',
+    nombre: 'PERFIL TIROIDEO',
+    laboratorioId: '1',
+    costo: 180.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  // PERFIL LIPIDICO
+  {
+    id: 'perfil-lipidico',
+    nombre: 'PERFIL LIPIDICO',
+    laboratorioId: '1',
+    costo: 120.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Ayuno 12 horas', 'Muestra de sangre']
+  },
+  // PERFIL HEPATICO
+  {
+    id: 'perfil-hepatico',
+    nombre: 'PERFIL HEPATICO',
+    laboratorioId: '1',
+    costo: 150.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  // PERFIL COAGULACION
+  {
+    id: 'perfil-coagulacion',
+    nombre: 'PERFIL COAGULACION',
+    laboratorioId: '1',
+    costo: 200.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  // PERFIL RENAL
+  {
+    id: 'perfil-renal',
+    nombre: 'PERFIL RENAL',
+    laboratorioId: '1',
+    costo: 180.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '24-48 horas',
+    requerimientos: ['Muestra de sangre', 'Recolección orina 24h']
+  },
+  // PERFIL PARA TRABAJO
+  {
+    id: 'perfil-trabajo',
+    nombre: 'PERFIL PARA TRABAJO',
+    laboratorioId: '1',
+    costo: 220.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '2-3 días',
+    requerimientos: ['Muestra de sangre', 'Muestra de esputo', 'Muestra de heces']
+  },
+  // PERFIL MATRIMONIO
+  {
+    id: 'perfil-matrimonio',
+    nombre: 'PERFIL MATRIMONIO',
+    laboratorioId: '1',
+    costo: 280.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '2-3 días',
+    requerimientos: ['Muestra de sangre', 'Muestra de esputo']
+  },
+  // PERFIL MANIPULADOR DE ALIMENTOS
+  {
+    id: 'perfil-manipulador',
+    nombre: 'PERFIL MANIPULADOR DE ALIMENTOS',
+    laboratorioId: '1',
+    costo: 200.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '2-3 días',
+    requerimientos: ['Muestra de sangre', 'Muestra de heces', 'Muestra de esputo']
+  },
+  // PERFIL OCUPACIONAL
+  {
+    id: 'perfil-ocupacional',
+    nombre: 'PERFIL OCUPACIONAL',
+    laboratorioId: '1',
+    costo: 350.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '3-5 días',
+    requerimientos: ['Muestra de sangre', 'Muestra de orina', 'Evaluaciones médicas']
+  },
+  // HEMOGRAMA COMPLETO
+  {
+    id: 'hemograma-completo',
+    nombre: 'HEMOGRAMA COMPLETO',
+    laboratorioId: '1',
+    costo: 45.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  // EXAMEN DE ORINA
+  {
+    id: 'examen-orina',
+    nombre: 'EXAMEN DE ORINA',
+    laboratorioId: '1',
+    costo: 25.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de orina']
+  },
+  // BETA HCG CUANTITATIVO
+  {
+    id: 'beta-hcg',
+    nombre: 'BETA HCG CUANTITATIVO',
+    laboratorioId: '1',
+    costo: 80.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  // MARCADORES TUMORALES
+  {
+    id: 'marcadores-tumorales',
+    nombre: 'MARCADORES TUMORALES',
+    laboratorioId: '1',
+    costo: 320.00,
+    tipo: 'perfil',
+    estado: 'activo',
+    tiempoEntrega: '48 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  // TEST TOLERANCIA GLUCOSA
+  {
+    id: 'test-tolerancia-glucosa',
+    nombre: 'TEST DE TOLERANCIA A LA GLUCOSA',
+    laboratorioId: '1',
+    costo: 120.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '3 horas',
+    requerimientos: ['Ayuno 8 horas', 'Muestras seriadas']
+  },
+  // ELECTROLITOS
+  {
+    id: 'electrolitos',
+    nombre: 'ELECTROLITOS',
+    laboratorioId: '1',
+    costo: 60.00,
+    tipo: 'examen',
+    estado: 'activo',
+    tiempoEntrega: '24 horas',
+    requerimientos: ['Muestra de sangre']
+  },
+  // BIOPSIA
+  {
+    id: 'biopsia-cervix',
+    nombre: 'BIOPSIA DE CÉRVIX',
+    laboratorioId: '2',
+    costo: 180.00,
+    tipo: 'biopsia',
+    estado: 'activo',
+    tiempoEntrega: '5-7 días',
+    requerimientos: ['Muestra de tejido']
+  },
+  {
+    id: 'biopsia-endometrio',
+    nombre: 'BIOPSIA DE ENDOMETRIO',
+    laboratorioId: '2',
+    costo: 200.00,
+    tipo: 'biopsia',
+    estado: 'activo',
+    tiempoEntrega: '5-7 días',
+    requerimientos: ['Muestra de tejido']
+  },
+  {
+    id: 'biopsia-mama',
+    nombre: 'BIOPSIA DE MAMA',
+    laboratorioId: '2',
+    costo: 350.00,
+    tipo: 'biopsia',
+    estado: 'activo',
+    tiempoEntrega: '5-7 días',
+    requerimientos: ['Muestra de tejido']
+  },
+  {
+    id: 'biopsia-prostata',
+    nombre: 'BIOPSIA DE PRÓSTATA',
+    laboratorioId: '2',
+    costo: 400.00,
+    tipo: 'biopsia',
+    estado: 'activo',
+    tiempoEntrega: '5-7 días',
+    requerimientos: ['Muestra de tejido']
+  },
+  // CULTIVOS
+  {
+    id: 'cultivo-orina',
+    nombre: 'UROCULTIVO',
+    laboratorioId: '1',
+    costo: 80.00,
+    tipo: 'cultivo',
+    estado: 'activo',
+    tiempoEntrega: '3-5 días',
+    requerimientos: ['Muestra de orina estéril']
+  },
+  {
+    id: 'cultivo-sangre',
+    nombre: 'HEMOCULTIVO',
+    laboratorioId: '1',
+    costo: 120.00,
+    tipo: 'cultivo',
+    estado: 'activo',
+    tiempoEntrega: '5-7 días',
+    requerimientos: ['Muestra de sangre estéril']
+  },
+  {
+    id: 'cultivo-heces',
+    nombre: 'COPROCULTIVO',
+    laboratorioId: '1',
+    costo: 90.00,
+    tipo: 'cultivo',
+    estado: 'activo',
+    tiempoEntrega: '3-5 días',
+    requerimientos: ['Muestra de heces']
+  },
+  {
+    id: 'cultivo-vaginal',
+    nombre: 'CULTIVO DE SECRECIÓN VAGINAL',
+    laboratorioId: '1',
+    costo: 70.00,
+    tipo: 'cultivo',
+    estado: 'activo',
+    tiempoEntrega: '3-5 días',
+    requerimientos: ['Muestra de secreción vaginal']
+  },
+  // EXAMENES ESPECÍFICOS
+  {
+    id: 'acaros-investigacion',
     nombre: 'ACAROS INVESTIGACION',
     laboratorioId: '1',
     costo: 80.00,
@@ -136,7 +461,7 @@ const prestacionesMock: PrestacionLaboratorio[] = [
     requerimientos: ['Muestra de piel']
   },
   {
-    id: '2',
+    id: 'acido-ascorbico',
     nombre: 'ACIDO ASCORBICO',
     laboratorioId: '1',
     costo: 250.00,
@@ -146,7 +471,7 @@ const prestacionesMock: PrestacionLaboratorio[] = [
     requerimientos: ['Ayuno 8 horas', 'Muestra de sangre']
   },
   {
-    id: '3',
+    id: 'acido-folico',
     nombre: 'ACIDO FOLICO',
     laboratorioId: '1',
     costo: 70.00,
@@ -156,7 +481,7 @@ const prestacionesMock: PrestacionLaboratorio[] = [
     requerimientos: ['Muestra de sangre']
   },
   {
-    id: '4',
+    id: 'acido-urico-orina',
     nombre: 'ACIDO URICO EN ORINA SIMPLE',
     laboratorioId: '1',
     costo: 70.00,
@@ -166,7 +491,7 @@ const prestacionesMock: PrestacionLaboratorio[] = [
     requerimientos: ['Muestra de orina']
   },
   {
-    id: '5',
+    id: 'acido-urico-sangre',
     nombre: 'ACIDO URICO EN SUERO',
     laboratorioId: '1',
     costo: 50.00,
@@ -176,17 +501,7 @@ const prestacionesMock: PrestacionLaboratorio[] = [
     requerimientos: ['Muestra de sangre']
   },
   {
-    id: '6',
-    nombre: 'ACIDO URICO ORINA 24hr',
-    laboratorioId: '1',
-    costo: 50.00,
-    tipo: 'examen',
-    estado: 'activo',
-    tiempoEntrega: '24 horas',
-    requerimientos: ['Recolección 24 horas', 'Muestra de orina']
-  },
-  {
-    id: '7',
+    id: 'acidos-biliares',
     nombre: 'ACIDOS BILIARES',
     laboratorioId: '1',
     costo: 370.00,
@@ -196,7 +511,7 @@ const prestacionesMock: PrestacionLaboratorio[] = [
     requerimientos: ['Ayuno 12 horas', 'Muestra de sangre']
   },
   {
-    id: '8',
+    id: 'acth-am',
     nombre: 'ACTH am BASAL',
     laboratorioId: '1',
     costo: 110.00,
@@ -206,17 +521,7 @@ const prestacionesMock: PrestacionLaboratorio[] = [
     requerimientos: ['Muestra de sangre matutina']
   },
   {
-    id: '9',
-    nombre: 'ACTH pm DOSAJE',
-    laboratorioId: '1',
-    costo: 185.00,
-    tipo: 'examen',
-    estado: 'activo',
-    tiempoEntrega: '24 horas',
-    requerimientos: ['Muestra de sangre vespertina']
-  },
-  {
-    id: '10',
+    id: 'aglutinaciones',
     nombre: 'AGLUTINACIONES EN LAMINA',
     laboratorioId: '1',
     costo: 40.00,
@@ -457,7 +762,7 @@ export default function LaboratorioPage() {
 
         {/* Tabs de Navegación */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="laboratorios" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               <span className="hidden sm:inline">Laboratorios</span>
@@ -473,6 +778,10 @@ export default function LaboratorioPage() {
             <TabsTrigger value="prestaciones" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">Prestaciones</span>
+            </TabsTrigger>
+            <TabsTrigger value="reportes" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              <span className="hidden sm:inline">Reportes</span>
             </TabsTrigger>
             <TabsTrigger value="solicitudes" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -761,6 +1070,37 @@ export default function LaboratorioPage() {
                 </p>
               </div>
             </div>
+
+            {/* Filtros para Prestaciones */}
+            <Card className="mb-4">
+              <CardContent className="p-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Buscar prestaciones..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <Select value={filterEstado} onValueChange={setFilterEstado}>
+                    <SelectTrigger className="w-full sm:w-48">
+                      <SelectValue placeholder="Filtrar por tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos los tipos</SelectItem>
+                      <SelectItem value="perfil">Perfiles</SelectItem>
+                      <SelectItem value="examen">Exámenes</SelectItem>
+                      <SelectItem value="biopsia">Biopsias</SelectItem>
+                      <SelectItem value="cultivo">Cultivos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
             
             <Card>
               <CardHeader>
@@ -779,20 +1119,68 @@ export default function LaboratorioPage() {
                       <TableRow>
                         <TableHead className="w-20">Código</TableHead>
                         <TableHead>Nombre</TableHead>
-                        <TableHead className="text-right">Precio paciente genérico</TableHead>
+                        <TableHead className="text-center">Tipo</TableHead>
+                        <TableHead className="text-center">Tiempo Entrega</TableHead>
+                        <TableHead className="text-right">Precio</TableHead>
+                        <TableHead className="text-center">Requerimientos</TableHead>
                         <TableHead className="text-center w-24">Editar</TableHead>
                         <TableHead className="text-center w-32">Deshabilitar</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {prestaciones.map((prestacion) => (
+                      {prestaciones
+                        .filter(prestacion => {
+                          const matchesSearch = prestacion.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+                          const matchesType = filterEstado === 'todos' || prestacion.tipo === filterEstado;
+                          return matchesSearch && matchesType;
+                        })
+                        .map((prestacion) => (
                         <TableRow key={prestacion.id} className="hover:bg-muted/50">
                           <TableCell className="text-center">
                             <span className="text-muted-foreground">-</span>
                           </TableCell>
-                          <TableCell className="font-medium">{prestacion.nombre}</TableCell>
+                          <TableCell className="font-medium">
+                            <div>
+                              <p className="font-semibold">{prestacion.nombre}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {prestacion.requerimientos.slice(0, 2).join(', ')}
+                                {prestacion.requerimientos.length > 2 && '...'}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge 
+                              variant="secondary" 
+                              className={
+                                prestacion.tipo === 'perfil' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
+                                prestacion.tipo === 'examen' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                                prestacion.tipo === 'biopsia' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' :
+                                prestacion.tipo === 'cultivo' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' :
+                                'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+                              }
+                            >
+                              {prestacion.tipo.toUpperCase()}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className="text-sm text-muted-foreground">{prestacion.tiempoEntrega}</span>
+                          </TableCell>
                           <TableCell className="text-right">
-                            <span className="font-medium">S/.{prestacion.costo.toFixed(2)}</span>
+                            <span className="font-bold text-success">S/ {prestacion.costo.toFixed(2)}</span>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex flex-wrap gap-1 justify-center">
+                              {prestacion.requerimientos.slice(0, 2).map((req, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {req}
+                                </Badge>
+                              ))}
+                              {prestacion.requerimientos.length > 2 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{prestacion.requerimientos.length - 2}
+                                </Badge>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell className="text-center">
                             <Button variant="outline" size="sm" className="text-info border-info hover:bg-info/10">
@@ -813,6 +1201,276 @@ export default function LaboratorioPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Tab: Reportes de Laboratorio */}
+          <TabsContent value="reportes" className="mt-6">
+            <div className="space-y-6">
+              {/* Mensaje Informativo */}
+              <div className="p-4 bg-info/10 border border-info/20 rounded-lg">
+                <div className="flex items-center gap-2 text-info">
+                  <TrendingUp className="h-4 w-4" />
+                  <p className="text-sm font-medium">
+                    Reportes detallados de exámenes realizados, costos, utilidades y comisiones por laboratorio.
+                  </p>
+                </div>
+              </div>
+
+              {/* Estadísticas de Reportes */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="border-l-4 border-l-primary">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Total Exámenes</p>
+                        <p className="text-2xl font-bold text-primary">
+                          {prestaciones.length}
+                        </p>
+                      </div>
+                      <FileText className="h-8 w-8 text-primary" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-success">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Ingresos Totales</p>
+                        <p className="text-2xl font-bold text-success">
+                          S/ {prestaciones.reduce((sum, p) => sum + p.costo, 0).toLocaleString()}
+                        </p>
+                      </div>
+                      <DollarSign className="h-8 w-8 text-success" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-warning">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Costo Promedio</p>
+                        <p className="text-2xl font-bold text-warning">
+                          S/ {(prestaciones.reduce((sum, p) => sum + p.costo, 0) / prestaciones.length).toFixed(0)}
+                        </p>
+                      </div>
+                      <Calculator className="h-8 w-8 text-warning" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-info">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Perfiles Activos</p>
+                        <p className="text-2xl font-bold text-info">
+                          {prestaciones.filter(p => p.tipo === 'perfil').length}
+                        </p>
+                      </div>
+                      <Users className="h-8 w-8 text-info" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Reporte de Exámenes por Tipo */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Reporte de Exámenes por Tipo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {['perfil', 'examen', 'biopsia', 'cultivo'].map(tipo => {
+                      const examenesTipo = prestaciones.filter(p => p.tipo === tipo);
+                      const totalCosto = examenesTipo.reduce((sum, p) => sum + p.costo, 0);
+                      const colorClass = tipo === 'perfil' ? 'text-blue-600' : 
+                                        tipo === 'examen' ? 'text-green-600' : 
+                                        tipo === 'biopsia' ? 'text-red-600' : 'text-purple-600';
+                      
+                      return (
+                        <div key={tipo} className="p-4 rounded-lg border bg-card">
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="font-semibold capitalize">{tipo}s</h3>
+                            <Badge variant="secondary">{examenesTipo.length}</Badge>
+                          </div>
+                          <p className={`text-2xl font-bold ${colorClass}`}>
+                            S/ {totalCosto.toLocaleString()}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Promedio: S/ {examenesTipo.length > 0 ? (totalCosto / examenesTipo.length).toFixed(0) : 0}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Reporte de Costos por Laboratorio */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    Reporte de Costos por Laboratorio
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {laboratorios.map(laboratorio => {
+                      const prestacionesLab = prestaciones.filter(p => p.laboratorioId === laboratorio.id);
+                      const totalCosto = prestacionesLab.reduce((sum, p) => sum + p.costo, 0);
+                      const costoPromedio = prestacionesLab.length > 0 ? totalCosto / prestacionesLab.length : 0;
+                      
+                      return (
+                        <div key={laboratorio.id} className="p-4 rounded-lg border bg-card">
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <h3 className="font-semibold">{laboratorio.nombre}</h3>
+                              <p className="text-sm text-muted-foreground">{laboratorio.detalle}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-2xl font-bold text-success">S/ {totalCosto.toLocaleString()}</p>
+                              <p className="text-sm text-muted-foreground">{prestacionesLab.length} prestaciones</p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="text-center p-3 rounded bg-muted/50">
+                              <p className="text-sm text-muted-foreground">Costo Promedio</p>
+                              <p className="font-semibold">S/ {costoPromedio.toFixed(0)}</p>
+                            </div>
+                            <div className="text-center p-3 rounded bg-muted/50">
+                              <p className="text-sm text-muted-foreground">Pacientes Atendidos</p>
+                              <p className="font-semibold">{laboratorio.pacientesAtendidos.toLocaleString()}</p>
+                            </div>
+                            <div className="text-center p-3 rounded bg-muted/50">
+                              <p className="text-sm text-muted-foreground">Ganancia Clínica</p>
+                              <p className="font-semibold text-success">S/ {laboratorio.gananciaClinica.toLocaleString()}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Reporte de Utilidades */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Reporte de Utilidades para FEMINIS
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg">Resumen Financiero</h3>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center p-3 rounded bg-green-50 dark:bg-green-950/20">
+                          <span className="text-sm font-medium">Ingresos Totales</span>
+                          <span className="font-bold text-green-600">S/ {gananciaTotalClinica.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 rounded bg-orange-50 dark:bg-orange-950/20">
+                          <span className="text-sm font-medium">Costos Laboratorios</span>
+                          <span className="font-bold text-orange-600">S/ {montoTotalPorPagar.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 rounded bg-blue-50 dark:bg-blue-950/20">
+                          <span className="text-sm font-medium">Utilidad Neta</span>
+                          <span className="font-bold text-blue-600">S/ {(gananciaTotalClinica - montoTotalPorPagar).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="font-semibold text-lg">Márgenes por Laboratorio</h3>
+                      <div className="space-y-3">
+                        {laboratorios.map(lab => (
+                          <div key={lab.id} className="p-3 rounded border">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="font-medium">{lab.nombre}</span>
+                              <span className="text-sm text-muted-foreground">{lab.porcentajePagoLaboratorio}%</span>
+                            </div>
+                            <div className="w-full bg-muted rounded-full h-2">
+                              <div 
+                                className="bg-primary h-2 rounded-full" 
+                                style={{ width: `${100 - lab.porcentajePagoLaboratorio}%` }}
+                              ></div>
+                            </div>
+                            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                              <span>Margen: {100 - lab.porcentajePagoLaboratorio}%</span>
+                              <span>Ganancia: S/ {lab.gananciaClinica.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Reporte de Comisiones */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" />
+                    Reporte de Comisiones por Examen
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Examen</TableHead>
+                          <TableHead>Tipo</TableHead>
+                          <TableHead className="text-right">Precio al Paciente</TableHead>
+                          <TableHead className="text-right">% Comisión</TableHead>
+                          <TableHead className="text-right">Monto Comisión</TableHead>
+                          <TableHead className="text-right">Ganancia FEMINIS</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {prestaciones.slice(0, 10).map(prestacion => {
+                          const laboratorio = laboratorios.find(l => l.id === prestacion.laboratorioId);
+                          const porcentajeComision = laboratorio?.porcentajePagoLaboratorio || 20;
+                          const montoComision = prestacion.costo * (porcentajeComision / 100);
+                          const gananciaFeminis = prestacion.costo - montoComision;
+                          
+                          return (
+                            <TableRow key={prestacion.id}>
+                              <TableCell className="font-medium">{prestacion.nombre}</TableCell>
+                              <TableCell>
+                                <Badge variant="secondary" className="capitalize">
+                                  {prestacion.tipo}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <span className="font-semibold">S/ {prestacion.costo.toFixed(2)}</span>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <span className="text-info">{porcentajeComision}%</span>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <span className="text-warning">S/ {montoComision.toFixed(2)}</span>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <span className="font-bold text-success">S/ {gananciaFeminis.toFixed(2)}</span>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Tab: Solicitudes */}
