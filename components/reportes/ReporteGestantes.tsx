@@ -324,7 +324,7 @@ export default function ReporteGestantes({ periodo = 'mes' }: ReporteGestantesPr
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Select defaultValue={periodo}>
+              <Select value={periodo}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
