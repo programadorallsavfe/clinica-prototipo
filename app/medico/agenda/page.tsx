@@ -14,6 +14,20 @@ import {
   Activity, TrendingUp, Users, HeartPulse
 } from 'lucide-react';
 
+// Tipo para las citas médicas
+interface CitaMedica {
+  id: string;
+  paciente: string;
+  documento: string;
+  especialidad: string;
+  horaInicio: string;
+  horaFin: string;
+  estado: 'programada' | 'en_curso' | 'atendida' | 'cancelada';
+  motivo: string;
+  telefono: string;
+  observaciones?: string;
+}
+
 // Mock data para la agenda médica
 const citasMock = [
   {
@@ -129,7 +143,7 @@ export default function AgendaMedicaPage() {
   const [citas, setCitas] = useState(citasMock);
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
   const [filtroBusqueda, setFiltroBusqueda] = useState<string>('');
-  const [citaSeleccionada, setCitaSeleccionada] = useState<any>(null);
+  const [citaSeleccionada, setCitaSeleccionada] = useState<CitaMedica | null>(null);
   const [showDetalleCita, setShowDetalleCita] = useState(false);
 
   // Filtrar citas
@@ -156,13 +170,13 @@ export default function AgendaMedicaPage() {
     ));
   };
 
-  const columnas: Columna<any>[] = [
+  const columnas: Columna<CitaMedica>[] = [
     {
       key: 'horaInicio',
       titulo: 'Hora',
       sortable: true,
       width: '100px',
-      render: (cita: any) => (
+      render: (cita: CitaMedica) => (
         <div className="text-sm">
           <div className="font-medium">{cita.horaInicio}</div>
           <div className="text-xs text-muted-foreground">{cita.horaFin}</div>
@@ -172,7 +186,7 @@ export default function AgendaMedicaPage() {
     {
       key: 'paciente',
       titulo: 'Paciente',
-      render: (cita: any) => (
+      render: (cita: CitaMedica) => (
         <div>
           <div className="font-medium">{cita.paciente}</div>
           <div className="text-xs text-muted-foreground">{cita.documento}</div>
@@ -182,7 +196,7 @@ export default function AgendaMedicaPage() {
     {
       key: 'especialidad',
       titulo: 'Especialidad',
-      render: (cita: any) => (
+      render: (cita: CitaMedica) => (
         <Badge variant="outline" className="bg-blue-50 text-blue-700">
           <Stethoscope className="h-3 w-3 mr-1" />
           {cita.especialidad}
@@ -192,7 +206,7 @@ export default function AgendaMedicaPage() {
     {
       key: 'motivo',
       titulo: 'Motivo',
-      render: (cita: any) => (
+      render: (cita: CitaMedica) => (
         <div className="max-w-xs">
           <p className="text-sm font-medium truncate">{cita.motivo}</p>
           {cita.observaciones && (
@@ -217,7 +231,7 @@ export default function AgendaMedicaPage() {
     {
       key: 'acciones',
       titulo: 'Acciones',
-      render: (cita: any) => (
+      render: (cita: CitaMedica) => (
         <div className="flex gap-1">
           <Button
             size="sm"
